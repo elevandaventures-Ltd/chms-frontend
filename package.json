@@ -9,7 +9,9 @@
     "lint": "node -e \"console.log('ESLint skipped for Day-1 baseline; configure ESLint for repo when ready')\"",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check .",
-    "format:write": "prettier --write ."
+    "format:write": "prettier --write .",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "next": "^16.2.6",
@@ -30,6 +32,19 @@
     "eslint-config-next": "^16.2.6",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "storybook": "^10.4.1",
+    "@storybook/nextjs-vite": "^10.4.1",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.4.1",
+    "@storybook/addon-a11y": "^10.4.1",
+    "@storybook/addon-docs": "^10.4.1",
+    "@storybook/addon-mcp": "^0.6.0",
+    "vite": "^8.0.14",
+    "eslint-plugin-storybook": "^10.4.1",
+    "vitest": "^4.1.7",
+    "playwright": "^1.60.0",
+    "@vitest/browser-playwright": "^4.1.7",
+    "@vitest/coverage-v8": "^4.1.7"
   }
 }
