@@ -1,40 +1,106 @@
-# Elevanda Ventures — Frontend Baseline
+# Elevanda Ventures
 
-This repository contains the Day 1 frontend baseline: a Next.js 14 App Router application using TypeScript, ESLint, and Prettier with simple UI scaffolding.
+Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 
-## Quick Scripts
+## What’s Included
 
-- **Install:** npm install
-- **Dev:** npm run dev (starts local server)
-- **Build:** npm run build
-- **Start (prod):** npm run start
-- **Lint:** npm run lint
-- **Typecheck:** npm run typecheck
-- **Format (check):** npm run format
-- **Format (write):** npm run format:write
+- Day 1: baseline app setup with TypeScript, Prettier, path aliases, and environment files.
+- Day 3: responsive workspace shell with a collapsible sidebar, top navigation, and sectioned dashboard content.
+- Day 4: Storybook 8 component documentation plus reusable UI controls for buttons and form fields.
+- Day 5: Modal, Drawer, Dropdown Menu, Toast (Sonner), Card, Badge, Avatar, and Skeleton components with Storybook stories.
+ - [x] Day 1: baseline app setup with TypeScript, Prettier, path aliases, and environment files. — complete
+ - [x] Day 3: responsive workspace shell with a collapsible sidebar, top navigation, and sectioned dashboard content. — complete
+ - [x] Day 4: Storybook 8 component documentation plus reusable UI controls for buttons and form fields. — complete
+ - [x] Day 5: Modal, Drawer, Dropdown Menu, Toast (Sonner), Card, Badge, Avatar, and Skeleton components with Storybook stories. — complete (2026-05-31)
+
+## Run It
+
+Install dependencies once:
+
+```bash
+npm install
+```
+
+Run the app locally:
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Run Storybook:
+
+```bash
+npm run storybook
+```
+
+Build the app:
+
+```bash
+npm run build
+```
+
+Build Storybook:
+
+```bash
+npm run build-storybook
+```
+
+Type-check the project:
+
+```bash
+npm run typecheck
+```
+
+## Available Scripts
+
+- `npm run dev` - start the Next.js dev server.
+- `npm run build` - create a production build.
+- `npm run start` - run the production server.
+- `npm run storybook` - start Storybook for the UI components.
+- `npm run build-storybook` - build the Storybook static site.
+- `npm run typecheck` - run TypeScript type checking.
+- `npm run lint` - placeholder lint script from the baseline.
+- `npm run format` - check formatting.
+- `npm run format:write` - write formatting changes.
+
+## Project Structure
+
+- [src/app/page.tsx](src/app/page.tsx) - Day 3 dashboard page.
+- [src/components/PageShell.tsx](src/components/PageShell.tsx) - shared page shell layout.
+- [src/components/Sidebar.tsx](src/components/Sidebar.tsx) - collapsible navigation.
+- [src/components/TopNav.tsx](src/components/TopNav.tsx) - top navigation bar.
+- [src/components/ui/Button.tsx](src/components/ui/Button.tsx) - Day 4 button component.
+- [src/components/ui/Input.tsx](src/components/ui/Input.tsx) - Day 4 input component.
+- [src/components/ui/Textarea.tsx](src/components/ui/Textarea.tsx) - Day 4 textarea component.
+- [src/components/ui/Select.tsx](src/components/ui/Select.tsx) - Day 4 select component.
+- [src/components/ui/Checkbox.tsx](src/components/ui/Checkbox.tsx) - Day 4 checkbox component.
+- [src/components/ui/Radio.tsx](src/components/ui/Radio.tsx) - Day 4 radio component.
+ - [src/components/ui/Modal.tsx](src/components/ui/Modal.tsx) - Day 5 modal component.
+ - [src/components/ui/Drawer.tsx](src/components/ui/Drawer.tsx) - Day 5 drawer component.
+ - [src/components/ui/Dropdown.tsx](src/components/ui/Dropdown.tsx) - Day 5 dropdown menu component.
+ - [src/components/ui/Toast.tsx](src/components/ui/Toast.tsx) - Day 5 toast provider (Sonner).
+ - [src/components/ui/Card.tsx](src/components/ui/Card.tsx) - Day 5 card component.
+ - [src/components/ui/Badge.tsx](src/components/ui/Badge.tsx) - Day 5 badge component.
+ - [src/components/ui/Avatar.tsx](src/components/ui/Avatar.tsx) - Day 5 avatar component.
+ - [src/components/ui/Skeleton.tsx](src/components/ui/Skeleton.tsx) - Day 5 skeleton loading component.
+- [.storybook/main.ts](.storybook/main.ts) - Storybook configuration.
+- [.storybook/preview.tsx](.storybook/preview.tsx) - Storybook global preview setup.
+- [.github/workflows/ci.yml](.github/workflows/ci.yml) - CI workflow for typecheck, build, and Storybook build.
 
 ## Environment
 
-- **Template:** [.env.local.example](.env.local.example)
-- **Local file:** [.env.local](.env.local) (update values for your machine)
+- [`.env.local.example`](.env.local.example) shows the expected local environment shape.
+- [`.env.local`](.env.local) is your machine-specific file.
 
-## Path Aliases
+## Notes
 
-- `@/components/*` -> `src/components/*`
-- `@/lib/*` -> `src/lib/*`
+- The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
+- Generated build output such as `storybook-static` is ignored and should not be committed.
 
-## Status (Day-by-day)
-
-- **Day 1 — Frontend baseline:** Completed. Next.js 14 App Router, TypeScript, ESLint, Prettier, path aliases, and `.env.local` are in place. Verified with `npm run typecheck`, `npm run lint`, and `npm run build`.
-
-## Key Files
-
-- Project manifest: [package.json](package.json)
-- TypeScript config: [tsconfig.json](tsconfig.json)
-- Root layout: [src/app/layout.tsx](src/app/layout.tsx)
-- Home page: [src/app/page.tsx](src/app/page.tsx)
-- Global styles: [src/app/globals.css](src/app/globals.css)
-- Feature card: [src/components/FeatureCard.tsx](src/components/FeatureCard.tsx)
-- Shared site data: [src/lib/site.ts](src/lib/site.ts)
-- Env template: [.env.local.example](.env.local.example)
-- Local env: [.env.local](.env.local)
+- **Status:** Day 1, 3, 4, and 5 implementations are present in the repo and pass TypeScript checks. To enable runtime toasts in Storybook, install `sonner` with `npm install sonner`.

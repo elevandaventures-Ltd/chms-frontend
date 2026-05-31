@@ -1,33 +1,40 @@
-import styles from './Field.module.css';
+"use client";
+import type { TextareaHTMLAttributes } from 'react';
+import { useId } from 'react';
 
-export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+type ValidationState = 'default' | 'success' | 'error';
+
+type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
   hint?: string;
-  error?: string;
-  valid?: boolean;
+  validation?: ValidationState;
 };
 
-export function Textarea({ label, hint, error, valid, id, required, className = '', ...props }: TextareaProps) {
-  const stateClass = error ? styles.controlInvalid : valid ? styles.controlValid : '';
+export function Textarea({ label, hint, validation = 'default', id, className = '', placeholder, ...rest }: TextareaProps) {
+  const reactId = useId();
+  const textareaId = id ?? `textarea-${reactId}`;
+  const classes = ['ui-field', `ui-field--${validation}`, className].filter(Boolean).join(' ');
 
   return (
-    <div className={styles.field}>
-      {label && (
-        <label className={styles.label} htmlFor={id}>
-          {label}
-          {required && <span className={styles.required} aria-hidden="true">*</span>}
-        </label>
-      )}
-      <textarea
-        id={id}
-        required={required}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-        className={`${styles.control} ${styles.textarea} ${stateClass} ${className}`}
-        {...props}
-      />
-      {hint && !error && <span id={`${id}-hint`} className={styles.hint}>{hint}</span>}
-      {error && <span id={`${id}-error`} className={styles.error} role="alert">{error}</span>}
+    <div className={classes}>
+      <div className="ui-control ui-control--textarea">
+        <textarea
+          id={textareaId}
+          className={`ui-input ui-textarea ${label ? 'ui-input--floating' : ''}`}
+          placeholder={label ? placeholder ?? ' ' : placeholder}
+          {...rest}
+        />
+
+        {label ? (
+          <label className="ui-label ui-label--textarea" htmlFor={textareaId}>
+            {label}
+          </label>
+        ) : null}
+      </div>
+
+      {hint ? <p className="ui-hint">{hint}</p> : null}
     </div>
   );
 }
+
+export default Textarea;

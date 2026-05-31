@@ -1,16 +1,31 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Textarea } from '@/components/ui/Textarea';
+import type { Meta, StoryObj } from '@storybook/react';
 
-const meta: Meta<typeof Textarea> = {
+import { Textarea } from './Textarea';
+
+const meta = {
   title: 'UI/Textarea',
   component: Textarea,
   tags: ['autodocs'],
-};
+} satisfies Meta<typeof Textarea>;
 
 export default meta;
-type Story = StoryObj<typeof Textarea>;
 
-export const Default: Story = { args: { id: 'notes', label: 'Notes', placeholder: 'Add a note…' } };
-export const Valid: Story = { args: { id: 'tv', label: 'Description', value: 'Looks good.', valid: true, readOnly: true } };
-export const Invalid: Story = { args: { id: 'ti', label: 'Description', value: '', error: 'Description is required.' } };
-export const Disabled: Story = { args: { id: 'td', label: 'Archived notes', value: 'Read only content.', disabled: true } };
+type Story = StoryObj<typeof meta>;
+
+export const Playground: Story = {
+  args: {
+    label: 'Message',
+    hint: 'A few details helps us respond faster.',
+    placeholder: 'Write your message…',
+  },
+};
+
+export const States: Story = {
+  render: () => (
+    <div className="story-stack">
+      <Textarea label="Default" placeholder="Write something" rows={4} />
+      <Textarea label="Success" placeholder="Looks good" validation="success" hint="Nice and clear." rows={4} />
+      <Textarea label="Error" placeholder="Needs input" validation="error" hint="Please add more context." rows={4} />
+    </div>
+  ),
+};

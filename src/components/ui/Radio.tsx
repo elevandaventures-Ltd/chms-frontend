@@ -1,36 +1,35 @@
-import styles from './Field.module.css';
+"use client";
+import type { InputHTMLAttributes } from 'react';
+import { useId } from 'react';
 
-export type RadioOption = { value: string; label: string };
+type ValidationState = 'default' | 'success' | 'error';
 
-export type RadioGroupProps = {
-  name: string;
-  label?: string;
-  options: RadioOption[];
-  value?: string;
-  onChange?: (value: string) => void;
-  error?: string;
-  disabled?: boolean;
+type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+  label: string;
+  hint?: string;
+  validation?: ValidationState;
 };
 
-export function RadioGroup({ name, label, options, value, onChange, error, disabled }: RadioGroupProps) {
+export function Radio({ label, hint, validation = 'default', id, className = '', ...rest }: RadioProps) {
+  const reactId = useId();
+  const radioId = id ?? `radio-${reactId}`;
+  const classes = ['ui-field', `ui-field--${validation}`, className].filter(Boolean).join(' ');
+
   return (
-    <fieldset className={styles.field} style={{ border: 'none', padding: 0, margin: 0 }}>
-      {label && <legend className={styles.label}>{label}</legend>}
-      {options.map((opt) => (
-        <label key={opt.value} className={styles.radioRow}>
-          <input
-            type="radio"
-            name={name}
-            value={opt.value}
-            checked={value === opt.value}
-            onChange={() => onChange?.(opt.value)}
-            disabled={disabled}
-            aria-invalid={!!error}
-          />
-          <span className={styles.radioLabel}>{opt.label}</span>
-        </label>
-      ))}
-      {error && <span className={styles.error} role="alert">{error}</span>}
-    </fieldset>
+    <label className={classes} htmlFor={radioId}>
+      <span className="ui-check ui-check--radio">
+        <input id={radioId} className="sr-only ui-check__input" type="radio" {...rest} />
+        <span className="ui-check__box ui-check__box--radio" aria-hidden="true">
+          <span className="ui-check__dot" />
+        </span>
+      </span>
+
+      <span className="ui-field__copy">
+        <span className="ui-field__title">{label}</span>
+        {hint ? <span className="ui-hint">{hint}</span> : null}
+      </span>
+    </label>
   );
 }
+
+export default Radio;

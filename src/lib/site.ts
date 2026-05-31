@@ -65,3 +65,40 @@ export const setupHighlights = [
       'The main container stays centered and adapts cleanly from mobile through desktop widths.',
   },
 ];
+
+export const projectMilestones = [
+  {
+    title: 'Dashboard shell hardening',
+    status: 'In progress',
+    detail: 'Polish sticky navigation behavior and complete section anchors for all sidebar links.',
+  },
+  {
+    title: 'Storybook adoption',
+    status: 'Ready for review',
+    detail: 'Document core UI controls and state variants so product and engineering can validate faster.',
+  },
+];
+
+export const teamPulse = [
+  {
+    name: 'Amina Choi',
+    role: 'Product Design',
+    update: 'Finalizing responsive nav spacing and interaction states.',
+  },
+  {
+    name: 'Jay Mensah',
+    role: 'Frontend',
+    update: 'Connecting form primitives into Storybook stories and docs.',
+  },
+];
+
+export const taskBoard = [
+  {
+    lane: 'Today',
+    item: 'Audit mobile layout at 768px and 1024px breakpoints.',
+  },
+  {
+    lane: 'Next up',
+    item: 'Add CI workflow for typecheck, app build, and Storybook build.',
+  },
+];

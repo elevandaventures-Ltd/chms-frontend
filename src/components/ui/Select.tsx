@@ -1,44 +1,52 @@
-import styles from './Field.module.css';
+"use client";
+import type { SelectHTMLAttributes } from 'react';
+import { useId } from 'react';
 
-export type SelectOption = { value: string; label: string };
+type ValidationState = 'default' | 'success' | 'error';
 
-export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
-  label?: string;
-  hint?: string;
-  error?: string;
-  valid?: boolean;
-  options: SelectOption[];
-  placeholder?: string;
+type SelectOption = {
+  label: string;
+  value: string;
+  disabled?: boolean;
 };
 
-export function Select({ label, hint, error, valid, id, required, options, placeholder, className = '', ...props }: SelectProps) {
-  const stateClass = error ? styles.controlInvalid : valid ? styles.controlValid : '';
+type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
+  label?: string;
+  hint?: string;
+  validation?: ValidationState;
+  options: SelectOption[];
+};
+
+export function Select({ label, hint, validation = 'default', options, id, className = '', children, ...rest }: SelectProps) {
+  const reactId = useId();
+  const selectId = id ?? `select-${reactId}`;
+  const classes = ['ui-field', `ui-field--${validation}`, className].filter(Boolean).join(' ');
 
   return (
-    <div className={styles.field}>
-      {label && (
-        <label className={styles.label} htmlFor={id}>
+    <div className={classes}>
+      {label ? (
+        <label className="ui-field__title" htmlFor={selectId}>
           {label}
-          {required && <span className={styles.required} aria-hidden="true">*</span>}
         </label>
-      )}
-      <div className={styles.selectWrap}>
-        <select
-          id={id}
-          required={required}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-          className={`${styles.control} ${styles.select} ${stateClass} ${className}`}
-          {...props}
-        >
-          {placeholder && <option value="">{placeholder}</option>}
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ) : null}
+
+      <div className="ui-control ui-control--select">
+        <select id={selectId} className="ui-select" {...rest}>
+          {options.map((option) => (
+            <option key={option.value} value={option.value} disabled={option.disabled}>
+              {option.label}
+            </option>
           ))}
+          {children}
         </select>
+        <span className="ui-control__chevron" aria-hidden="true">
+          ▾
+        </span>
       </div>
-      {hint && !error && <span id={`${id}-hint`} className={styles.hint}>{hint}</span>}
-      {error && <span id={`${id}-error`} className={styles.error} role="alert">{error}</span>}
+
+      {hint ? <p className="ui-hint">{hint}</p> : null}
     </div>
   );
 }
+
+export default Select;

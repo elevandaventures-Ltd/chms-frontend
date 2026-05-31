@@ -1,16 +1,37 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Checkbox } from '@/components/ui/Checkbox';
+import { useState } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 
-const meta: Meta<typeof Checkbox> = {
+import { Checkbox } from './Checkbox';
+
+const meta = {
   title: 'UI/Checkbox',
   component: Checkbox,
   tags: ['autodocs'],
-};
+} satisfies Meta<typeof Checkbox>;
 
 export default meta;
-type Story = StoryObj<typeof Checkbox>;
 
-export const Default: Story = { args: { id: 'cb1', label: 'I agree to the terms' } };
-export const Checked: Story = { args: { id: 'cb2', label: 'Send me updates', defaultChecked: true } };
-export const Invalid: Story = { args: { id: 'cb3', label: 'I agree to the terms', error: 'You must accept the terms.' } };
-export const Disabled: Story = { args: { id: 'cb4', label: 'Notifications (unavailable)', disabled: true } };
+type Story = StoryObj<typeof meta>;
+
+export const Playground: Story = {
+  args: {
+    label: 'Accept terms',
+  },
+  render: () => {
+    const [checked, setChecked] = useState(true);
+    return <Checkbox label="Accept terms" hint="Required before submitting." checked={checked} onChange={(event) => setChecked(event.currentTarget.checked)} />;
+  },
+};
+
+export const States: Story = {
+  args: {
+    label: 'Checkbox state',
+  },
+  render: () => (
+    <div className="story-stack">
+      <Checkbox label="Default" hint="This is a standard option." defaultChecked />
+      <Checkbox label="Success" hint="Valid selection." validation="success" defaultChecked />
+      <Checkbox label="Error" hint="Please confirm this option." validation="error" />
+    </div>
+  ),
+};

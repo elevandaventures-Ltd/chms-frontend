@@ -1,33 +1,67 @@
-import styles from './Field.module.css';
+"use client";
+import type { InputHTMLAttributes, ReactNode } from 'react';
+import { useId } from 'react';
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type ValidationState = 'default' | 'success' | 'error';
+
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   hint?: string;
-  error?: string;
-  valid?: boolean;
+  validation?: ValidationState;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
+  clearable?: boolean;
+  onClear?: () => void;
 };
 
-export function Input({ label, hint, error, valid, id, required, className = '', ...props }: InputProps) {
-  const stateClass = error ? styles.controlInvalid : valid ? styles.controlValid : '';
+export function Input({
+  label,
+  hint,
+  validation = 'default',
+  leadingIcon,
+  trailingIcon,
+  clearable = false,
+  onClear,
+  id,
+  className = '',
+  placeholder,
+  ...rest
+}: InputProps) {
+  const reactId = useId();
+  const inputId = id ?? `input-${reactId}`;
+  const classes = ['ui-field', `ui-field--${validation}`, className].filter(Boolean).join(' ');
+  const showFloatingLabel = Boolean(label);
 
   return (
-    <div className={styles.field}>
-      {label && (
-        <label className={styles.label} htmlFor={id}>
-          {label}
-          {required && <span className={styles.required} aria-hidden="true">*</span>}
-        </label>
-      )}
-      <input
-        id={id}
-        required={required}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-        className={`${styles.control} ${stateClass} ${className}`}
-        {...props}
-      />
-      {hint && !error && <span id={`${id}-hint`} className={styles.hint}>{hint}</span>}
-      {error && <span id={`${id}-error`} className={styles.error} role="alert">{error}</span>}
+    <div className={classes}>
+      <div className={`ui-control ${leadingIcon ? 'ui-control--leading' : ''} ${trailingIcon || clearable ? 'ui-control--trailing' : ''}`}>
+        {leadingIcon ? <span className="ui-control__icon ui-control__icon--leading">{leadingIcon}</span> : null}
+
+        <input
+          id={inputId}
+          className={`ui-input ${showFloatingLabel ? 'ui-input--floating' : ''}`}
+          placeholder={showFloatingLabel ? placeholder ?? ' ' : placeholder}
+          {...rest}
+        />
+
+        {label ? (
+          <label className="ui-label" htmlFor={inputId}>
+            {label}
+          </label>
+        ) : null}
+
+        {clearable ? (
+          <button type="button" className="ui-control__action" onClick={onClear} aria-label="Clear input">
+            ×
+          </button>
+        ) : null}
+
+        {!clearable && trailingIcon ? <span className="ui-control__icon ui-control__icon--trailing">{trailingIcon}</span> : null}
+      </div>
+
+      {hint ? <p className="ui-hint">{hint}</p> : null}
     </div>
   );
 }
+
+export default Input;

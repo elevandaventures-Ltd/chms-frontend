@@ -1,32 +1,58 @@
-import styles from './Button.module.css';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  fullWidth?: boolean;
   loading?: boolean;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
 };
 
 export function Button({
   variant = 'primary',
   size = 'md',
+  fullWidth = false,
   loading = false,
-  disabled,
+  leadingIcon,
+  trailingIcon,
   children,
+  disabled,
+  type = 'button',
   className = '',
-  ...props
+  ...rest
 }: ButtonProps) {
+  const isDisabled = disabled || loading;
+  const classes = [
+    'ui-button',
+    `ui-button--${variant}`,
+    `ui-button--${size}`,
+    fullWidth ? 'ui-button--full' : '',
+    loading ? 'ui-button--loading' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <button
-      className={`${styles.btn} ${styles[variant]} ${styles[size]} ${className}`}
-      disabled={disabled || loading}
-      aria-busy={loading}
-      {...props}
-    >
-      {loading ? <span className={styles.spinner} aria-hidden="true" /> : null}
-      {children}
+    <button type={type} className={classes} disabled={isDisabled} data-loading={loading ? 'true' : 'false'} {...rest}>
+      <span className="ui-button__content">
+        {loading ? (
+          <svg className="ui-button__spinner" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.2" />
+            <path d="M22 12a10 10 0 0 1-10 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+        ) : null}
+
+        {!loading && leadingIcon ? <span className="ui-button__icon">{leadingIcon}</span> : null}
+        <span>{children}</span>
+        {!loading && trailingIcon ? <span className="ui-button__icon">{trailingIcon}</span> : null}
+      </span>
     </button>
   );
 }
+
+export default Button;
