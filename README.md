@@ -8,10 +8,12 @@ Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 - Day 3: responsive workspace shell with a collapsible sidebar, top navigation, and sectioned dashboard content.
 - Day 4: Storybook 8 component documentation plus reusable UI controls for buttons and form fields.
 - Day 5: Modal, Drawer, Dropdown Menu, Toast (Sonner), Card, Badge, Avatar, and Skeleton components with Storybook stories.
+ - Day 6: login and signup flows with magic-link and password-based auth, plus Supabase-backed client auth setup.
  - [x] Day 1: baseline app setup with TypeScript, Prettier, path aliases, and environment files. — complete
  - [x] Day 3: responsive workspace shell with a collapsible sidebar, top navigation, and sectioned dashboard content. — complete
  - [x] Day 4: Storybook 8 component documentation plus reusable UI controls for buttons and form fields. — complete
  - [x] Day 5: Modal, Drawer, Dropdown Menu, Toast (Sonner), Card, Badge, Avatar, and Skeleton components with Storybook stories. — complete (2026-05-31)
+ - [x] Day 6: login/signup screens, auth states, and Supabase client integration. — complete (2026-06-02)
 
 ## Run It
 
@@ -97,10 +99,11 @@ npm run typecheck
 
 - [`.env.local.example`](.env.local.example) shows the expected local environment shape.
 - [`.env.local`](.env.local) is your machine-specific file.
+- Day 6 auth expects `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`.
 
 ## Notes
 
 - The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
 - Generated build output such as `storybook-static` is ignored and should not be committed.
 
-- **Status:** Day 1, 3, 4, and 5 implementations are present in the repo and pass TypeScript checks. To enable runtime toasts in Storybook, install `sonner` with `npm install sonner`.
+- **Status:** Day 1, 3, 4, 5, and 6 implementations are present in the repo and pass TypeScript checks and the production build. Day 6 uses Supabase client auth for login, signup, and magic-link flows.
