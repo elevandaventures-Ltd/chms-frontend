@@ -14,6 +14,13 @@ export type TeamMember = {
   initials: string;
 };
 
+export type NotificationItem = {
+  title: string;
+  detail: string;
+  time: string;
+  unread?: boolean;
+};
+
 export const currentUser: TeamMember = {
   name: 'Solomon Leek',
   role: 'manager',
@@ -21,14 +28,24 @@ export const currentUser: TeamMember = {
   initials: 'SL',
 };
 
-export const notifications = [
+export const notifications: NotificationItem[] = [
   {
     title: 'Sprint review at 3:00 PM',
     detail: 'Prepare the foundation walkthrough for the new shell.',
+    time: '5m ago',
+    unread: true,
   },
   {
     title: 'Layout QA pending',
     detail: 'Verify sidebar, top bar, and page shell across breakpoints.',
+    time: '24m ago',
+    unread: true,
+  },
+  {
+    title: 'JWT decoded in API logs',
+    detail: 'Signin payload is now visible in the server terminal during auth tests.',
+    time: '1h ago',
+    unread: false,
   },
 ];
 

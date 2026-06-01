@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { IBM_Plex_Sans, Space_Grotesk } from 'next/font/google';
 
 import './globals.css';
+import DevSessionCleanup from '@/components/DevSessionCleanup';
 
 // Keep the shared typography in one place so the app uses the same visual system everywhere.
 const bodyFont = IBM_Plex_Sans({
@@ -28,8 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${bodyFont.variable} ${displayFont.variable}`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${bodyFont.variable} ${displayFont.variable}`} suppressHydrationWarning>
+        <DevSessionCleanup />
+        {children}
+      </body>
     </html>
   );
 }

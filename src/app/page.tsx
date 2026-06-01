@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <PageShell
       sidebar={<Sidebar user={site.currentUser} items={site.sidebarItems} />}
-      topNav={<TopNav user={site.currentUser} notificationCount={site.notifications.length} />}
+      topNav={<TopNav user={site.currentUser} notifications={site.notifications} />}
     >
       <section className="hero" id="overview">
         <div className="hero-copy">

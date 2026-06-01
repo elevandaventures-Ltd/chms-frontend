@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "id": "user-demo",
+      "name": "Solomon Leek",
+      "email": "solomon@elevanda.com",
+      "password": "Elevanda6!"
+    }
+  ]
+}
