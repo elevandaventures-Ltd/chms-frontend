@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/Button';
+import { getSupabaseClient } from '@/lib/supabaseClient';
 
 type SignupErrors = {
   name?: string;
@@ -49,26 +50,31 @@ export default function SignupPage() {
     setLoading(true);
     setStatus({ kind: 'idle' });
 
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setStatus({ kind: 'error', message: 'Supabase env vars are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' });
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
 
-      const data = await res.json().catch(() => ({}));
-
-      if (res.status === 201 && data?.token) {
+      if (!error) {
         try {
-          localStorage.setItem('token', data.token);
+          if (data?.session?.access_token) {
+            localStorage.setItem('token', data.session.access_token);
+          }
         } catch {}
 
-        setStatus({ kind: 'success', message: 'Account created successfully. You are signed in.' });
-      } else if (res.status === 409) {
-        setErrors({ email: 'An account already exists for that email.' });
-        setStatus({ kind: 'error', message: 'Account already exists.' });
+        setStatus({ kind: 'success', message: 'Account created successfully. Check your email if confirmation is required.' });
       } else {
-        setStatus({ kind: 'error', message: data?.error ?? 'Unable to create account.' });
+        if (error.message?.includes('already')) {
+          setErrors({ email: 'An account already exists for that email.' });
+          setStatus({ kind: 'error', message: 'Account already exists.' });
+        } else {
+          setStatus({ kind: 'error', message: error.message ?? 'Unable to create account.' });
+        }
       }
     } catch {
       setStatus({ kind: 'error', message: 'Network error. Try again.' });

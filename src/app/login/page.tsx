@@ -4,6 +4,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/Button';
+import { getSupabaseClient } from '@/lib/supabaseClient';
 
 type AuthMode = 'magic' | 'password';
 
@@ -83,19 +84,21 @@ export default function LoginPage() {
     setLoading(true);
     setStatus({ kind: 'idle' });
 
-    try {
-      const res = await fetch('/api/auth/magic', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail }),
-      });
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setStatus({ kind: 'error', message: 'Supabase env vars are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' });
+      setLoading(false);
+      return;
+    }
 
-      if (res.ok) {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ email: trimmedEmail });
+
+      if (!error) {
         setStatus({ kind: 'magic-sent', email: trimmedEmail });
       } else {
-        const body = await res.json().catch(() => ({}));
-        setErrors({ email: body?.error === 'not_found' ? 'We could not find an account for that email address.' : 'Unable to send magic link. Try again.' });
-        setStatus({ kind: 'error', message: body?.error ?? 'Unable to send magic link.' });
+        setErrors({ email: error.message.includes('notfound') ? 'We could not find an account for that email address.' : 'Unable to send magic link. Try again.' });
+        setStatus({ kind: 'error', message: error.message ?? 'Unable to send magic link.' });
       }
     } catch (err) {
       setStatus({ kind: 'error', message: 'Network error. Try again.' });
@@ -135,29 +138,34 @@ export default function LoginPage() {
     setLoading(true);
     setStatus({ kind: 'idle' });
 
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setStatus({ kind: 'error', message: 'Supabase env vars are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' });
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail, password }),
-      });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: trimmedEmail, password });
 
-      const data = await res.json().catch(() => ({}));
-
-      if (res.ok && data?.token) {
+      if (!error && data?.session?.access_token) {
         try {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('token', data.session.access_token);
         } catch {}
 
-        setStatus({ kind: 'success', message: 'Signed in successfully. JWT decoded in API logs and the session is ready.' });
-      } else if (res.status === 401) {
-        setErrors({ password: 'Wrong password. Try again or request a magic link.' });
-        setStatus({ kind: 'error', message: 'Invalid credentials.' });
-      } else if (res.status === 404) {
-        setErrors({ email: 'We could not find an account for that email address.' });
-        setStatus({ kind: 'error', message: 'Account not found.' });
+        setStatus({ kind: 'success', message: 'Signed in successfully.' });
+      } else if (error) {
+        if (error.status === 401) {
+          setErrors({ password: 'Wrong password. Try again or request a magic link.' });
+          setStatus({ kind: 'error', message: 'Invalid credentials.' });
+        } else if (error.status === 404) {
+          setErrors({ email: 'We could not find an account for that email address.' });
+          setStatus({ kind: 'error', message: 'Account not found.' });
+        } else {
+          setStatus({ kind: 'error', message: error.message ?? 'Unable to sign in. Try again.' });
+        }
       } else {
-        setStatus({ kind: 'error', message: data?.error ?? 'Unable to sign in. Try again.' });
+        setStatus({ kind: 'error', message: 'Unable to sign in. Try again.' });
       }
     } catch (err) {
       setStatus({ kind: 'error', message: 'Network error. Try again.' });
