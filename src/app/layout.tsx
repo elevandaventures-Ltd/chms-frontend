@@ -1,26 +1,34 @@
 import type { Metadata } from 'next';
-import { IBM_Plex_Sans, Space_Grotesk } from 'next/font/google';
+import { Inter, Playfair_Display } from 'next/font/google';
 
 import './globals.css';
 import DevSessionCleanup from '@/components/DevSessionCleanup';
 
-// Keep the shared typography in one place so the app uses the same visual system everywhere.
-const bodyFont = IBM_Plex_Sans({
+/**
+ * Day 2 — Google Fonts
+ * Body:    Inter        (clean, legible sans-serif for UI copy)
+ * Display: Playfair Display (editorial serif for headings)
+ *
+ * Both loaded via next/font/google for automatic self-hosting
+ * and zero layout shift (font-display: swap handled by Next.js).
+ */
+const bodyFont = Inter({
   subsets: ['latin'],
   variable: '--font-body',
-  weight: ['400', '500', '600'],
+  display: 'swap',
 });
 
-const displayFont = Space_Grotesk({
+const displayFont = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-display',
-  weight: ['400', '500', '700'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
 });
 
-// Metadata here defines the default document title and description for the whole app.
 export const metadata: Metadata = {
-  title: 'Elevanda Ventures',
-  description: 'Next.js 14 frontend foundation for the Elevanda Ventures workspace.',
+  title: 'Elevanda Ventures — CHMS',
+  description: 'Church management system for growing congregations.',
 };
 
 export default function RootLayout({
@@ -30,7 +38,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${bodyFont.variable} ${displayFont.variable}`} suppressHydrationWarning>
+      <body
+        className={`${bodyFont.variable} ${displayFont.variable} font-sans antialiased`}
+        suppressHydrationWarning
+      >
         <DevSessionCleanup />
         {children}
       </body>

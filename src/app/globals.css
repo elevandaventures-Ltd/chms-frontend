@@ -1,3 +1,149 @@
+/* ── Tailwind CSS v3 directives ─────────────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Typography scale (@layer base) ─────────────────────────────────────── */
+@layer base {
+  /*
+   * Day 2 — Design token system + Google Fonts typography scale
+   *
+   * Fonts:
+   *   --font-body    → Inter (loaded via next/font/google in layout.tsx)
+   *   --font-display → Playfair Display (loaded via next/font/google in layout.tsx)
+   *
+   * Scale follows a Major Third (1.25×) modular scale anchored at 1rem/16px.
+   */
+
+  :root {
+    /* ── Font size scale ── */
+    --text-xs:   0.75rem;    /* 12px */
+    --text-sm:   0.875rem;   /* 14px */
+    --text-base: 1rem;       /* 16px */
+    --text-lg:   1.125rem;   /* 18px */
+    --text-xl:   1.25rem;    /* 20px */
+    --text-2xl:  1.5rem;     /* 24px */
+    --text-3xl:  1.875rem;   /* 30px */
+    --text-4xl:  2.25rem;    /* 36px */
+    --text-5xl:  3rem;       /* 48px */
+    --text-6xl:  3.75rem;    /* 60px */
+
+    /* ── Line height ── */
+    --leading-tight:  1.1;
+    --leading-snug:   1.35;
+    --leading-normal: 1.5;
+    --leading-relaxed:1.65;
+    --leading-loose:  1.75;
+
+    /* ── Letter spacing ── */
+    --tracking-tighter: -0.05em;
+    --tracking-tight:   -0.03em;
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-wider:   0.08em;
+    --tracking-widest:  0.14em;
+
+    /* ── Font weight ── */
+    --font-normal:    400;
+    --font-medium:    500;
+    --font-semibold:  600;
+    --font-bold:      700;
+
+    /* ── Spacing scale (8px base) ── */
+    --space-1:  0.25rem;  /* 4px  */
+    --space-2:  0.5rem;   /* 8px  */
+    --space-3:  0.75rem;  /* 12px */
+    --space-4:  1rem;     /* 16px */
+    --space-5:  1.25rem;  /* 20px */
+    --space-6:  1.5rem;   /* 24px */
+    --space-8:  2rem;     /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-14: 3.5rem;   /* 56px */
+    --space-16: 4rem;     /* 64px */
+  }
+
+  /* ── Base element resets ── */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-body), Inter, system-ui, sans-serif;
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    font-weight: var(--font-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Display headings use Playfair Display */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), 'Playfair Display', Georgia, serif;
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h1 { font-size: var(--text-5xl); }
+  h2 { font-size: var(--text-4xl); }
+  h3 { font-size: var(--text-2xl); }
+  h4 { font-size: var(--text-xl); }
+  h5 { font-size: var(--text-lg); }
+  h6 { font-size: var(--text-base); }
+
+  /* Body prose */
+  p {
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Small label text */
+  small {
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  /* Kicker / overline */
+  .text-kicker {
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent);
+  }
+}
+
+/* ── shadcn/ui utility layer ─────────────────────────────────────────────── */
+@layer utilities {
+  /* Smooth focus ring matching the design system accent */
+  .focus-ring {
+    @apply outline-none ring-2 ring-offset-2;
+    ring-color: var(--accent);
+  }
+
+  /* Glassmorphism panel */
+  .glass-panel {
+    background: var(--panel);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--panel-border);
+  }
+
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ── Existing design-system CSS ──────────────────────────────────────────── */
 :root {
   color-scheme: light;
   --bg: #f3efe7;

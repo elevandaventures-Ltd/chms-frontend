@@ -5,6 +5,7 @@ Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 ## What's Included
 
 - [x] Day 1: baseline app setup with TypeScript, Prettier, path aliases, and environment files. — complete
+- [x] Day 2: Tailwind CSS v3 + shadcn/ui + Radix UI installed; design token system (colors, fonts, spacing) in tailwind.config.ts; Google Fonts switched to Playfair Display (display) + Inter (body); typography scale in globals.css. — complete (2026-06-03)
 - [x] Day 3: responsive workspace shell with a collapsible sidebar, top navigation, and sectioned dashboard content. — complete
 - [x] Day 4: Storybook 8 component documentation plus reusable UI controls for buttons and form fields. — complete
 - [x] Day 5: Modal, Drawer, Dropdown Menu, Toast (Sonner), Card, Badge, Avatar, and Skeleton components with Storybook stories. — complete (2026-05-31)
@@ -161,7 +162,7 @@ Find these in your Supabase project under **Settings → API**.
 
 - The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
 - Generated build output such as `storybook-static` is ignored and should not be committed.
-- **Status:** Days 1, 3, 4, 5, 6, 7, and 8 are complete and pass TypeScript checks.
+- **Status:** Days 1, 2, 3, 4, 5, 6, 7, and 8 are complete and pass TypeScript checks.
 
 ## Church Onboarding Wizard (Day 8)
 
