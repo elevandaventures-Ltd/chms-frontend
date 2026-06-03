@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 
 import './globals.css';
-import DevSessionCleanup from '@/components/DevSessionCleanup';
 
 /**
  * Day 2 — Google Fonts
@@ -42,7 +41,6 @@ export default function RootLayout({
         className={`${bodyFont.variable} ${displayFont.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <DevSessionCleanup />
         {children}
       </body>
     </html>

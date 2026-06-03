@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { getSupabaseClient } from '@/lib/supabaseClient';
+import { getSupabaseBrowserClient as getSupabaseClient } from '@/lib/supabase/client';
 
 type SignupErrors  = { name?: string; email?: string; password?: string };
 type SignupStatus  = { kind: 'idle' } | { kind: 'success'; message: string } | { kind: 'error'; message: string };

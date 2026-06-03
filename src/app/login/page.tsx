@@ -4,7 +4,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Mail, Lock, ArrowLeft, ArrowRight, CheckCircle2, AlertCircle, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { getSupabaseClient } from '@/lib/supabaseClient';
+import { getSupabaseBrowserClient as getSupabaseClient } from '@/lib/supabase/client';
 
 type AuthMode = 'magic' | 'password';
 type FieldErrors = { email?: string; password?: string };
