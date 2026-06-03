@@ -120,23 +120,8 @@ export const sprintLog: DayEntry[] = [
   },
 ];
 
-export const teamPulse = [
-  {
-    name: 'Amina Choi',
-    role: 'Product Design',
-    update: 'Completed denomination card-grid and upload zone designs for the Day 8 wizard.',
-  },
-  {
-    name: 'Jay Mensah',
-    role: 'Frontend',
-    update: 'Wired up Supabase session persistence and the onboarding API route.',
-  },
-  {
-    name: 'Solomon Leek',
-    role: 'Project Lead',
-    update: 'Reviewing middleware RLS policies and planning Day 9 member management.',
-  },
-];
+export const teamPulse: { name: string; role: string; update: string }[] = [];
+// Day 9 — member management (invite flow, role assignment, member list) will populate this.
 
 export const taskBoard = [
   {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle2, Clock, Circle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Clock, Circle, ArrowRight, Users } from 'lucide-react';
 import * as site from '@/lib/site';
 import PageShell from '@/components/PageShell';
 import Sidebar from '@/components/Sidebar';
@@ -126,14 +126,13 @@ export default function HomePage() {
       {/* ── Team ─────────────────────────────────────────────────────────── */}
       <section id="team" aria-labelledby="team-heading">
         <h2 className="dash-section-title" id="team-heading">Team</h2>
-        <div className="content-grid">
-          {site.teamPulse.map((member) => (
-            <article className="content-card" key={member.name}>
-              <p className="panel-label">{member.role}</p>
-              <h3>{member.name}</h3>
-              <p>{member.update}</p>
-            </article>
-          ))}
+        <div className="dash-empty-state">
+          <Users size={32} strokeWidth={1.5} className="dash-empty-state__icon" aria-hidden="true" />
+          <h3 className="dash-empty-state__title">Member management coming in Day 9</h3>
+          <p className="dash-empty-state__body">
+            The invite flow, role assignment, and member list will be built in the next sprint.
+            Once live, your team members will appear here.
+          </p>
         </div>
       </section>
 
