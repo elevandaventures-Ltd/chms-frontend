@@ -2,186 +2,224 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-
 import { Button } from '@/components/ui/Button';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 
-type SignupErrors = {
-  name?: string;
-  email?: string;
-  password?: string;
-};
-
-type SignupStatus =
-  | { kind: 'idle' }
-  | { kind: 'success'; message: string }
-  | { kind: 'error'; message: string };
+type SignupErrors  = { name?: string; email?: string; password?: string };
+type SignupStatus  = { kind: 'idle' } | { kind: 'success'; message: string } | { kind: 'error'; message: string };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function isValidEmail(value: string) {
-  return emailPattern.test(value.trim().toLowerCase());
-}
+function isValidEmail(v: string) { return emailPattern.test(v.trim().toLowerCase()); }
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name,     setName]     = useState('');
+  const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<SignupErrors>({});
-  const [status, setStatus] = useState<SignupStatus>({ kind: 'idle' });
+  const [showPwd,  setShowPwd]  = useState(false);
+  const [loading,  setLoading]  = useState(false);
+  const [errors,   setErrors]   = useState<SignupErrors>({});
+  const [status,   setStatus]   = useState<SignupStatus>({ kind: 'idle' });
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const nextErrors: SignupErrors = {};
-
-    if (!name.trim()) nextErrors.name = 'Enter your name.';
-    if (!isValidEmail(email)) nextErrors.email = 'Enter a valid email address.';
-    if (password.length < 8) nextErrors.password = 'Use at least 8 characters.';
-
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      setStatus({ kind: 'error', message: 'Check the fields and try again.' });
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-    setStatus({ kind: 'idle' });
-
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      setStatus({ kind: 'error', message: 'Supabase env vars are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.' });
-      setLoading(false);
-      return;
-    }
-
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const errs: SignupErrors = {};
+    if (!name.trim())          errs.name     = 'Enter your full name.';
+    if (!isValidEmail(email))  errs.email    = 'Enter a valid email address.';
+    if (password.length < 8)   errs.password = 'Use at least 8 characters.';
+    if (Object.keys(errs).length) { setErrors(errs); setStatus({ kind: 'error', message: 'Check the fields and try again.' }); return; }
+    setErrors({}); setLoading(true); setStatus({ kind: 'idle' });
+    const sb = getSupabaseClient();
+    if (!sb) { setStatus({ kind: 'error', message: 'Supabase env vars are missing.' }); setLoading(false); return; }
     try {
-      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
-
+      const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
       if (!error) {
-        try {
-          if (data?.session?.access_token) {
-            localStorage.setItem('token', data.session.access_token);
-          }
-        } catch {}
-
-        setStatus({ kind: 'success', message: 'Account created successfully. Check your email if confirmation is required.' });
+        try { if (data?.session?.access_token) localStorage.setItem('token', data.session.access_token); } catch {}
+        setStatus({ kind: 'success', message: 'Account created! Check your email if confirmation is required.' });
       } else {
-        if (error.message?.includes('already')) {
-          setErrors({ email: 'An account already exists for that email.' });
-          setStatus({ kind: 'error', message: 'Account already exists.' });
-        } else {
-          setStatus({ kind: 'error', message: error.message ?? 'Unable to create account.' });
-        }
+        if (error.message?.includes('already')) { setErrors({ email: 'An account already exists for that email.' }); setStatus({ kind: 'error', message: 'Account already exists.' }); }
+        else { setStatus({ kind: 'error', message: error.message ?? 'Unable to create account.' }); }
       }
-    } catch {
-      setStatus({ kind: 'error', message: 'Network error. Try again.' });
-    } finally {
-      setLoading(false);
-    }
+    } catch { setStatus({ kind: 'error', message: 'Network error. Try again.' }); }
+    finally { setLoading(false); }
   }
 
-  const isNameInvalid: 'true' | 'false' = errors.name ? 'true' : 'false';
-  const isEmailInvalid: 'true' | 'false' = errors.email ? 'true' : 'false';
-  const isPasswordInvalid: 'true' | 'false' = errors.password ? 'true' : 'false';
+  const pwStrength = password.length === 0 ? 0 : password.length < 8 ? 1 : password.length < 12 ? 2 : 3;
+  const pwLabel    = ['', 'Too short', 'Good', 'Strong'][pwStrength];
+  const pwColor    = ['', '#b91c1c', '#9a6000', '#16a34a'][pwStrength];
 
   return (
-    <main className="auth-page">
-      <div className="auth-shell">
-        <section className="auth-hero" aria-label="Signup overview">
-          <p className="auth-kicker">Create an account</p>
-          <h1>Set up a new workspace account.</h1>
-          <p className="auth-intro">
-            Sign up here to create a new account for the mock auth flow, receive a JWT, and then
-            log in with the same email and password.
-          </p>
-          <ul className="auth-notes">
-            <li>Creates an in-memory user during the current dev session.</li>
-            <li>Returns a mock JWT and stores it locally after success.</li>
-            <li>Use the Login page after sign up to test the sign-in path.</li>
-          </ul>
-        </section>
+    <div className="signin-page">
 
-        <section className="auth-card" aria-label="Signup form">
-          <div className="auth-card__header">
-            <div>
-              <p className="auth-kicker">Elevanda Ventures</p>
-              <h2>Sign up</h2>
-              <p className="auth-summary">Create a new account to test the auth flow.</p>
-            </div>
+      {/* ── Left panel ────────────────────────────────────────────────── */}
+      <aside className="signin-panel signin-panel--green" aria-hidden="true">
+        <div className="signin-panel__inner">
+          <div className="signin-panel__brand">
+            <span className="signin-panel__logo">⛪</span>
+            <span className="signin-panel__name">Elevanda Ventures</span>
           </div>
 
-          {status.kind === 'success' ? (
-            <div className="auth-banner auth-banner--success" role="status" aria-live="polite">
-              <strong>Account created</strong>
+          <div className="signin-panel__copy">
+            <h1 className="signin-panel__headline">
+              Your church deserves great tools.
+            </h1>
+            <p className="signin-panel__sub">
+              Create your free account and start registering your church, managing
+              members, and tracking your ministry from a single workspace.
+            </p>
+          </div>
+
+          <ul className="signin-panel__features" aria-label="Getting started steps">
+            <li>
+              <span className="signin-panel__feature-dot" aria-hidden="true" />
+              Create your account in under a minute
+            </li>
+            <li>
+              <span className="signin-panel__feature-dot" aria-hidden="true" />
+              Run the 5-step church onboarding wizard
+            </li>
+            <li>
+              <span className="signin-panel__feature-dot" aria-hidden="true" />
+              Invite your team and assign roles
+            </li>
+            <li>
+              <span className="signin-panel__feature-dot" aria-hidden="true" />
+              Manage services, members &amp; reports
+            </li>
+          </ul>
+
+          <div className="signin-panel__footer">
+            <p>Elevanda Ventures · CHMS · {new Date().getFullYear()}</p>
+          </div>
+        </div>
+
+        <div className="signin-panel__blob signin-panel__blob--1" aria-hidden="true" />
+        <div className="signin-panel__blob signin-panel__blob--2" aria-hidden="true" />
+      </aside>
+
+      {/* ── Right panel ───────────────────────────────────────────────── */}
+      <main className="signin-form-panel">
+        <div className="signin-card" aria-label="Create your account">
+
+          <Link href="/login" className="signin-back">
+            ← Back to sign in
+          </Link>
+
+          <div className="signin-card__head">
+            <p className="signin-eyebrow">Elevanda Ventures</p>
+            <h2 className="signin-card__title">Create your account</h2>
+            <p className="signin-card__sub">Free to start. No credit card needed.</p>
+          </div>
+
+          {/* Status banners */}
+          {status.kind === 'success' && (
+            <div className="signin-banner signin-banner--success" role="status" aria-live="polite">
+              <strong>🎉 Account created</strong>
+              <p>{status.message}</p>
+              <Link className="signin-footer-link" href="/login" style={{ marginTop: '8px', display: 'inline-flex' }}>
+                Sign in now →
+              </Link>
+            </div>
+          )}
+          {status.kind === 'error' && (
+            <div className="signin-banner signin-banner--error" role="alert" aria-live="polite">
+              <strong>Signup failed</strong>
               <p>{status.message}</p>
             </div>
-          ) : null}
+          )}
 
-          {status.kind === 'error' ? (
-            <div className="auth-banner auth-banner--error" role="alert" aria-live="polite">
-              <strong>Signup blocked</strong>
-              <p>{status.message}</p>
-            </div>
-          ) : null}
+          <form className="signin-form" onSubmit={handleSubmit} noValidate>
 
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
-            <div className={`auth-field ${errors.name ? 'auth-field--error' : ''}`}>
-              <label className="auth-label" htmlFor="signup-name">Full name</label>
+            {/* Name */}
+            <div className={`signin-field${errors.name ? ' signin-field--error' : ''}`}>
+              <label className="signin-label" htmlFor="su-name">Full name</label>
               <input
-                id="signup-name"
-                className="auth-input"
+                id="su-name"
+                className="signin-input"
+                type="text"
+                autoComplete="name"
+                placeholder="Pastor John Doe"
                 value={name}
-                onChange={(event) => setName(event.target.value)}
-                aria-invalid={isNameInvalid}
-                aria-describedby={errors.name ? 'signup-name-error' : undefined}
-                placeholder="Your name"
+                onChange={(ev) => { setName(ev.target.value); if (errors.name) setErrors((p) => ({ ...p, name: undefined })); }}
+                aria-invalid={errors.name ? 'true' : 'false'}
+                aria-describedby={errors.name ? 'su-name-err' : undefined}
               />
-              {errors.name ? <p id="signup-name-error" className="auth-error">{errors.name}</p> : null}
+              {errors.name && <p id="su-name-err" className="signin-error" role="alert">{errors.name}</p>}
             </div>
 
-            <div className={`auth-field ${errors.email ? 'auth-field--error' : ''}`}>
-              <label className="auth-label" htmlFor="signup-email">Email address</label>
+            {/* Email */}
+            <div className={`signin-field${errors.email ? ' signin-field--error' : ''}`}>
+              <label className="signin-label" htmlFor="su-email">Email address</label>
               <input
-                id="signup-email"
-                className="auth-input"
+                id="su-email"
+                className="signin-input"
                 type="email"
+                autoComplete="email"
+                inputMode="email"
+                placeholder="you@church.org"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                aria-invalid={isEmailInvalid}
-                aria-describedby={errors.email ? 'signup-email-error' : undefined}
-                placeholder="name@company.com"
+                onChange={(ev) => { setEmail(ev.target.value); if (errors.email) setErrors((p) => ({ ...p, email: undefined })); }}
+                aria-invalid={errors.email ? 'true' : 'false'}
+                aria-describedby={errors.email ? 'su-email-err' : undefined}
               />
-              {errors.email ? <p id="signup-email-error" className="auth-error">{errors.email}</p> : null}
+              {errors.email && <p id="su-email-err" className="signin-error" role="alert">{errors.email}</p>}
             </div>
 
-            <div className={`auth-field ${errors.password ? 'auth-field--error' : ''}`}>
-              <label className="auth-label" htmlFor="signup-password">Password</label>
-              <input
-                id="signup-password"
-                className="auth-input"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                aria-invalid={isPasswordInvalid}
-                aria-describedby={errors.password ? 'signup-password-error' : undefined}
-                placeholder="At least 8 characters"
-              />
-              {errors.password ? <p id="signup-password-error" className="auth-error">{errors.password}</p> : null}
+            {/* Password */}
+            <div className={`signin-field${errors.password ? ' signin-field--error' : ''}`}>
+              <label className="signin-label" htmlFor="su-password">Password</label>
+              <div className="signin-password-wrap">
+                <input
+                  id="su-password"
+                  className="signin-input signin-input--password"
+                  type={showPwd ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  placeholder="At least 8 characters"
+                  value={password}
+                  onChange={(ev) => { setPassword(ev.target.value); if (errors.password) setErrors((p) => ({ ...p, password: undefined })); }}
+                  aria-invalid={errors.password ? 'true' : 'false'}
+                  aria-describedby={errors.password ? 'su-pw-err' : undefined}
+                />
+                <button
+                  type="button"
+                  className="signin-toggle"
+                  onClick={() => setShowPwd((v) => !v)}
+                  aria-pressed={showPwd ? 'true' : 'false'}
+                  aria-label={showPwd ? 'Hide password' : 'Show password'}
+                >
+                  {showPwd ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {/* Strength bar */}
+              {password.length > 0 && (
+                <div className="signin-strength">
+                  <div className="signin-strength__track">
+                    <div
+                      className="signin-strength__fill"
+                      style={{ width: `${(pwStrength / 3) * 100}%`, background: pwColor }}
+                    />
+                  </div>
+                  <span className="signin-strength__label" style={{ color: pwColor }}>{pwLabel}</span>
+                </div>
+              )}
+              {errors.password && <p id="su-pw-err" className="signin-error" role="alert">{errors.password}</p>}
             </div>
 
             <Button type="submit" size="lg" fullWidth loading={loading}>Create account</Button>
+
+            <p className="signin-terms">
+              By creating an account you agree to our{' '}
+              <span style={{ color: 'var(--accent-strong)', fontWeight: 600 }}>Terms of Service</span>{' '}
+              and{' '}
+              <span style={{ color: 'var(--accent-strong)', fontWeight: 600 }}>Privacy Policy</span>.
+            </p>
           </form>
 
-          <div className="auth-card__footer">
-            <p>
-              Already have an account? <Link className="auth-footer-link" href="/login">Log in</Link>
-            </p>
+          <div className="signin-card__footer">
+            <p>Already have an account?</p>
+            <Link className="signin-footer-link" href="/login">Sign in →</Link>
           </div>
-        </section>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   );
 }
