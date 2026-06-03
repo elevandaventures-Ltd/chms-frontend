@@ -30,69 +30,93 @@ export const currentUser: TeamMember = {
 
 export const notifications: NotificationItem[] = [
   {
-    title: 'Sprint review at 3:00 PM',
-    detail: 'Prepare the foundation walkthrough for the new shell.',
-    time: '5m ago',
+    title: 'Day 8 wizard is live',
+    detail: 'Church onboarding wizard is available at /onboarding.',
+    time: 'Just now',
     unread: true,
   },
   {
-    title: 'Layout QA pending',
-    detail: 'Verify sidebar, top bar, and page shell across breakpoints.',
-    time: '24m ago',
+    title: 'Protected routes active',
+    detail: 'Middleware now redirects unauthenticated users to /login.',
+    time: '1d ago',
     unread: true,
   },
   {
-    title: 'JWT decoded in API logs',
-    detail: 'Signin payload is now visible in the server terminal during auth tests.',
-    time: '1h ago',
+    title: 'Supabase session persistence',
+    detail: 'Auto token refresh and localStorage persistence are wired up.',
+    time: '2d ago',
     unread: false,
   },
 ];
 
 export const sidebarItems: SidebarItem[] = [
-  { label: 'Overview', href: '#overview', icon: '◌', roles: ['admin', 'manager', 'member'] },
-  { label: 'Projects', href: '#projects', icon: '▣', roles: ['admin', 'manager'] },
-  { label: 'Team', href: '#team', icon: '✦', roles: ['admin', 'manager'] },
-  { label: 'Tasks', href: '#tasks', icon: '↳', roles: ['admin', 'manager', 'member'] },
-  { label: 'Reports', href: '#reports', icon: '▤', roles: ['admin'] },
+  { label: 'Overview',    href: '#overview',    icon: '◌', roles: ['admin', 'manager', 'member'] },
+  { label: 'Progress',    href: '#progress',    icon: '▣', roles: ['admin', 'manager'] },
+  { label: 'Team',        href: '#team',        icon: '✦', roles: ['admin', 'manager'] },
+  { label: 'Tasks',       href: '#tasks',       icon: '↳', roles: ['admin', 'manager', 'member'] },
+  { label: 'Reports',     href: '#reports',     icon: '▤', roles: ['admin'] },
 ];
 
-export const setupChecklist: string[] = [
-  'Next.js 14 App Router',
-  'TypeScript strict mode',
-  'ESLint + Prettier',
-  'Absolute path aliases',
-  'Environment template',
-];
+export type DayEntry = {
+  day: string;
+  date: string;
+  title: string;
+  status: 'complete' | 'in-progress' | 'upcoming';
+  detail: string;
+  href?: string;
+};
 
-export const setupHighlights = [
+export const sprintLog: DayEntry[] = [
   {
-    title: 'Role-aware sidebar',
-    description:
-      'Navigation items filter by user role and collapse into a compact rail on smaller screens.',
+    day: 'Day 1',
+    date: '2026-05-25',
+    title: 'Project baseline',
+    status: 'complete',
+    detail: 'Next.js 14 App Router with TypeScript strict mode, ESLint, Prettier, path aliases, and environment templates.',
   },
   {
-    title: 'Top navigation shell',
-    description:
-      'The header keeps the avatar, notifications, and quick actions visible without crowding content.',
+    day: 'Day 3',
+    date: '2026-05-27',
+    title: 'Workspace shell',
+    status: 'complete',
+    detail: 'Collapsible sidebar with role-aware nav, sticky top navigation, and a responsive max-width page shell across all breakpoints.',
   },
   {
-    title: 'Responsive page shell',
-    description:
-      'The main container stays centered and adapts cleanly from mobile through desktop widths.',
-  },
-];
-
-export const projectMilestones = [
-  {
-    title: 'Dashboard shell hardening',
-    status: 'In progress',
-    detail: 'Polish sticky navigation behavior and complete section anchors for all sidebar links.',
+    day: 'Day 4',
+    date: '2026-05-28',
+    title: 'UI component library + Storybook',
+    status: 'complete',
+    detail: 'Button, Input, Textarea, Select, Checkbox, and Radio primitives documented with Storybook 8 stories and a11y addon.',
   },
   {
-    title: 'Storybook adoption',
-    status: 'Ready for review',
-    detail: 'Document core UI controls and state variants so product and engineering can validate faster.',
+    day: 'Day 5',
+    date: '2026-05-31',
+    title: 'Extended UI components',
+    status: 'complete',
+    detail: 'Modal, Drawer, Dropdown, Toast (Sonner), Card, Badge, Avatar, and Skeleton components — all with Storybook stories.',
+  },
+  {
+    day: 'Day 6',
+    date: '2026-06-02',
+    title: 'Authentication flows',
+    status: 'complete',
+    detail: 'Login and signup pages with magic-link and password auth, Supabase client integration, and explicit error states.',
+    href: '/login',
+  },
+  {
+    day: 'Day 7',
+    date: '2026-06-02',
+    title: 'Protected routes + session persistence',
+    status: 'complete',
+    detail: 'Edge middleware redirects unauthenticated users to /login. Supabase browser client with autoRefreshToken and persistSession.',
+  },
+  {
+    day: 'Day 8',
+    date: '2026-06-03',
+    title: 'Church onboarding wizard',
+    status: 'complete',
+    detail: '5-step wizard: church name + logo upload, denomination selector, contact + address, review, and confirmation. React context state, animated progress bar, step-back navigation.',
+    href: '/onboarding',
   },
 ];
 
@@ -100,22 +124,41 @@ export const teamPulse = [
   {
     name: 'Amina Choi',
     role: 'Product Design',
-    update: 'Finalizing responsive nav spacing and interaction states.',
+    update: 'Completed denomination card-grid and upload zone designs for the Day 8 wizard.',
   },
   {
     name: 'Jay Mensah',
     role: 'Frontend',
-    update: 'Connecting form primitives into Storybook stories and docs.',
+    update: 'Wired up Supabase session persistence and the onboarding API route.',
+  },
+  {
+    name: 'Solomon Leek',
+    role: 'Project Lead',
+    update: 'Reviewing middleware RLS policies and planning Day 9 member management.',
   },
 ];
 
 export const taskBoard = [
   {
-    lane: 'Today',
-    item: 'Audit mobile layout at 768px and 1024px breakpoints.',
+    lane: 'Done',
+    item: 'Church onboarding wizard — all 5 steps complete and pushed.',
+  },
+  {
+    lane: 'Done',
+    item: 'Protected route middleware with Supabase session cookie validation.',
   },
   {
     lane: 'Next up',
-    item: 'Add CI workflow for typecheck, app build, and Storybook build.',
+    item: 'Add NEXT_PUBLIC_SUPABASE_URL + ANON_KEY to .env.local and run the churches table migration.',
   },
+  {
+    lane: 'Next up',
+    item: 'Day 9 — member management: invite flow, role assignment, and member list.',
+  },
+];
+
+export const quickLinks = [
+  { label: 'Start onboarding',  href: '/onboarding', description: 'Register a new church through the 5-step wizard.' },
+  { label: 'Sign in',           href: '/login',       description: 'Access your workspace with magic link or password.' },
+  { label: 'Sign up',           href: '/signup',      description: 'Create a new workspace account.' },
 ];

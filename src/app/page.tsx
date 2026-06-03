@@ -1,27 +1,36 @@
-import { FeatureCard } from '@/components/FeatureCard';
+import Link from 'next/link';
 import * as site from '@/lib/site';
 import PageShell from '@/components/PageShell';
 import Sidebar from '@/components/Sidebar';
 import TopNav from '@/components/TopNav';
 
+const STATUS_LABEL: Record<site.DayEntry['status'], string> = {
+  'complete':    'Complete',
+  'in-progress': 'In progress',
+  'upcoming':    'Upcoming',
+};
+
 export default function HomePage() {
+  const completedDays = site.sprintLog.filter((d) => d.status === 'complete').length;
+
   return (
     <PageShell
       sidebar={<Sidebar user={site.currentUser} items={site.sidebarItems} />}
       topNav={<TopNav user={site.currentUser} notifications={site.notifications} />}
     >
+      {/* ── Hero ── */}
       <section className="hero" id="overview">
         <div className="hero-copy">
-          <p className="eyebrow">Day 3 assignment</p>
-          <h2>Base layout components with responsive breakpoints.</h2>
+          <p className="eyebrow">Elevanda Ventures · CHMS</p>
+          <h2>Church management system in progress.</h2>
           <p className="lede">
-            The shell now includes a collapsible sidebar, a top nav with notifications and avatar,
-            and a max-width page container that stays balanced across mobile, tablet, and desktop.
+            {completedDays} of {site.sprintLog.length} sprint days complete. Authentication,
+            protected routes, and the church onboarding wizard are all live.
           </p>
         </div>
 
         <div className="hero-panel">
-          <p className="panel-label">Latest notifications</p>
+          <p className="panel-label">Recent activity</p>
           <ul className="notification-list">
             {site.notifications.map((n) => (
               <li key={n.title}>
@@ -33,22 +42,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="cards-grid" aria-label="Project highlights">
-        {site.setupHighlights.map((item) => (
-          <FeatureCard key={item.title} title={item.title} description={item.description} />
+      {/* ── Quick links ── */}
+      <section className="cards-grid" aria-label="Quick actions" id="overview">
+        {site.quickLinks.map((link) => (
+          <Link key={link.href} href={link.href} className="content-card" style={{ textDecoration: 'none' }}>
+            <p className="panel-label">Quick action</p>
+            <h3>{link.label}</h3>
+            <p>{link.description}</p>
+          </Link>
         ))}
       </section>
 
-      <section className="content-grid" id="projects" aria-label="Projects">
-        {site.projectMilestones.map((project) => (
-          <article className="content-card" key={project.title}>
-            <p className="panel-label">{project.status}</p>
-            <h3>{project.title}</h3>
-            <p>{project.detail}</p>
+      {/* ── Sprint log ── */}
+      <section className="content-grid" id="progress" aria-label="Sprint progress">
+        {site.sprintLog.map((entry) => (
+          <article className="content-card" key={entry.day}>
+            <p className="panel-label">{entry.day} · {STATUS_LABEL[entry.status]}</p>
+            <h3>{entry.title}</h3>
+            <p>{entry.detail}</p>
+            {entry.href ? (
+              <Link
+                href={entry.href}
+                style={{
+                  marginTop: '8px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  color: 'var(--accent-strong)',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '0.18em',
+                }}
+              >
+                Open →
+              </Link>
+            ) : null}
           </article>
         ))}
       </section>
 
+      {/* ── Team ── */}
       <section className="content-grid" id="team" aria-label="Team updates">
         {site.teamPulse.map((member) => (
           <article className="content-card" key={member.name}>
@@ -59,7 +93,8 @@ export default function HomePage() {
         ))}
       </section>
 
-      <section className="content-grid" id="tasks" aria-label="Tasks">
+      {/* ── Tasks ── */}
+      <section className="content-grid" id="tasks" aria-label="Task board">
         {site.taskBoard.map((task) => (
           <article className="content-card" key={task.item}>
             <p className="panel-label">{task.lane}</p>
