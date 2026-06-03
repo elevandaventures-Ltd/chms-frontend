@@ -36,6 +36,8 @@ const PUBLIC_PATHS: RegExp[] = [
   /^\/_next(\/.*)?$/,           // Next.js internal assets
   /^\/favicon\.svg$/,           // Favicon
   /^\/api\/auth(\/.*)?$/,       // Auth API routes (signin, signup, magic)
+  /^\/onboarding(\/.*)?$/,      // Church onboarding wizard (pre-auth flow)
+  /^\/api\/onboarding(\/.*)?$/, // Onboarding API route
 ];
 
 function isPublicPath(pathname: string): boolean {

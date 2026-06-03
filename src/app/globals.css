@@ -1611,3 +1611,635 @@ a {
 }
 
 
+
+/* ── Day 8 · Church Onboarding Wizard ─────────────────────────────────────── */
+
+/* Page layout */
+.onboarding-page {
+  width: min(1240px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 56px;
+}
+
+.onboarding-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: color 140ms ease;
+}
+
+.onboarding-back-link:hover { color: var(--text); }
+
+.onboarding-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(520px, 1.2fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* Hero panel (left) */
+.onboarding-hero {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  padding: 36px;
+  border: 1px solid var(--panel-border);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(39, 76, 63, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 243, 236, 0.88));
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.onboarding-hero__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  letter-spacing: -0.05em;
+  line-height: 0.94;
+}
+
+/* Wizard card (right) */
+.onboarding-card {
+  border: 1px solid var(--panel-border);
+  border-radius: 32px;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+/* ── WizardShell ─────────────────────────────────────────────────────────── */
+
+.wizard {
+  display: grid;
+  gap: 0;
+}
+
+.wizard__header {
+  padding: 28px 28px 0;
+}
+
+.wizard__eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.wizard__title {
+  margin: 0 0 4px;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.wizard__desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+/* Progress bar */
+.wizard__progress-track {
+  margin: 20px 28px 0;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(35, 29, 24, 0.08);
+  overflow: hidden;
+}
+
+.wizard__progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), #e38c5a);
+  transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step pills */
+.wizard__steps {
+  display: flex;
+  gap: 6px;
+  padding: 16px 28px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.wizard__steps::-webkit-scrollbar { display: none; }
+
+.wizard__step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.wizard__step-pill--active {
+  background: linear-gradient(135deg, var(--accent), #e38c5a);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(178, 81, 49, 0.22);
+}
+
+.wizard__step-pill--completed {
+  border-color: rgba(39, 76, 63, 0.28);
+  background: rgba(39, 76, 63, 0.08);
+  color: var(--accent-strong);
+  cursor: pointer;
+}
+
+.wizard__step-pill--completed:hover {
+  background: rgba(39, 76, 63, 0.14);
+  box-shadow: var(--shadow-strong);
+}
+
+.wizard__step-pill:disabled:not(.wizard__step-pill--active) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wizard__step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex: none;
+}
+
+.wizard__step-pill--active .wizard__step-num {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.wizard__step-pill--completed .wizard__step-num {
+  background: rgba(39, 76, 63, 0.12);
+  color: var(--accent-strong);
+}
+
+.wizard__step-label {
+  line-height: 1;
+}
+
+/* Body (step form area) */
+.wizard__body {
+  padding: 24px 28px 28px;
+}
+
+/* ── Shared wizard form helpers ──────────────────────────────────────────── */
+
+.wizard-form {
+  display: grid;
+  gap: 18px;
+}
+
+.wizard-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.wizard-required {
+  color: var(--accent);
+  margin-left: 2px;
+}
+
+.wizard-section-label {
+  margin: 4px 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.wizard-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* Navigation row */
+.wizard-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(35, 29, 24, 0.08);
+  margin-top: 4px;
+}
+
+/* ── Step 1 — Logo upload ────────────────────────────────────────────────── */
+
+.wizard-upload-zone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 20px;
+  border: 2px dashed rgba(35, 29, 24, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.wizard-upload-zone:hover {
+  border-color: rgba(178, 81, 49, 0.34);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-strong);
+}
+
+.wizard-upload-zone:focus-visible {
+  outline: none;
+  border-color: rgba(178, 81, 49, 0.5);
+  box-shadow: 0 0 0 4px rgba(178, 81, 49, 0.14);
+}
+
+.wizard-upload-icon {
+  font-size: 2rem;
+  flex: none;
+}
+
+.wizard-upload-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.wizard-upload-copy strong {
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.wizard-upload-copy span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.wizard-logo-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(35, 29, 24, 0.10);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.wizard-logo-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: contain;
+  border: 1px solid rgba(35, 29, 24, 0.08);
+  flex: none;
+  background: #fff;
+}
+
+.wizard-logo-info {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wizard-logo-filename {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wizard-logo-remove {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(185, 28, 28, 0.08);
+  color: #8d1717;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.wizard-logo-remove:hover { background: rgba(185, 28, 28, 0.14); }
+
+/* ── Step 2 — Denomination grid ─────────────────────────────────────────── */
+
+.wizard-denom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.wizard-denom-card {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 16px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+  font: inherit;
+}
+
+.wizard-denom-card:hover {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-1px);
+}
+
+.wizard-denom-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(178, 81, 49, 0.14);
+}
+
+.wizard-denom-card--selected {
+  border-color: var(--accent);
+  background: rgba(178, 81, 49, 0.06);
+  box-shadow: 0 0 0 3px rgba(178, 81, 49, 0.16), var(--shadow-strong);
+}
+
+.wizard-denom-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.wizard-denom-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* ── Step 3 — Contact select ────────────────────────────────────────────── */
+
+.auth-select-wrap {
+  position: relative;
+}
+
+.auth-select {
+  appearance: none;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.auth-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  font-size: 0.88rem;
+}
+
+/* ── Step 4 — Review ────────────────────────────────────────────────────── */
+
+.wizard-review-section {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(35, 29, 24, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.wizard-review-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wizard-review-rows {
+  display: grid;
+  gap: 6px;
+}
+
+.wizard-review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(35, 29, 24, 0.06);
+}
+
+.wizard-review-copy {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wizard-review-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--muted);
+}
+
+.wizard-review-value {
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wizard-review-empty {
+  color: var(--muted);
+  font-style: normal;
+}
+
+.wizard-review-edit {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background-color 140ms ease;
+}
+
+.wizard-review-edit:hover { background: rgba(39, 76, 63, 0.08); }
+
+.wizard-review-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: contain;
+  border: 1px solid rgba(35, 29, 24, 0.08);
+  background: #fff;
+  margin-top: 4px;
+}
+
+/* ── Step 5 — Done ──────────────────────────────────────────────────────── */
+
+.wizard-done {
+  display: grid;
+  gap: 20px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.wizard-done__icon {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.wizard-done__copy {
+  display: grid;
+  gap: 10px;
+}
+
+.wizard-done__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: -0.04em;
+}
+
+.wizard-done__body {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  max-width: 46ch;
+  justify-self: center;
+}
+
+.wizard-done__summary {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(35, 29, 24, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  text-align: left;
+}
+
+.wizard-done__summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wizard-done__summary-row span {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.wizard-done__summary-row strong {
+  font-size: 0.96rem;
+  color: var(--text);
+}
+
+.wizard-done__actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .onboarding-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-hero {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .onboarding-page {
+    width: min(100% - 18px, 1240px);
+    padding-top: 16px;
+  }
+
+  .onboarding-hero,
+  .onboarding-card {
+    border-radius: 24px;
+  }
+
+  .onboarding-hero {
+    padding: 22px;
+  }
+
+  .wizard__header { padding: 22px 22px 0; }
+  .wizard__progress-track { margin: 16px 22px 0; }
+  .wizard__steps { padding: 14px 22px 0; }
+  .wizard__body { padding: 20px 22px 22px; }
+
+  .wizard-denom-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  .wizard-two-col {
+    grid-template-columns: 1fr;
+  }
+}

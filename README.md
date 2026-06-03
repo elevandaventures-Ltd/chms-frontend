@@ -10,6 +10,7 @@ Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 - [x] Day 5: Modal, Drawer, Dropdown Menu, Toast (Sonner), Card, Badge, Avatar, and Skeleton components with Storybook stories. — complete (2026-05-31)
 - [x] Day 6: login/signup screens, magic-link and password auth states, and Supabase client integration. — complete (2026-06-02)
 - [x] Day 7: protected route middleware, Supabase session persistence with auto token refresh, and auth callback handler. — complete (2026-06-02)
+- [x] Day 8: 5-step church onboarding wizard (name + logo, denomination, contact + address, review, done), React context state management, progress bar, step-back navigation, Supabase insert. — complete (2026-06-03)
 
 ## Run It
 
@@ -93,12 +94,20 @@ npm run typecheck
 - [src/lib/supabase/client.ts](src/lib/supabase/client.ts) — Day 7 browser Supabase client (persistSession, autoRefreshToken).
 - [src/lib/supabase/server.ts](src/lib/supabase/server.ts) — Day 7 server Supabase client for middleware (cookie-based).
 - [src/hooks/useSession.ts](src/hooks/useSession.ts) — Day 7 React hook: surfaces current session and re-renders on auth state changes.
+- [src/app/onboarding/page.tsx](src/app/onboarding/page.tsx) — Day 8 onboarding wizard page (5 steps, React context).
+- [src/context/OnboardingContext.tsx](src/context/OnboardingContext.tsx) — Day 8 wizard state: OnboardingProvider + useOnboarding hook.
+- [src/components/onboarding/WizardShell.tsx](src/components/onboarding/WizardShell.tsx) — Day 8 progress bar, step pills, and navigation shell.
+- [src/components/onboarding/Step1Identity.tsx](src/components/onboarding/Step1Identity.tsx) — Day 8 Step 1: church name + logo upload.
+- [src/components/onboarding/Step2Denomination.tsx](src/components/onboarding/Step2Denomination.tsx) — Day 8 Step 2: denomination card-grid selector.
+- [src/components/onboarding/Step3Contact.tsx](src/components/onboarding/Step3Contact.tsx) — Day 8 Step 3: contact details + address.
+- [src/components/onboarding/Step4Review.tsx](src/components/onboarding/Step4Review.tsx) — Day 8 Step 4: review summary with edit shortcuts.
+- [src/components/onboarding/Step5Done.tsx](src/components/onboarding/Step5Done.tsx) — Day 8 Step 5: success screen.
+- [src/app/api/onboarding/route.ts](src/app/api/onboarding/route.ts) — Day 8 API: validates and inserts church record into Supabase.
 - [.storybook/main.ts](.storybook/main.ts) — Storybook configuration.
 - [.storybook/preview.tsx](.storybook/preview.tsx) — Storybook global preview setup.
 - [.github/workflows/ci.yml](.github/workflows/ci.yml) — CI workflow for typecheck, build, and Storybook build.
 
 ## Authentication (Day 6 & 7)
-
 ### How the middleware works
 
 Every request passes through `middleware.ts` at the Edge before reaching a page or API handler.
@@ -152,4 +161,62 @@ Find these in your Supabase project under **Settings → API**.
 
 - The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
 - Generated build output such as `storybook-static` is ignored and should not be committed.
-- **Status:** Days 1, 3, 4, 5, 6, and 7 are complete and pass TypeScript checks.
+- **Status:** Days 1, 3, 4, 5, 6, 7, and 8 are complete and pass TypeScript checks.
+
+## Church Onboarding Wizard (Day 8)
+
+Route: `/onboarding` — accessible without authentication (listed as a public path in middleware).
+
+### Steps
+
+| Step | Route segment | What it collects |
+|---|---|---|
+| 1 | Identity | Church name (required) + logo upload (optional, JPEG/PNG/SVG/WebP ≤ 2 MB) |
+| 2 | Denomination | Visual card-grid selector with 12 presets + free-text "Other" fallback |
+| 3 | Contact | Primary contact name, email, phone + full postal address |
+| 4 | Review | Read-only summary of all steps with per-section edit shortcuts |
+| 5 | Done | Success confirmation with a link back to the dashboard |
+
+### Architecture
+
+- **State** — `OnboardingProvider` (React context in `src/context/OnboardingContext.tsx`) holds all form data and exposes `patch`, `next`, `back`, `goTo` helpers. Zero external state libraries.
+- **Shell** — `WizardShell` renders the animated progress bar (CSS width transition), clickable step pills for completed steps, and the step title/description header.
+- **Navigation** — Back button always goes to the previous step. Completed step pills are clickable for direct jump. Step 4 has per-section edit buttons that call `goTo(n)`.
+- **Validation** — Each step validates before advancing. Step 1 checks name length. Step 2 requires a selection. Step 3 validates email format, required fields, and phone pattern.
+- **API** (`POST /api/onboarding`) — Validates the payload server-side, then upserts into the `churches` Supabase table. Falls back to a mock 201 response when Supabase env vars are absent so the wizard completes in dev.
+
+### Supabase table
+
+Run this migration in your Supabase SQL editor to create the required table:
+
+```sql
+create table if not exists public.churches (
+  id            uuid primary key default gen_random_uuid(),
+  name          text not null,
+  denomination  text not null,
+  contact_name  text not null,
+  contact_email text not null,
+  contact_phone text,
+  address_line1 text not null,
+  address_line2 text,
+  city          text not null,
+  state         text not null,
+  postal_code   text not null,
+  country       text not null,
+  created_at    timestamptz default now()
+);
+
+-- RLS: authenticated users can insert their own church record.
+alter table public.churches enable row level security;
+
+create policy "Allow insert for authenticated users"
+  on public.churches for insert
+  to authenticated
+  with check (true);
+
+-- RLS: each user can only read their own rows (cross-tenant isolation).
+create policy "Users see only their own churches"
+  on public.churches for select
+  to authenticated
+  using (contact_email = auth.jwt() ->> 'email');
+```
