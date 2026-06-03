@@ -5,6 +5,7 @@
  * Fields: church name (required), logo upload (optional, image preview).
  */
 import React, { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { UploadCloud, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useOnboarding } from '@/context/OnboardingContext';
 
@@ -17,20 +18,11 @@ export default function Step1Identity() {
   function handleLogoChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     if (!file) return;
-
     const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      setLogoError('Please upload a JPEG, PNG, SVG, or WebP image.');
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      setLogoError('Image must be smaller than 2 MB.');
-      return;
-    }
-
+    if (!allowedTypes.includes(file.type)) { setLogoError('Please upload a JPEG, PNG, SVG, or WebP image.'); return; }
+    if (file.size > 2 * 1024 * 1024) { setLogoError('Image must be smaller than 2 MB.'); return; }
     setLogoError('');
-    const previewUrl = URL.createObjectURL(file);
-    patch({ logoFile: file, logoPreviewUrl: previewUrl });
+    patch({ logoFile: file, logoPreviewUrl: URL.createObjectURL(file) });
   }
 
   function handleRemoveLogo() {
@@ -42,22 +34,15 @@ export default function Step1Identity() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const name = data.churchName.trim();
-
-    if (!name) {
-      setNameError('Church name is required.');
-      return;
-    }
-    if (name.length < 3) {
-      setNameError('Name must be at least 3 characters.');
-      return;
-    }
-
+    if (!name) { setNameError('Church name is required.'); return; }
+    if (name.length < 3) { setNameError('Name must be at least 3 characters.'); return; }
     setNameError('');
     next();
   }
 
   return (
     <form className="wizard-form" onSubmit={handleSubmit} noValidate>
+
       {/* Church name */}
       <div className={`auth-field ${nameError ? 'auth-field--error' : ''}`}>
         <label className="auth-label" htmlFor="church-name">
@@ -71,19 +56,15 @@ export default function Step1Identity() {
           placeholder="e.g. Grace Community Church"
           value={data.churchName}
           maxLength={120}
-          onChange={(e) => {
-            patch({ churchName: e.target.value });
-            if (nameError) setNameError('');
-          }}
+          onChange={(e) => { patch({ churchName: e.target.value }); if (nameError) setNameError(''); }}
           aria-required="true"
           aria-invalid={nameError ? 'true' : 'false'}
           aria-describedby={nameError ? 'church-name-error' : undefined}
         />
-        {nameError ? (
-          <p id="church-name-error" className="auth-error" role="alert">{nameError}</p>
-        ) : (
-          <p className="auth-hint">The official name of your church as it appears in documents.</p>
-        )}
+        {nameError
+          ? <p id="church-name-error" className="auth-error" role="alert">{nameError}</p>
+          : <p className="auth-hint">The official name of your church as it appears in documents.</p>
+        }
       </div>
 
       {/* Logo upload */}
@@ -98,13 +79,8 @@ export default function Step1Identity() {
               <p className="wizard-logo-filename">{data.logoFile?.name}</p>
               <p className="auth-hint">{data.logoFile ? `${(data.logoFile.size / 1024).toFixed(0)} KB` : ''}</p>
             </div>
-            <button
-              type="button"
-              className="wizard-logo-remove"
-              onClick={handleRemoveLogo}
-              aria-label="Remove logo"
-            >
-              ✕
+            <button type="button" className="wizard-logo-remove" onClick={handleRemoveLogo} aria-label="Remove logo">
+              <X size={14} aria-hidden="true" />
             </button>
           </div>
         ) : (
@@ -114,7 +90,9 @@ export default function Step1Identity() {
             onClick={() => fileInputRef.current?.click()}
             aria-label="Upload church logo"
           >
-            <span className="wizard-upload-icon" aria-hidden="true">🏛</span>
+            <span className="wizard-upload-icon" aria-hidden="true">
+              <UploadCloud size={28} strokeWidth={1.5} />
+            </span>
             <span className="wizard-upload-copy">
               <strong>Click to upload</strong>
               <span>JPEG, PNG, SVG or WebP · max 2 MB</span>
@@ -131,18 +109,12 @@ export default function Step1Identity() {
           tabIndex={-1}
           onChange={handleLogoChange}
         />
-
-        {logoError ? (
-          <p className="auth-error" role="alert">{logoError}</p>
-        ) : null}
+        {logoError && <p className="auth-error" role="alert">{logoError}</p>}
       </div>
 
-      {/* Navigation */}
       <div className="wizard-nav">
         <span />
-        <Button type="submit" size="lg">
-          Continue
-        </Button>
+        <Button type="submit" size="lg">Continue</Button>
       </div>
     </form>
   );

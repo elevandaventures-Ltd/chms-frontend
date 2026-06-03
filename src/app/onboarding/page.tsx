@@ -9,6 +9,7 @@
  */
 import React from 'react';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { OnboardingProvider, useOnboarding } from '@/context/OnboardingContext';
 import WizardShell from '@/components/onboarding/WizardShell';
 import Step1Identity    from '@/components/onboarding/Step1Identity';
@@ -25,7 +26,7 @@ function OnboardingInner() {
       {/* Back link — only visible before completion */}
       {step < 5 ? (
         <Link href="/" className="onboarding-back-link">
-          ← Back to workspace
+          <ArrowLeft size={14} aria-hidden="true" /> Back to workspace
         </Link>
       ) : null}
 

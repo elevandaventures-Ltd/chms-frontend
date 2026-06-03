@@ -1,13 +1,20 @@
 import Link from 'next/link';
+import { CheckCircle2, Clock, Circle, ArrowRight } from 'lucide-react';
 import * as site from '@/lib/site';
 import PageShell from '@/components/PageShell';
 import Sidebar from '@/components/Sidebar';
 import TopNav from '@/components/TopNav';
 
+const STATUS_ICON: Record<site.DayEntry['status'], React.ReactNode> = {
+  'complete':    <CheckCircle2 size={13} aria-hidden="true" />,
+  'in-progress': <Clock        size={13} aria-hidden="true" />,
+  'upcoming':    <Circle       size={13} aria-hidden="true" />,
+};
+
 const STATUS_LABEL: Record<site.DayEntry['status'], string> = {
-  'complete':    '✓ Complete',
-  'in-progress': '⧖ In progress',
-  'upcoming':    '○ Upcoming',
+  'complete':    'Complete',
+  'in-progress': 'In progress',
+  'upcoming':    'Upcoming',
 };
 
 const STATUS_COLOR: Record<site.DayEntry['status'], string> = {
@@ -74,7 +81,9 @@ export default function HomePage() {
               <p className="panel-label">Action</p>
               <h3>{link.label}</h3>
               <p>{link.description}</p>
-              <span className="dash-action-arrow" aria-hidden="true">→</span>
+              <span className="dash-action-arrow" aria-hidden="true">
+                <ArrowRight size={16} />
+              </span>
             </Link>
           ))}
         </div>
@@ -96,8 +105,9 @@ export default function HomePage() {
                 <span className="dash-sprint-card__day">{entry.day}</span>
                 <span
                   className="dash-sprint-card__status"
-                  style={{ color: STATUS_COLOR[entry.status] }}
+                  style={{ color: STATUS_COLOR[entry.status], display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                 >
+                  {STATUS_ICON[entry.status]}
                   {STATUS_LABEL[entry.status]}
                 </span>
               </div>
@@ -105,7 +115,7 @@ export default function HomePage() {
               <p>{entry.detail}</p>
               {entry.href && (
                 <Link className="dash-sprint-card__link" href={entry.href}>
-                  Open →
+                  Open <ArrowRight size={13} aria-hidden="true" />
                 </Link>
               )}
             </article>

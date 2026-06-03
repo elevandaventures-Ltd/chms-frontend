@@ -1,16 +1,10 @@
 'use client';
 
 /**
- * WizardShell — wraps every onboarding step.
- *
- * Renders:
- * - Step breadcrumb (e.g. "Step 2 of 5")
- * - Animated progress bar keyed on current step
- * - Step indicator pills (clickable for completed steps)
- * - Step title + description slot
- * - Children (the active step form)
+ * WizardShell — progress bar, step pills, header.
  */
 import React from 'react';
+import { Check } from 'lucide-react';
 import { useOnboarding } from '@/context/OnboardingContext';
 
 const STEP_META = [
@@ -29,22 +23,29 @@ export default function WizardShell({ children }: { children: React.ReactNode })
 
   return (
     <div className="wizard">
-      {/* ── Header ── */}
+      {/* Header */}
       <header className="wizard__header">
         <p className="wizard__eyebrow">Church onboarding · Step {step} of {totalSteps}</p>
         <h2 className="wizard__title">{current.label}</h2>
         <p className="wizard__desc">{current.description}</p>
       </header>
 
-      {/* ── Progress bar ── */}
-      <div className="wizard__progress-track" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={totalSteps} aria-label={`Step ${step} of ${totalSteps}`}>
+      {/* Progress bar */}
+      <div
+        className="wizard__progress-track"
+        role="progressbar"
+        aria-valuenow={step}
+        aria-valuemin={1}
+        aria-valuemax={totalSteps}
+        aria-label={`Step ${step} of ${totalSteps}`}
+      >
         <div className="wizard__progress-fill" style={{ width: `${progressPct}%` }} />
       </div>
 
-      {/* ── Step pills ── */}
+      {/* Step pills */}
       <nav className="wizard__steps" aria-label="Wizard steps">
         {STEP_META.map((meta, idx) => {
-          const stepNum = (idx + 1) as 1 | 2 | 3 | 4 | 5;
+          const stepNum   = (idx + 1) as 1 | 2 | 3 | 4 | 5;
           const isCompleted = stepNum < step;
           const isActive    = stepNum === step;
 
@@ -63,7 +64,7 @@ export default function WizardShell({ children }: { children: React.ReactNode })
               aria-label={`Step ${stepNum}: ${meta.label}${isCompleted ? ' (completed)' : ''}`}
             >
               <span className="wizard__step-num" aria-hidden="true">
-                {isCompleted ? '✓' : stepNum}
+                {isCompleted ? <Check size={12} strokeWidth={3} /> : stepNum}
               </span>
               <span className="wizard__step-label">{meta.label}</span>
             </button>
@@ -71,10 +72,8 @@ export default function WizardShell({ children }: { children: React.ReactNode })
         })}
       </nav>
 
-      {/* ── Active step content ── */}
-      <div className="wizard__body">
-        {children}
-      </div>
+      {/* Active step */}
+      <div className="wizard__body">{children}</div>
     </div>
   );
 }

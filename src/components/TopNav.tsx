@@ -2,14 +2,17 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import {
+  Bell,
+  PlusCircle,
+  ChevronRight,
+} from 'lucide-react';
 import type { NotificationItem, TeamMember } from '@/lib/site';
 
 type TopNavProps = {
   user: TeamMember;
   notifications?: NotificationItem[];
-  /** Page title shown in the top nav. Defaults to 'Dashboard'. */
   title?: string;
-  /** Subtitle / description line below the title. */
   subtitle?: string;
 };
 
@@ -30,9 +33,7 @@ export function TopNav({
   useEffect(() => {
     function handleDocumentClick(event: MouseEvent) {
       if (!menuRef.current) return;
-      if (!menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
+      if (!menuRef.current.contains(event.target as Node)) setOpen(false);
     }
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') setOpen(false);
@@ -56,9 +57,9 @@ export function TopNav({
 
       {/* Right — actions */}
       <div className="topnav__actions">
-        {/* Onboarding shortcut */}
         <Link className="topnav__link topnav__link--primary" href="/onboarding">
-          + Register church
+          <PlusCircle size={15} aria-hidden="true" />
+          Register church
         </Link>
 
         {/* Notifications */}
@@ -70,7 +71,7 @@ export function TopNav({
             aria-expanded={open}
             onClick={() => setOpen((c) => !c)}
           >
-            <span className="topnav__bell" aria-hidden="true">🔔</span>
+            <Bell size={18} aria-hidden="true" />
             {unreadCount > 0 && (
               <span className="topnav__badge" aria-hidden="true">{unreadCount}</span>
             )}
@@ -124,6 +125,7 @@ export function TopNav({
                 onClick={() => setOpen(false)}
               >
                 View all updates
+                <ChevronRight size={14} aria-hidden="true" />
               </Link>
             </div>
           )}

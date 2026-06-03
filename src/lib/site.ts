@@ -50,11 +50,11 @@ export const notifications: NotificationItem[] = [
 ];
 
 export const sidebarItems: SidebarItem[] = [
-  { label: 'Overview',    href: '#overview',    icon: '◌', roles: ['admin', 'manager', 'member'] },
-  { label: 'Progress',    href: '#progress',    icon: '▣', roles: ['admin', 'manager'] },
-  { label: 'Team',        href: '#team',        icon: '✦', roles: ['admin', 'manager'] },
-  { label: 'Tasks',       href: '#tasks',       icon: '↳', roles: ['admin', 'manager', 'member'] },
-  { label: 'Reports',     href: '#reports',     icon: '▤', roles: ['admin'] },
+  { label: 'Overview',  href: '#overview',  icon: 'overview',  roles: ['admin', 'manager', 'member'] },
+  { label: 'Progress',  href: '#progress',  icon: 'progress',  roles: ['admin', 'manager'] },
+  { label: 'Team',      href: '#team',      icon: 'team',      roles: ['admin', 'manager'] },
+  { label: 'Tasks',     href: '#tasks',     icon: 'tasks',     roles: ['admin', 'manager', 'member'] },
+  { label: 'Reports',   href: '#reports',   icon: 'reports',   roles: ['admin'] },
 ];
 
 export type DayEntry = {

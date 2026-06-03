@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 
@@ -50,11 +51,18 @@ export default function SignupPage() {
   return (
     <div className="signin-page">
 
-      {/* ── Left panel ────────────────────────────────────────────────── */}
+      {/* Left panel */}
       <aside className="signin-panel signin-panel--green" aria-hidden="true">
         <div className="signin-panel__inner">
           <div className="signin-panel__brand">
-            <span className="signin-panel__logo">⛪</span>
+            <span className="signin-panel__logo" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 22V10l9-8 9 8v12"/>
+                <path d="M9 22V16h6v6"/>
+                <path d="M12 2v4"/>
+                <path d="M10 6h4"/>
+              </svg>
+            </span>
             <span className="signin-panel__name">Elevanda Ventures</span>
           </div>
 
@@ -69,39 +77,26 @@ export default function SignupPage() {
           </div>
 
           <ul className="signin-panel__features" aria-label="Getting started steps">
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Create your account in under a minute
-            </li>
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Run the 5-step church onboarding wizard
-            </li>
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Invite your team and assign roles
-            </li>
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Manage services, members &amp; reports
-            </li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Create your account in under a minute</li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Run the 5-step church onboarding wizard</li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Invite your team and assign roles</li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Manage services, members &amp; reports</li>
           </ul>
 
           <div className="signin-panel__footer">
             <p>Elevanda Ventures · CHMS · {new Date().getFullYear()}</p>
           </div>
         </div>
-
         <div className="signin-panel__blob signin-panel__blob--1" aria-hidden="true" />
         <div className="signin-panel__blob signin-panel__blob--2" aria-hidden="true" />
       </aside>
 
-      {/* ── Right panel ───────────────────────────────────────────────── */}
+      {/* Right panel */}
       <main className="signin-form-panel">
         <div className="signin-card" aria-label="Create your account">
 
           <Link href="/login" className="signin-back">
-            ← Back to sign in
+            <ArrowLeft size={14} aria-hidden="true" /> Back to sign in
           </Link>
 
           <div className="signin-card__head">
@@ -110,78 +105,60 @@ export default function SignupPage() {
             <p className="signin-card__sub">Free to start. No credit card needed.</p>
           </div>
 
-          {/* Status banners */}
           {status.kind === 'success' && (
             <div className="signin-banner signin-banner--success" role="status" aria-live="polite">
-              <strong>🎉 Account created</strong>
+              <strong>
+                <CheckCircle2 size={15} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />
+                Account created
+              </strong>
               <p>{status.message}</p>
-              <Link className="signin-footer-link" href="/login" style={{ marginTop: '8px', display: 'inline-flex' }}>
-                Sign in now →
+              <Link className="signin-footer-link" href="/login" style={{ marginTop: '8px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                Sign in now <ArrowRight size={13} aria-hidden="true" />
               </Link>
             </div>
           )}
           {status.kind === 'error' && (
             <div className="signin-banner signin-banner--error" role="alert" aria-live="polite">
-              <strong>Signup failed</strong>
+              <strong>
+                <AlertCircle size={15} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />
+                Signup failed
+              </strong>
               <p>{status.message}</p>
             </div>
           )}
 
           <form className="signin-form" onSubmit={handleSubmit} noValidate>
 
-            {/* Name */}
             <div className={`signin-field${errors.name ? ' signin-field--error' : ''}`}>
               <label className="signin-label" htmlFor="su-name">Full name</label>
-              <input
-                id="su-name"
-                className="signin-input"
-                type="text"
-                autoComplete="name"
-                placeholder="Pastor John Doe"
-                value={name}
+              <input id="su-name" className="signin-input" type="text" autoComplete="name"
+                placeholder="Pastor John Doe" value={name}
                 onChange={(ev) => { setName(ev.target.value); if (errors.name) setErrors((p) => ({ ...p, name: undefined })); }}
-                aria-invalid={errors.name ? 'true' : 'false'}
-                aria-describedby={errors.name ? 'su-name-err' : undefined}
+                aria-invalid={errors.name ? 'true' : 'false'} aria-describedby={errors.name ? 'su-name-err' : undefined}
               />
               {errors.name && <p id="su-name-err" className="signin-error" role="alert">{errors.name}</p>}
             </div>
 
-            {/* Email */}
             <div className={`signin-field${errors.email ? ' signin-field--error' : ''}`}>
               <label className="signin-label" htmlFor="su-email">Email address</label>
-              <input
-                id="su-email"
-                className="signin-input"
-                type="email"
-                autoComplete="email"
-                inputMode="email"
-                placeholder="you@church.org"
-                value={email}
+              <input id="su-email" className="signin-input" type="email" autoComplete="email" inputMode="email"
+                placeholder="you@church.org" value={email}
                 onChange={(ev) => { setEmail(ev.target.value); if (errors.email) setErrors((p) => ({ ...p, email: undefined })); }}
-                aria-invalid={errors.email ? 'true' : 'false'}
-                aria-describedby={errors.email ? 'su-email-err' : undefined}
+                aria-invalid={errors.email ? 'true' : 'false'} aria-describedby={errors.email ? 'su-email-err' : undefined}
               />
               {errors.email && <p id="su-email-err" className="signin-error" role="alert">{errors.email}</p>}
             </div>
 
-            {/* Password */}
             <div className={`signin-field${errors.password ? ' signin-field--error' : ''}`}>
               <label className="signin-label" htmlFor="su-password">Password</label>
               <div className="signin-password-wrap">
-                <input
-                  id="su-password"
-                  className="signin-input signin-input--password"
-                  type={showPwd ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  placeholder="At least 8 characters"
-                  value={password}
+                <input id="su-password" className="signin-input signin-input--password"
+                  type={showPwd ? 'text' : 'password'} autoComplete="new-password"
+                  placeholder="At least 8 characters" value={password}
                   onChange={(ev) => { setPassword(ev.target.value); if (errors.password) setErrors((p) => ({ ...p, password: undefined })); }}
-                  aria-invalid={errors.password ? 'true' : 'false'}
-                  aria-describedby={errors.password ? 'su-pw-err' : undefined}
+                  aria-invalid={errors.password ? 'true' : 'false'} aria-describedby={errors.password ? 'su-pw-err' : undefined}
                 />
-                <button
-                  type="button"
-                  className="signin-toggle"
+                <button type="button" className="signin-toggle"
                   onClick={() => setShowPwd((v) => !v)}
                   aria-pressed={showPwd ? 'true' : 'false'}
                   aria-label={showPwd ? 'Hide password' : 'Show password'}
@@ -189,14 +166,10 @@ export default function SignupPage() {
                   {showPwd ? 'Hide' : 'Show'}
                 </button>
               </div>
-              {/* Strength bar */}
               {password.length > 0 && (
                 <div className="signin-strength">
                   <div className="signin-strength__track">
-                    <div
-                      className="signin-strength__fill"
-                      style={{ width: `${(pwStrength / 3) * 100}%`, background: pwColor }}
-                    />
+                    <div className="signin-strength__fill" style={{ width: `${(pwStrength / 3) * 100}%`, background: pwColor }} />
                   </div>
                   <span className="signin-strength__label" style={{ color: pwColor }}>{pwLabel}</span>
                 </div>
@@ -216,7 +189,9 @@ export default function SignupPage() {
 
           <div className="signin-card__footer">
             <p>Already have an account?</p>
-            <Link className="signin-footer-link" href="/login">Sign in →</Link>
+            <Link className="signin-footer-link" href="/login">
+              Sign in <ArrowRight size={13} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </main>

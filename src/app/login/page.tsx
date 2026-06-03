@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { Mail, Lock, ArrowLeft, ArrowRight, CheckCircle2, AlertCircle, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 
@@ -91,7 +92,14 @@ export default function LoginPage() {
       <aside className="signin-panel" aria-hidden="true">
         <div className="signin-panel__inner">
           <div className="signin-panel__brand">
-            <span className="signin-panel__logo">⛪</span>
+            <span className="signin-panel__logo" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 22V10l9-8 9 8v12"/>
+                <path d="M9 22V16h6v6"/>
+                <path d="M12 2v4"/>
+                <path d="M10 6h4"/>
+              </svg>
+            </span>
             <span className="signin-panel__name">Elevanda Ventures</span>
           </div>
 
@@ -140,7 +148,7 @@ export default function LoginPage() {
 
           {/* Back link */}
           <Link href="/" className="signin-back">
-            ← Back to dashboard
+            <ArrowLeft size={14} aria-hidden="true" /> Back to dashboard
           </Link>
 
           {/* Header */}
@@ -161,7 +169,9 @@ export default function LoginPage() {
                 className={`signin-tab${mode === m ? ' signin-tab--active' : ''}`}
                 onClick={() => { setMode(m); setErrors({}); setStatus({ kind: 'idle' }); }}
               >
-                {m === 'magic' ? '✉ Magic link' : '🔒 Password'}
+                {m === 'magic'
+                  ? <><Mail size={14} aria-hidden="true" /> Magic link</>
+                  : <><Lock size={14} aria-hidden="true" /> Password</>}
               </button>
             ))}
           </div>
@@ -169,19 +179,19 @@ export default function LoginPage() {
           {/* Status banners */}
           {status.kind === 'magic-sent' && (
             <div className="signin-banner signin-banner--success" role="status" aria-live="polite">
-              <strong>📬 Check your inbox</strong>
+              <strong><Inbox size={15} aria-hidden="true" style={{display:'inline',verticalAlign:'middle',marginRight:6}} />Check your inbox</strong>
               <p>A sign-in link was sent to <strong>{status.email}</strong>.</p>
             </div>
           )}
           {status.kind === 'success' && (
             <div className="signin-banner signin-banner--success" role="status" aria-live="polite">
-              <strong>✓ Signed in</strong>
+              <strong><CheckCircle2 size={15} aria-hidden="true" style={{display:'inline',verticalAlign:'middle',marginRight:6}} />Signed in</strong>
               <p>{status.message}</p>
             </div>
           )}
           {status.kind === 'error' && (
             <div className="signin-banner signin-banner--error" role="alert" aria-live="polite">
-              <strong>Sign-in failed</strong>
+              <strong><AlertCircle size={15} aria-hidden="true" style={{display:'inline',verticalAlign:'middle',marginRight:6}} />Sign-in failed</strong>
               <p>{status.message}</p>
             </div>
           )}
@@ -267,7 +277,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="signin-card__footer">
             <p>Don't have an account?</p>
-            <Link className="signin-footer-link" href="/signup">Create one free →</Link>
+            <Link className="signin-footer-link" href="/signup">Create one free <ArrowRight size={13} aria-hidden="true" /></Link>
           </div>
         </div>
       </main>

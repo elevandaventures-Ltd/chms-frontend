@@ -2,10 +2,10 @@
 
 /**
  * Step 5 — Success screen
- * Shown after the church record has been successfully created in the database.
  */
 import React from 'react';
 import Link from 'next/link';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useOnboarding } from '@/context/OnboardingContext';
 
@@ -14,12 +14,12 @@ export default function Step5Done() {
 
   return (
     <div className="wizard-done">
-      <div className="wizard-done__icon" aria-hidden="true">🎉</div>
+      <div className="wizard-done__icon" aria-hidden="true">
+        <CheckCircle2 size={56} strokeWidth={1.5} color="var(--accent-strong)" />
+      </div>
 
       <div className="wizard-done__copy">
-        <h3 className="wizard-done__title">
-          {data.churchName} is registered.
-        </h3>
+        <h3 className="wizard-done__title">{data.churchName} is registered.</h3>
         <p className="wizard-done__body">
           Your church profile is live. You can now invite team members, set up
           services, and manage your congregation from the workspace dashboard.
@@ -43,7 +43,9 @@ export default function Step5Done() {
 
       <div className="wizard-done__actions">
         <Link href="/">
-          <Button size="lg">Go to dashboard</Button>
+          <Button size="lg" trailingIcon={<ArrowRight size={16} aria-hidden="true" />}>
+            Go to dashboard
+          </Button>
         </Link>
       </div>
     </div>

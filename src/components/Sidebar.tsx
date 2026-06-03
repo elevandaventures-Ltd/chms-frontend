@@ -2,6 +2,22 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  LogOut,
+  UserPlus,
+  Copy,
+  PlusCircle,
+  LogIn,
+  Circle,
+  BarChart2,
+  Users,
+  CheckSquare,
+  FileText,
+  LayoutDashboard,
+} from 'lucide-react';
 import type { SidebarItem, TeamMember } from '@/lib/site';
 
 type SidebarProps = {
@@ -9,8 +25,17 @@ type SidebarProps = {
   items: SidebarItem[];
 };
 
+// Map icon strings from site.ts to Lucide components
+const NAV_ICONS: Record<string, React.ReactNode> = {
+  '#overview': <LayoutDashboard size={16} aria-hidden="true" />,
+  '#progress': <BarChart2       size={16} aria-hidden="true" />,
+  '#team':     <Users           size={16} aria-hidden="true" />,
+  '#tasks':    <CheckSquare     size={16} aria-hidden="true" />,
+  '#reports':  <FileText        size={16} aria-hidden="true" />,
+};
+
 export function Sidebar({ user, items }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed]     = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,7 +70,7 @@ export function Sidebar({ user, items }: SidebarProps) {
   return (
     <div className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
 
-      {/* ── Brand ── */}
+      {/* Brand */}
       <div className="sidebar__top">
         <div>
           <p className="sidebar__eyebrow">Workspace</p>
@@ -58,11 +83,13 @@ export function Sidebar({ user, items }: SidebarProps) {
           className="icon-button icon-button--ghost"
           onClick={() => setCollapsed((s) => !s)}
         >
-          {collapsed ? '➤' : '◂'}
+          {collapsed
+            ? <ChevronRight size={16} aria-hidden="true" />
+            : <ChevronLeft  size={16} aria-hidden="true" />}
         </button>
       </div>
 
-      {/* ── User profile ── */}
+      {/* User profile */}
       <div className="sidebar__profile-shell" ref={profileRef}>
         <button
           type="button"
@@ -79,7 +106,7 @@ export function Sidebar({ user, items }: SidebarProps) {
             <span className="sidebar__profile-name">{user.name}</span>
             <span className="sidebar__hint">{user.title}</span>
           </div>
-          <span className="sidebar__profile-chevron" aria-hidden="true">▾</span>
+          <ChevronDown size={14} className="sidebar__profile-chevron" aria-hidden="true" />
         </button>
 
         {profileOpen && (
@@ -89,66 +116,48 @@ export function Sidebar({ user, items }: SidebarProps) {
               <span>{user.title}</span>
             </div>
             <div className="sidebar__profile-actions">
-              <button
-                type="button"
-                className="sidebar__profile-action"
-                role="menuitem"
-                onClick={handleCopyLabel}
-              >
-                Copy account label
+              <button type="button" className="sidebar__profile-action" role="menuitem" onClick={handleCopyLabel}>
+                <Copy size={14} aria-hidden="true" /> Copy account label
               </button>
-              <Link
-                className="sidebar__profile-action"
-                role="menuitem"
-                href="/onboarding"
-                onClick={() => setProfileOpen(false)}
-              >
-                Register a church
+              <Link className="sidebar__profile-action" role="menuitem" href="/onboarding" onClick={() => setProfileOpen(false)}>
+                <PlusCircle size={14} aria-hidden="true" /> Register a church
               </Link>
-              <Link
-                className="sidebar__profile-action"
-                role="menuitem"
-                href="/signup"
-                onClick={() => setProfileOpen(false)}
-              >
-                Create another account
+              <Link className="sidebar__profile-action" role="menuitem" href="/signup" onClick={() => setProfileOpen(false)}>
+                <UserPlus size={14} aria-hidden="true" /> Create another account
               </Link>
-              <button
-                type="button"
-                className="sidebar__profile-action sidebar__profile-action--danger"
-                role="menuitem"
-                onClick={handleSignOut}
-              >
-                Sign out
+              <button type="button" className="sidebar__profile-action sidebar__profile-action--danger" role="menuitem" onClick={handleSignOut}>
+                <LogOut size={14} aria-hidden="true" /> Sign out
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* ── Navigation ── */}
+      {/* Navigation */}
       <nav className="sidebar__nav" aria-label="Main navigation">
         {visibleItems.map((item) => (
           <a key={item.href} className="sidebar__link" href={item.href}>
-            <span className="sidebar__icon">{item.icon}</span>
+            <span className="sidebar__icon">
+              {NAV_ICONS[item.href] ?? <Circle size={14} aria-hidden="true" />}
+            </span>
             <span className="sidebar__label">{item.label}</span>
           </a>
         ))}
       </nav>
 
-      {/* ── Quick actions ── */}
+      {/* Quick actions */}
       <div className="sidebar__quick">
         <Link className="sidebar__quick-link" href="/onboarding">
-          <span className="sidebar__icon" aria-hidden="true">＋</span>
+          <span className="sidebar__icon"><PlusCircle size={14} aria-hidden="true" /></span>
           <span className="sidebar__label">Register church</span>
         </Link>
         <Link className="sidebar__quick-link" href="/login">
-          <span className="sidebar__icon" aria-hidden="true">→</span>
+          <span className="sidebar__icon"><LogIn size={14} aria-hidden="true" /></span>
           <span className="sidebar__label">Sign in</span>
         </Link>
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <div className="sidebar__footer">
         <p className="sidebar__hint">Role</p>
         <p className="sidebar__hint-value">{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
