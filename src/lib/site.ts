@@ -75,6 +75,13 @@ export const sprintLog: DayEntry[] = [
     detail: 'Next.js 14 App Router with TypeScript strict mode, ESLint, Prettier, path aliases, and environment templates.',
   },
   {
+    day: 'Day 2',
+    date: '2026-05-26',
+    title: 'Design system foundation',
+    status: 'complete',
+    detail: 'Tailwind CSS v3 + shadcn/ui + Radix UI installed. Design token system (colors, fonts, spacing) in tailwind.config.ts. Google Fonts switched to Playfair Display (display) + Inter (body). Full typography scale applied to global CSS.',
+  },
+  {
     day: 'Day 3',
     date: '2026-05-27',
     title: 'Workspace shell',
