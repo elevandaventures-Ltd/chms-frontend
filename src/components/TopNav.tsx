@@ -7,14 +7,23 @@ import type { NotificationItem, TeamMember } from '@/lib/site';
 type TopNavProps = {
   user: TeamMember;
   notifications?: NotificationItem[];
+  /** Page title shown in the top nav. Defaults to 'Dashboard'. */
+  title?: string;
+  /** Subtitle / description line below the title. */
+  subtitle?: string;
 };
 
-export function TopNav({ user, notifications = [] }: TopNavProps) {
+export function TopNav({
+  user,
+  notifications = [],
+  title = 'Dashboard',
+  subtitle = 'Church management system — Elevanda Ventures.',
+}: TopNavProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const unreadCount = useMemo(
-    () => notifications.filter((notification) => notification.unread).length,
+    () => notifications.filter((n) => n.unread).length,
     [notifications],
   );
 
@@ -25,16 +34,11 @@ export function TopNav({ user, notifications = [] }: TopNavProps) {
         setOpen(false);
       }
     }
-
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setOpen(false);
-      }
+      if (event.key === 'Escape') setOpen(false);
     }
-
     document.addEventListener('mousedown', handleDocumentClick);
     document.addEventListener('keydown', handleEscape);
-
     return () => {
       document.removeEventListener('mousedown', handleDocumentClick);
       document.removeEventListener('keydown', handleEscape);
@@ -43,39 +47,42 @@ export function TopNav({ user, notifications = [] }: TopNavProps) {
 
   return (
     <header className="topnav" role="banner">
-      <div>
-        <p className="topnav__eyebrow">Operations hub</p>
-        <h1 className="topnav__title">Elevanda workspace shell</h1>
-        <p className="lede">Track projects, team updates, and tasks from one responsive layout.</p>
+      {/* Left — title block */}
+      <div className="topnav__brand">
+        <p className="topnav__eyebrow">Elevanda Ventures · CHMS</p>
+        <h1 className="topnav__title">{title}</h1>
+        <p className="topnav__subtitle">{subtitle}</p>
       </div>
 
+      {/* Right — actions */}
       <div className="topnav__actions">
-        <Link className="topnav__link" href="/login">
-          Login
+        {/* Onboarding shortcut */}
+        <Link className="topnav__link topnav__link--primary" href="/onboarding">
+          + Register church
         </Link>
 
+        {/* Notifications */}
         <div className="topnav__notifications" ref={menuRef}>
           <button
             className="icon-button icon-button--ghost topnav__notification-button"
-            aria-label={`${unreadCount} unread notifications`}
+            aria-label={`${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`}
             aria-haspopup="menu"
             aria-expanded={open}
-            onClick={() => setOpen((current) => !current)}
+            onClick={() => setOpen((c) => !c)}
           >
-            <span className="topnav__bell" aria-hidden="true">
-              🔔
-            </span>
-            <span className="topnav__badge">{unreadCount}</span>
+            <span className="topnav__bell" aria-hidden="true">🔔</span>
+            {unreadCount > 0 && (
+              <span className="topnav__badge" aria-hidden="true">{unreadCount}</span>
+            )}
           </button>
 
-          {open ? (
+          {open && (
             <div className="topnav__notifications-panel" role="menu" aria-label="Notifications">
               <div className="topnav__notifications-header">
                 <div>
                   <p className="topnav__notifications-kicker">Notifications</p>
                   <h2 className="topnav__notifications-title">Recent activity</h2>
                 </div>
-
                 <button
                   className="topnav__notifications-action"
                   type="button"
@@ -87,19 +94,19 @@ export function TopNav({ user, notifications = [] }: TopNavProps) {
 
               <div className="topnav__notifications-list">
                 {notifications.length > 0 ? (
-                  notifications.map((notification) => (
+                  notifications.map((n) => (
                     <button
-                      key={`${notification.title}-${notification.time}`}
-                      className={`topnav__notification-item ${notification.unread ? 'topnav__notification-item--unread' : ''}`}
+                      key={`${n.title}-${n.time}`}
+                      className={`topnav__notification-item ${n.unread ? 'topnav__notification-item--unread' : ''}`}
                       type="button"
                       role="menuitem"
                       onClick={() => setOpen(false)}
                     >
                       <span className="topnav__notification-dot" aria-hidden="true" />
                       <span className="topnav__notification-copy">
-                        <strong>{notification.title}</strong>
-                        <span>{notification.detail}</span>
-                        <span className="topnav__notification-time">{notification.time}</span>
+                        <strong>{n.title}</strong>
+                        <span>{n.detail}</span>
+                        <span className="topnav__notification-time">{n.time}</span>
                       </span>
                     </button>
                   ))
@@ -111,14 +118,21 @@ export function TopNav({ user, notifications = [] }: TopNavProps) {
                 )}
               </div>
 
-              <Link className="topnav__notifications-link" href="#overview" onClick={() => setOpen(false)}>
-                View workspace updates
+              <Link
+                className="topnav__notifications-link"
+                href="#overview"
+                onClick={() => setOpen(false)}
+              >
+                View all updates
               </Link>
             </div>
-          ) : null}
+          )}
         </div>
 
-        <div className="topnav__avatar">{user.initials}</div>
+        {/* Avatar */}
+        <div className="topnav__avatar" aria-label={user.name} title={user.name}>
+          {user.initials}
+        </div>
       </div>
     </header>
   );

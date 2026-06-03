@@ -5,28 +5,51 @@ import Sidebar from '@/components/Sidebar';
 import TopNav from '@/components/TopNav';
 
 const STATUS_LABEL: Record<site.DayEntry['status'], string> = {
-  'complete':    'Complete',
-  'in-progress': 'In progress',
-  'upcoming':    'Upcoming',
+  'complete':    '✓ Complete',
+  'in-progress': '⧖ In progress',
+  'upcoming':    '○ Upcoming',
+};
+
+const STATUS_COLOR: Record<site.DayEntry['status'], string> = {
+  'complete':    'var(--accent-strong)',
+  'in-progress': '#9a6000',
+  'upcoming':    'var(--muted)',
 };
 
 export default function HomePage() {
-  const completedDays = site.sprintLog.filter((d) => d.status === 'complete').length;
+  const completedDays  = site.sprintLog.filter((d) => d.status === 'complete').length;
+  const totalDays      = site.sprintLog.length;
+  const progressPct    = Math.round((completedDays / totalDays) * 100);
 
   return (
     <PageShell
       sidebar={<Sidebar user={site.currentUser} items={site.sidebarItems} />}
-      topNav={<TopNav user={site.currentUser} notifications={site.notifications} />}
+      topNav={
+        <TopNav
+          user={site.currentUser}
+          notifications={site.notifications}
+          title="Dashboard"
+          subtitle={`${completedDays} of ${totalDays} sprint days complete · ${progressPct}% done`}
+        />
+      }
     >
-      {/* ── Hero ── */}
-      <section className="hero" id="overview">
+
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <section className="hero" id="overview" aria-label="Project overview">
         <div className="hero-copy">
           <p className="eyebrow">Elevanda Ventures · CHMS</p>
-          <h2>Church management system in progress.</h2>
+          <h2>Church management system.</h2>
           <p className="lede">
-            {completedDays} of {site.sprintLog.length} sprint days complete. Authentication,
-            protected routes, and the church onboarding wizard are all live.
+            A full-stack church management platform built sprint by sprint.
+            Authentication, protected routes, and the church onboarding wizard
+            are live. Member management is next.
           </p>
+          <div className="dash-progress-row">
+            <div className="dash-progress-track" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100} aria-label={`Sprint progress ${progressPct}%`}>
+              <div className="dash-progress-fill" style={{ width: `${progressPct}%` }} />
+            </div>
+            <span className="dash-progress-label">{progressPct}%</span>
+          </div>
         </div>
 
         <div className="hero-panel">
@@ -42,67 +65,81 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Quick links ── */}
-      <section className="cards-grid" aria-label="Quick actions" id="overview">
-        {site.quickLinks.map((link) => (
-          <Link key={link.href} href={link.href} className="content-card" style={{ textDecoration: 'none' }}>
-            <p className="panel-label">Quick action</p>
-            <h3>{link.label}</h3>
-            <p>{link.description}</p>
-          </Link>
-        ))}
+      {/* ── Quick actions ────────────────────────────────────────────────── */}
+      <section aria-labelledby="quick-actions-heading">
+        <h2 className="dash-section-title" id="quick-actions-heading">Quick actions</h2>
+        <div className="cards-grid">
+          {site.quickLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="dash-action-card">
+              <p className="panel-label">Action</p>
+              <h3>{link.label}</h3>
+              <p>{link.description}</p>
+              <span className="dash-action-arrow" aria-hidden="true">→</span>
+            </Link>
+          ))}
+        </div>
       </section>
 
-      {/* ── Sprint log ── */}
-      <section className="content-grid" id="progress" aria-label="Sprint progress">
-        {site.sprintLog.map((entry) => (
-          <article className="content-card" key={entry.day}>
-            <p className="panel-label">{entry.day} · {STATUS_LABEL[entry.status]}</p>
-            <h3>{entry.title}</h3>
-            <p>{entry.detail}</p>
-            {entry.href ? (
-              <Link
-                href={entry.href}
-                style={{
-                  marginTop: '8px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '0.88rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-strong)',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '0.18em',
-                }}
-              >
-                Open →
-              </Link>
-            ) : null}
-          </article>
-        ))}
+      {/* ── Sprint progress ──────────────────────────────────────────────── */}
+      <section id="progress" aria-labelledby="sprint-heading">
+        <h2 className="dash-section-title" id="sprint-heading">
+          Sprint log
+          <span className="dash-section-badge">{completedDays}/{totalDays} complete</span>
+        </h2>
+        <div className="dash-sprint-grid">
+          {site.sprintLog.map((entry) => (
+            <article
+              key={entry.day}
+              className={`content-card dash-sprint-card dash-sprint-card--${entry.status}`}
+            >
+              <div className="dash-sprint-card__meta">
+                <span className="dash-sprint-card__day">{entry.day}</span>
+                <span
+                  className="dash-sprint-card__status"
+                  style={{ color: STATUS_COLOR[entry.status] }}
+                >
+                  {STATUS_LABEL[entry.status]}
+                </span>
+              </div>
+              <h3>{entry.title}</h3>
+              <p>{entry.detail}</p>
+              {entry.href && (
+                <Link className="dash-sprint-card__link" href={entry.href}>
+                  Open →
+                </Link>
+              )}
+            </article>
+          ))}
+        </div>
       </section>
 
-      {/* ── Team ── */}
-      <section className="content-grid" id="team" aria-label="Team updates">
-        {site.teamPulse.map((member) => (
-          <article className="content-card" key={member.name}>
-            <p className="panel-label">{member.role}</p>
-            <h3>{member.name}</h3>
-            <p>{member.update}</p>
-          </article>
-        ))}
+      {/* ── Team ─────────────────────────────────────────────────────────── */}
+      <section id="team" aria-labelledby="team-heading">
+        <h2 className="dash-section-title" id="team-heading">Team</h2>
+        <div className="content-grid">
+          {site.teamPulse.map((member) => (
+            <article className="content-card" key={member.name}>
+              <p className="panel-label">{member.role}</p>
+              <h3>{member.name}</h3>
+              <p>{member.update}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
-      {/* ── Tasks ── */}
-      <section className="content-grid" id="tasks" aria-label="Task board">
-        {site.taskBoard.map((task) => (
-          <article className="content-card" key={task.item}>
-            <p className="panel-label">{task.lane}</p>
-            <h3>Action item</h3>
-            <p>{task.item}</p>
-          </article>
-        ))}
+      {/* ── Tasks ────────────────────────────────────────────────────────── */}
+      <section id="tasks" aria-labelledby="tasks-heading">
+        <h2 className="dash-section-title" id="tasks-heading">Task board</h2>
+        <div className="content-grid">
+          {site.taskBoard.map((task) => (
+            <article className="content-card" key={task.item}>
+              <p className="panel-label">{task.lane}</p>
+              <p>{task.item}</p>
+            </article>
+          ))}
+        </div>
       </section>
+
     </PageShell>
   );
 }
