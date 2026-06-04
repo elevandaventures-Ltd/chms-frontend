@@ -10,5 +10,5 @@ dist
 *storybook.log
 storybook-static
 
-# Auth data — never commit user records or credentials
+# User data — never commit records or credentials to version control
 data/
