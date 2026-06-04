@@ -1,16 +1,18 @@
 'use client';
 
 /**
- * OnboardingContext — wizard state management.
+ * OnboardingContext — wizard state management for the 6-step church
+ * registration flow.
  *
- * Holds all form data across 5 steps and provides helpers for navigation
- * (next, back, goTo) and field updates (patch).  A single `useOnboarding`
- * hook is exposed for step components to consume.
- *
- * Data structure mirrors the `churches` table columns so the final submit
- * can POST it directly to /api/onboarding.
+ * Steps:
+ *   1 — Identity      (church name + logo)
+ *   2 — Denomination  (affiliation selector)
+ *   3 — Contact       (contact details + address)
+ *   4 — Plan          (Community / Growth / Enterprise)
+ *   5 — Review        (read-only summary + submit)
+ *   6 — Done          (success screen)
  */
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -18,7 +20,66 @@ import React, {
   type ReactNode,
 } from 'react';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ── Plan type ─────────────────────────────────────────────────────────────────
+
+export type PlanId = 'community' | 'growth' | 'enterprise';
+
+export type Plan = {
+  id: PlanId;
+  name: string;
+  price: string;          // display string e.g. "Free", "$29 / mo"
+  priceMonthly: number;   // numeric for submission (0, 29, 99)
+  description: string;
+  features: string[];
+  highlight?: boolean;    // renders the "Recommended" badge
+};
+
+export const PLANS: Plan[] = [
+  {
+    id: 'community',
+    name: 'Community',
+    price: 'Free',
+    priceMonthly: 0,
+    description: 'Everything you need to get started.',
+    features: [
+      'Up to 100 members',
+      'Attendance tracking',
+      'Basic event management',
+      'Email communication',
+    ],
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    price: '$29 / mo',
+    priceMonthly: 29,
+    description: 'For growing churches ready to scale.',
+    features: [
+      'Up to 500 members',
+      'Advanced reporting',
+      'Finance module',
+      'SMS communication',
+      'Priority support',
+    ],
+    highlight: true,
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: '$99+ / mo',
+    priceMonthly: 99,
+    description: 'Unlimited capacity for large ministries.',
+    features: [
+      'Unlimited members',
+      'Multi-campus support',
+      'Custom integrations',
+      'Dedicated account manager',
+      'SLA guarantee',
+    ],
+  },
+];
+
+// ── Wizard data ───────────────────────────────────────────────────────────────
 
 export type OnboardingData = {
   // Step 1 — Identity
@@ -40,14 +101,16 @@ export type OnboardingData = {
   state: string;
   postalCode: string;
   country: string;
+
+  // Step 4 — Plan
+  plan: PlanId;
 };
 
-export type StepId = 1 | 2 | 3 | 4 | 5;
+export type StepId = 1 | 2 | 3 | 4 | 5 | 6;
 
 type OnboardingContextValue = {
   step: StepId;
   data: OnboardingData;
-  /** Partially update the wizard data (shallow merge). */
   patch: (updates: Partial<OnboardingData>) => void;
   next: () => void;
   back: () => void;
@@ -55,7 +118,7 @@ type OnboardingContextValue = {
   totalSteps: number;
 };
 
-// ─── Defaults ─────────────────────────────────────────────────────────────────
+// ── Defaults ──────────────────────────────────────────────────────────────────
 
 const DEFAULT_DATA: OnboardingData = {
   churchName: '',
@@ -72,11 +135,12 @@ const DEFAULT_DATA: OnboardingData = {
   state: '',
   postalCode: '',
   country: 'Ghana',
+  plan: 'community',
 };
 
-const TOTAL_STEPS: StepId = 5;
+const TOTAL_STEPS = 6;
 
-// ─── Context ──────────────────────────────────────────────────────────────────
+// ── Context ───────────────────────────────────────────────────────────────────
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 
@@ -101,7 +165,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <OnboardingContext.Provider value={{ step, data, patch, next, back, goTo, totalSteps: TOTAL_STEPS }}>
+    <OnboardingContext.Provider
+      value={{ step, data, patch, next, back, goTo, totalSteps: TOTAL_STEPS }}
+    >
       {children}
     </OnboardingContext.Provider>
   );
@@ -109,8 +175,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
 export function useOnboarding(): OnboardingContextValue {
   const ctx = useContext(OnboardingContext);
-  if (!ctx) {
-    throw new Error('useOnboarding must be used inside <OnboardingProvider>.');
-  }
+  if (!ctx) throw new Error('useOnboarding must be used inside <OnboardingProvider>.');
   return ctx;
 }

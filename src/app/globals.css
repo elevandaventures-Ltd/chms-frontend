@@ -3497,3 +3497,314 @@ input:checked + .data-table__check-box,
 }
 
 .data-table__row--skeleton .data-table__td { padding: 16px; }
+
+/* ── Plan selection cards (Step 4) ──────────────────────────────────────── */
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 18px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease,
+    background-color 150ms ease;
+}
+
+.plan-card:hover {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-2px);
+}
+
+.plan-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(178, 81, 49, 0.16), var(--shadow-strong);
+}
+
+.plan-card--selected {
+  border-color: var(--accent);
+  background: rgba(178, 81, 49, 0.04);
+  box-shadow: 0 0 0 3px rgba(178, 81, 49, 0.15), var(--shadow-strong);
+}
+
+.plan-card--highlight {
+  border-color: var(--accent-strong);
+  background: linear-gradient(180deg, rgba(39, 76, 63, 0.04), rgba(255,255,255,0.7));
+}
+
+.plan-card--highlight.plan-card--selected {
+  border-color: var(--accent);
+}
+
+.plan-card__badge {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--accent-strong);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plan-card__header {
+  display: grid;
+  gap: 4px;
+}
+
+.plan-card__name {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.plan-card__price {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-family: var(--font-display), serif;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+
+.plan-card--highlight .plan-card__price {
+  color: var(--accent-strong);
+}
+
+.plan-card__desc {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.plan-card__features {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-card__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.plan-card__feature-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(39, 76, 63, 0.10);
+  color: var(--accent-strong);
+  margin-top: 1px;
+}
+
+.plan-card--selected .plan-card__feature-icon {
+  background: rgba(178, 81, 49, 0.10);
+  color: var(--accent);
+}
+
+.plan-card__select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.plan-card__select--active {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--accent), #d46845);
+  color: #fff;
+}
+
+.wizard-review-row--plan {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wizard-plan-price {
+  font-weight: 700;
+  font-size: 0.96rem;
+  color: var(--accent);
+}
+
+/* Plan grid responsive */
+@media (max-width: 860px) {
+  .plan-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Profile settings page ───────────────────────────────────────────────── */
+
+.profile-page {
+  width: min(1240px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.profile-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.profile-hero {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid var(--panel-border);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(247,243,236,0.88));
+  box-shadow: var(--shadow);
+}
+
+.profile-hero__title {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.profile-avatar-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #e38c5a);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(178, 81, 49, 0.22);
+}
+
+.profile-avatar-preview__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-preview__initials {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.profile-meta {
+  display: grid;
+  gap: 3px;
+}
+
+.profile-meta strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profile-meta span {
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.profile-forms {
+  display: grid;
+  gap: 24px;
+}
+
+.profile-card {
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid var(--panel-border);
+  border-radius: 28px;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+}
+
+.profile-card__title {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(35, 29, 24, 0.08);
+}
+
+.profile-form {
+  display: grid;
+  gap: 18px;
+}
+
+.profile-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.profile-loading {
+  display: grid;
+  gap: 12px;
+  padding: 32px;
+  max-width: 480px;
+}
+
+.profile-loading__bar {
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+.profile-loading__bar--short { width: 60%; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .profile-shell {
+    grid-template-columns: 1fr;
+  }
+  .profile-hero { position: static; }
+}

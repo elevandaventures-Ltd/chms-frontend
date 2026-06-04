@@ -39,6 +39,7 @@ type ChurchPayload = {
   state: string;
   postalCode: string;
   country: string;
+  plan?: string;
 };
 
 type FieldErrors = Partial<Record<keyof ChurchPayload, string>>;
@@ -118,6 +119,7 @@ export async function POST(request: NextRequest) {
       state:         body.state!.trim(),
       postal_code:   body.postalCode!.trim(),
       country:       body.country!.trim(),
+      plan:          body.plan?.trim() ?? 'community',
     })
     .select('id, name')
     .single();

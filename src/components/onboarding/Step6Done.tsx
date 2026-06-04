@@ -1,16 +1,19 @@
 'use client';
 
 /**
- * Step 5 — Success screen
+ * Step 6 — Success / Done
+ *
+ * Shown after the church record has been successfully created.
+ * Displays a summary of the registration and links to the dashboard.
  */
-import React from 'react';
 import Link from 'next/link';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useOnboarding } from '@/context/OnboardingContext';
+import { useOnboarding, PLANS } from '@/context/OnboardingContext';
 
-export default function Step5Done() {
+export default function Step6Done() {
   const { data } = useOnboarding();
+  const plan = PLANS.find((p) => p.id === data.plan)!;
 
   return (
     <div className="wizard-done">
@@ -21,8 +24,8 @@ export default function Step5Done() {
       <div className="wizard-done__copy">
         <h3 className="wizard-done__title">{data.churchName} is registered.</h3>
         <p className="wizard-done__body">
-          Your church profile is live. You can now invite team members, set up
-          services, and manage your congregation from the workspace dashboard.
+          Your church is live on the {plan.name} plan. You can now invite your
+          team, manage members, and run your ministry from the dashboard.
         </p>
       </div>
 
@@ -32,11 +35,15 @@ export default function Step5Done() {
           <strong>{data.churchName}</strong>
         </div>
         <div className="wizard-done__summary-row">
+          <span>Plan</span>
+          <strong>{plan.name} — {plan.price}</strong>
+        </div>
+        <div className="wizard-done__summary-row">
           <span>Contact</span>
           <strong>{data.contactEmail}</strong>
         </div>
         <div className="wizard-done__summary-row">
-          <span>City</span>
+          <span>Location</span>
           <strong>{data.city}, {data.country}</strong>
         </div>
       </div>
