@@ -2,22 +2,22 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Bell, PlusCircle, ChevronRight } from 'lucide-react';
-import type { NotificationItem, TeamMember } from '@/lib/site';
+import { Bell, PlusCircle, ChevronRight, User } from 'lucide-react';
+import type { NotificationItem } from '@/lib/site';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 type TopNavProps = {
-  user: TeamMember;
   notifications?: NotificationItem[];
   title?: string;
   subtitle?: string;
 };
 
 export function TopNav({
-  user,
   notifications = [],
   title = 'Dashboard',
   subtitle = 'Church Management System',
 }: TopNavProps) {
+  const currentUser = useCurrentUser();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -41,6 +41,22 @@ export function TopNav({
       document.removeEventListener('keydown', handleEscape);
     };
   }, []);
+
+  // Determine what to render inside the avatar circle
+  const avatarContent = currentUser.loading ? null : currentUser.avatarUrl ? (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={currentUser.avatarUrl}
+      alt={currentUser.name || currentUser.email}
+      className="topnav__avatar-img"
+    />
+  ) : currentUser.initials ? (
+    <span>{currentUser.initials}</span>
+  ) : (
+    <User size={18} aria-hidden="true" />
+  );
+
+  const avatarLabel = currentUser.name || currentUser.email || 'Account';
 
   return (
     <header className="topnav" role="banner">
@@ -127,10 +143,15 @@ export function TopNav({
           )}
         </div>
 
-        {/* Avatar */}
-        <div className="topnav__avatar" aria-label={user.name} title={user.name}>
-          {user.initials}
-        </div>
+        {/* Avatar — shows real photo, initials, or generic icon */}
+        <Link
+          href="/settings/profile"
+          className={`topnav__avatar${currentUser.avatarUrl ? ' topnav__avatar--photo' : ''}`}
+          aria-label={`${avatarLabel} — profile settings`}
+          title={avatarLabel}
+        >
+          {avatarContent}
+        </Link>
       </div>
     </header>
   );

@@ -1,13 +1,12 @@
 /**
  * site.ts — ChMS application data and type definitions.
  *
- * UserRole matches the 6 roles defined in the Day 9 RBAC spec:
- *   admin, pastor, finance, ministry_leader, staff, member
- *
- * Sidebar items link to real ChMS routes with correct role restrictions.
+ * UserRole matches the 6 roles defined in the Day 9 RBAC spec.
+ * The hardcoded currentUser has been removed — use useCurrentUser()
+ * from @/hooks/useCurrentUser to get the real signed-in user.
  */
 
-// ── Role types ───────────────────────────────────────────────────────────────
+// ── Role types ────────────────────────────────────────────────────────────────
 
 export type UserRole =
   | 'admin'
@@ -17,20 +16,13 @@ export type UserRole =
   | 'staff'
   | 'member';
 
-// ── Shared types ─────────────────────────────────────────────────────────────
+// ── Shared types ──────────────────────────────────────────────────────────────
 
 export type SidebarItem = {
   label: string;
   href: string;
   icon: string;
   roles: UserRole[];
-};
-
-export type TeamMember = {
-  name: string;
-  role: UserRole;
-  title: string;
-  initials: string;
 };
 
 export type NotificationItem = {
@@ -40,16 +32,7 @@ export type NotificationItem = {
   unread?: boolean;
 };
 
-// ── Current user (replaced by real session in Day 9+) ────────────────────────
-
-export const currentUser: TeamMember = {
-  name: 'Solomon Leek',
-  role: 'admin',
-  title: 'System Administrator',
-  initials: 'SL',
-};
-
-// ── Notifications ────────────────────────────────────────────────────────────
+// ── Notifications (static; replace with real-time feed in a later sprint) ────
 
 export const notifications: NotificationItem[] = [
   {
@@ -143,7 +126,7 @@ export const sprintLog: DayEntry[] = [
     date: '2026-05-26',
     title: 'Design system foundation',
     status: 'complete',
-    detail: 'Tailwind CSS v3 + shadcn/ui + Radix UI installed. Design token system in tailwind.config.ts. Google Fonts: Playfair Display (display) + Inter (body). Full typography scale in global CSS.',
+    detail: 'Tailwind CSS v3 + shadcn/ui + Radix UI. Design token system in tailwind.config.ts. Playfair Display (display) + Inter (body). Full typography scale in global CSS.',
   },
   {
     day: 'Day 3',
@@ -164,7 +147,7 @@ export const sprintLog: DayEntry[] = [
     date: '2026-05-31',
     title: 'Extended UI components',
     status: 'complete',
-    detail: 'Modal, Drawer, Dropdown, Toast (Sonner), Card, Badge, Avatar, and Skeleton components — all with Storybook stories.',
+    detail: 'Modal, Drawer, Dropdown, Toast (Sonner), Card, Badge, Avatar, Skeleton — all with Storybook stories.',
   },
   {
     day: 'Day 6',
@@ -186,12 +169,20 @@ export const sprintLog: DayEntry[] = [
     date: '2026-06-03',
     title: 'Church onboarding wizard',
     status: 'complete',
-    detail: '5-step wizard: church name + logo upload, denomination selector, contact + address, review, and confirmation. React context state, animated progress bar, step-back navigation.',
+    detail: '6-step wizard: identity, denomination, contact, plan selection, review + confirm, done. React context state, progress bar, step-back navigation.',
     href: '/onboarding',
+  },
+  {
+    day: 'Day 9',
+    date: '2026-06-04',
+    title: 'Plan selection, review step, profile settings',
+    status: 'complete',
+    detail: 'Plan selection step (Community/Growth/Enterprise), review + confirm step with Supabase insert, profile settings page with avatar upload and password change.',
+    href: '/settings/profile',
   },
 ];
 
-// ── Team pulse (populated from database in Day 9+) ───────────────────────────
+// ── Team pulse (populated from database in a later sprint) ───────────────────
 
 export const teamPulse: { name: string; role: string; update: string }[] = [];
 
@@ -200,26 +191,26 @@ export const teamPulse: { name: string; role: string; update: string }[] = [];
 export const taskBoard = [
   {
     lane: 'Done',
-    item: 'Church onboarding wizard — all 5 steps complete and pushed.',
+    item: '6-step church onboarding wizard with plan selection.',
   },
   {
     lane: 'Done',
-    item: 'Protected route middleware with Supabase session cookie validation.',
+    item: 'Profile settings page with Supabase Storage avatar upload.',
   },
   {
     lane: 'Next up',
-    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run the churches table migration.',
+    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run migrations.',
   },
   {
     lane: 'Next up',
-    item: 'Day 9 — RBAC: roles, permissions, user_church_roles tables + seed data for 6 roles.',
+    item: 'Day 10 — RBAC: roles, permissions, user_church_roles tables + seed data.',
   },
 ];
 
 // ── Quick links ───────────────────────────────────────────────────────────────
 
 export const quickLinks = [
-  { label: 'Register a church', href: '/onboarding', description: 'Run the 5-step church registration wizard.' },
-  { label: 'Sign in',           href: '/login',      description: 'Access your workspace with magic link or password.' },
-  { label: 'Sign up',           href: '/signup',      description: 'Create a new workspace account.' },
+  { label: 'Register a church', href: '/onboarding',        description: 'Run the 6-step church registration wizard.' },
+  { label: 'Profile settings',  href: '/settings/profile',  description: 'Update your name, photo, and password.' },
+  { label: 'Sign in',           href: '/login',              description: 'Access your workspace with magic link or password.' },
 ];

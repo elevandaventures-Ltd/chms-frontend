@@ -30,10 +30,9 @@ export default function HomePage() {
 
   return (
     <PageShell
-      sidebar={<Sidebar user={site.currentUser} items={site.sidebarItems} />}
+      sidebar={<Sidebar items={site.sidebarItems} />}
       topNav={
         <TopNav
-          user={site.currentUser}
           notifications={site.notifications}
           title="Dashboard"
           subtitle={`${completedDays} of ${totalDays} sprint days complete · ${progressPct}% done`}
