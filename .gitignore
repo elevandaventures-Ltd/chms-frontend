@@ -9,3 +9,6 @@ dist
 .env.*.local
 *storybook.log
 storybook-static
+
+# Auth data — never commit user records or credentials
+data/

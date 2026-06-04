@@ -15,23 +15,16 @@ type StatusState =
   | { kind: 'error'; message: string };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const demoPassword = 'Elevanda6!';
-
 function isValidEmail(v: string) { return emailPattern.test(v.trim().toLowerCase()); }
-function getAuthError(email: string) {
-  const n = email.trim().toLowerCase();
-  if (n.includes('missing') || n.endsWith('@notfound.com')) return 'We could not find an account for that email address.';
-  return null;
-}
 
 export default function LoginPage() {
-  const [mode, setMode]               = useState<AuthMode>('magic');
-  const [email, setEmail]             = useState('solomon@elevanda.com');
-  const [password, setPassword]       = useState('');
-  const [showPassword, setShowPwd]    = useState(false);
-  const [loading, setLoading]         = useState(false);
-  const [status, setStatus]           = useState<StatusState>({ kind: 'idle' });
-  const [errors, setErrors]           = useState<FieldErrors>({});
+  const [mode, setMode]            = useState<AuthMode>('magic');
+  const [email, setEmail]          = useState('');
+  const [password, setPassword]    = useState('');
+  const [showPassword, setShowPwd] = useState(false);
+  const [loading, setLoading]      = useState(false);
+  const [status, setStatus]        = useState<StatusState>({ kind: 'idle' });
+  const [errors, setErrors]        = useState<FieldErrors>({});
 
   const modeLabel = useMemo(() =>
     mode === 'magic'
@@ -44,12 +37,10 @@ export default function LoginPage() {
     const t = email.trim();
     const errs: FieldErrors = {};
     if (!isValidEmail(t)) errs.email = 'Enter a valid email address.';
-    const ae = errs.email ? null : getAuthError(t);
-    if (ae) errs.email = ae;
     if (Object.keys(errs).length) { setErrors(errs); setStatus({ kind: 'error', message: errs.email ?? 'Check the form.' }); return; }
     setErrors({}); setLoading(true); setStatus({ kind: 'idle' });
     const sb = getSupabaseClient();
-    if (!sb) { setStatus({ kind: 'error', message: 'Supabase env vars are missing.' }); setLoading(false); return; }
+    if (!sb) { setStatus({ kind: 'error', message: 'Authentication is not configured. Contact your administrator.' }); setLoading(false); return; }
     try {
       const { error } = await sb.auth.signInWithOtp({ email: t });
       if (!error) { setStatus({ kind: 'magic-sent', email: t }); }
@@ -63,24 +54,26 @@ export default function LoginPage() {
     const t = email.trim();
     const errs: FieldErrors = {};
     if (!isValidEmail(t)) errs.email = 'Enter a valid email address.';
-    const ae = errs.email ? null : getAuthError(t);
-    if (ae) errs.email = ae;
     if (!password.trim()) errs.password = 'Enter your password.';
-    else if (password !== demoPassword) errs.password = 'Wrong password. Try again or use a magic link.';
     if (Object.keys(errs).length) { setErrors(errs); setStatus({ kind: 'error', message: errs.password ?? errs.email ?? 'Check the form.' }); return; }
     setErrors({}); setLoading(true); setStatus({ kind: 'idle' });
     const sb = getSupabaseClient();
-    if (!sb) { setStatus({ kind: 'error', message: 'Supabase env vars are missing.' }); setLoading(false); return; }
+    if (!sb) { setStatus({ kind: 'error', message: 'Authentication is not configured. Contact your administrator.' }); setLoading(false); return; }
     try {
       const { data, error } = await sb.auth.signInWithPassword({ email: t, password });
       if (!error && data?.session?.access_token) {
         try { localStorage.setItem('token', data.session.access_token); } catch {}
         setStatus({ kind: 'success', message: 'Signed in successfully.' });
       } else if (error) {
-        if (error.status === 401) { setErrors({ password: 'Wrong password.' }); setStatus({ kind: 'error', message: 'Invalid credentials.' }); }
-        else if (error.status === 404) { setErrors({ email: 'No account for that email.' }); setStatus({ kind: 'error', message: 'Account not found.' }); }
-        else { setStatus({ kind: 'error', message: error.message ?? 'Unable to sign in.' }); }
-      } else { setStatus({ kind: 'error', message: 'Unable to sign in.' }); }
+        if (error.status === 400 || error.status === 401) {
+          setErrors({ password: 'Incorrect email or password.' });
+          setStatus({ kind: 'error', message: 'Incorrect email or password.' });
+        } else {
+          setStatus({ kind: 'error', message: error.message ?? 'Unable to sign in. Try again.' });
+        }
+      } else {
+        setStatus({ kind: 'error', message: 'Unable to sign in. Try again.' });
+      }
     } catch { setStatus({ kind: 'error', message: 'Network error. Try again.' }); }
     finally { setLoading(false); }
   }
@@ -88,7 +81,7 @@ export default function LoginPage() {
   return (
     <div className="signin-page">
 
-      {/* ── Left panel ────────────────────────────────────────────────── */}
+      {/* Left panel */}
       <aside className="signin-panel" aria-hidden="true">
         <div className="signin-panel__inner">
           <div className="signin-panel__brand">
@@ -100,7 +93,7 @@ export default function LoginPage() {
                 <path d="M10 6h4"/>
               </svg>
             </span>
-            <span className="signin-panel__name">Elevanda Ventures</span>
+            <span className="signin-panel__name">Elevanda ChMS</span>
           </div>
 
           <div className="signin-panel__copy">
@@ -114,46 +107,30 @@ export default function LoginPage() {
           </div>
 
           <ul className="signin-panel__features" aria-label="Platform features">
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Church registration &amp; onboarding wizard
-            </li>
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Role-based access for admins, managers &amp; members
-            </li>
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Secure magic-link and password authentication
-            </li>
-            <li>
-              <span className="signin-panel__feature-dot" aria-hidden="true" />
-              Protected routes with Supabase session persistence
-            </li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Member directory and profiles</li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Attendance tracking and reporting</li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Events, communication, and finance</li>
+            <li><span className="signin-panel__feature-dot" aria-hidden="true" />Role-based access for all ministry teams</li>
           </ul>
 
           <div className="signin-panel__footer">
-            <p>Elevanda Ventures · CHMS · {new Date().getFullYear()}</p>
+            <p>Elevanda Ventures · ChMS · {new Date().getFullYear()}</p>
           </div>
         </div>
-
-        {/* decorative blobs */}
         <div className="signin-panel__blob signin-panel__blob--1" aria-hidden="true" />
         <div className="signin-panel__blob signin-panel__blob--2" aria-hidden="true" />
       </aside>
 
-      {/* ── Right panel — form card ────────────────────────────────────── */}
+      {/* Right panel */}
       <main className="signin-form-panel">
-        <div className="signin-card" aria-label="Sign in to your workspace">
+        <div className="signin-card" aria-label="Sign in to ChMS">
 
-          {/* Back link */}
           <Link href="/" className="signin-back">
             <ArrowLeft size={14} aria-hidden="true" /> Back to dashboard
           </Link>
 
-          {/* Header */}
           <div className="signin-card__head">
-            <p className="signin-eyebrow">Elevanda Ventures</p>
+            <p className="signin-eyebrow">Elevanda ChMS</p>
             <h2 className="signin-card__title">Welcome back</h2>
             <p className="signin-card__sub">{modeLabel}</p>
           </div>
@@ -176,27 +153,27 @@ export default function LoginPage() {
             ))}
           </div>
 
-          {/* Status banners */}
+          {/* Banners */}
           {status.kind === 'magic-sent' && (
             <div className="signin-banner signin-banner--success" role="status" aria-live="polite">
-              <strong><Inbox size={15} aria-hidden="true" style={{display:'inline',verticalAlign:'middle',marginRight:6}} />Check your inbox</strong>
+              <strong><Inbox size={15} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />Check your inbox</strong>
               <p>A sign-in link was sent to <strong>{status.email}</strong>.</p>
             </div>
           )}
           {status.kind === 'success' && (
             <div className="signin-banner signin-banner--success" role="status" aria-live="polite">
-              <strong><CheckCircle2 size={15} aria-hidden="true" style={{display:'inline',verticalAlign:'middle',marginRight:6}} />Signed in</strong>
+              <strong><CheckCircle2 size={15} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />Signed in</strong>
               <p>{status.message}</p>
             </div>
           )}
           {status.kind === 'error' && (
             <div className="signin-banner signin-banner--error" role="alert" aria-live="polite">
-              <strong><AlertCircle size={15} aria-hidden="true" style={{display:'inline',verticalAlign:'middle',marginRight:6}} />Sign-in failed</strong>
+              <strong><AlertCircle size={15} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />Sign-in failed</strong>
               <p>{status.message}</p>
             </div>
           )}
 
-          {/* ── Magic link form ── */}
+          {/* Magic link form */}
           {mode === 'magic' && (
             <form className="signin-form" onSubmit={handleMagicSubmit} noValidate>
               <div className={`signin-field${errors.email ? ' signin-field--error' : ''}`}>
@@ -213,14 +190,14 @@ export default function LoginPage() {
                   aria-invalid={errors.email ? 'true' : 'false'}
                   aria-describedby={errors.email ? 'le-err le-hint' : 'le-hint'}
                 />
-                <p id="le-hint" className="signin-hint">We'll send a single-use sign-in link.</p>
+                <p id="le-hint" className="signin-hint">We will send a single-use sign-in link to this address.</p>
                 {errors.email && <p id="le-err" className="signin-error" role="alert">{errors.email}</p>}
               </div>
               <Button type="submit" size="lg" fullWidth loading={loading}>Send magic link</Button>
             </form>
           )}
 
-          {/* ── Password form ── */}
+          {/* Password form */}
           {mode === 'password' && (
             <form className="signin-form" onSubmit={handlePasswordSubmit} noValidate>
               <div className={`signin-field${errors.email ? ' signin-field--error' : ''}`}>
@@ -241,17 +218,14 @@ export default function LoginPage() {
               </div>
 
               <div className={`signin-field${errors.password ? ' signin-field--error' : ''}`}>
-                <div className="signin-label-row">
-                  <label className="signin-label" htmlFor="pw-password">Password</label>
-                  <span className="signin-hint">Demo: Elevanda6!</span>
-                </div>
+                <label className="signin-label" htmlFor="pw-password">Password</label>
                 <div className="signin-password-wrap">
                   <input
                     id="pw-password"
                     className="signin-input signin-input--password"
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(ev) => { setPassword(ev.target.value); if (errors.password) setErrors((p) => ({ ...p, password: undefined })); }}
                     aria-invalid={errors.password ? 'true' : 'false'}
@@ -274,10 +248,11 @@ export default function LoginPage() {
             </form>
           )}
 
-          {/* Footer */}
           <div className="signin-card__footer">
-            <p>Don't have an account?</p>
-            <Link className="signin-footer-link" href="/signup">Create one free <ArrowRight size={13} aria-hidden="true" /></Link>
+            <p>Don&apos;t have an account?</p>
+            <Link className="signin-footer-link" href="/signup">
+              Create one <ArrowRight size={13} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </main>

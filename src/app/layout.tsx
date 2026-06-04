@@ -26,7 +26,7 @@ const displayFont = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Elevanda Ventures — CHMS',
+  title: 'Elevanda ChMS',
   description: 'Church management system for growing congregations.',
 };
 

@@ -11,12 +11,14 @@ import {
   Copy,
   PlusCircle,
   LogIn,
-  Circle,
-  BarChart2,
-  Users,
-  CheckSquare,
-  FileText,
   LayoutDashboard,
+  Users,
+  CalendarCheck,
+  CalendarDays,
+  MessageSquare,
+  Landmark,
+  Settings,
+  Circle,
 } from 'lucide-react';
 import type { SidebarItem, TeamMember } from '@/lib/site';
 
@@ -27,11 +29,13 @@ type SidebarProps = {
 
 // Map icon strings from site.ts to Lucide components
 const NAV_ICONS: Record<string, React.ReactNode> = {
-  '#overview': <LayoutDashboard size={16} aria-hidden="true" />,
-  '#progress': <BarChart2       size={16} aria-hidden="true" />,
-  '#team':     <Users           size={16} aria-hidden="true" />,
-  '#tasks':    <CheckSquare     size={16} aria-hidden="true" />,
-  '#reports':  <FileText        size={16} aria-hidden="true" />,
+  '/':             <LayoutDashboard size={16} aria-hidden="true" />,
+  '/members':      <Users           size={16} aria-hidden="true" />,
+  '/attendance':   <CalendarCheck   size={16} aria-hidden="true" />,
+  '/events':       <CalendarDays    size={16} aria-hidden="true" />,
+  '/communication':<MessageSquare   size={16} aria-hidden="true" />,
+  '/finance':      <Landmark        size={16} aria-hidden="true" />,
+  '/settings':     <Settings        size={16} aria-hidden="true" />,
 };
 
 export function Sidebar({ user, items }: SidebarProps) {

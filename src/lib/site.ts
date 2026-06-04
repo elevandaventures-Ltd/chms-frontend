@@ -1,4 +1,23 @@
-export type UserRole = 'admin' | 'manager' | 'member';
+/**
+ * site.ts — ChMS application data and type definitions.
+ *
+ * UserRole matches the 6 roles defined in the Day 9 RBAC spec:
+ *   admin, pastor, finance, ministry_leader, staff, member
+ *
+ * Sidebar items link to real ChMS routes with correct role restrictions.
+ */
+
+// ── Role types ───────────────────────────────────────────────────────────────
+
+export type UserRole =
+  | 'admin'
+  | 'pastor'
+  | 'finance'
+  | 'ministry_leader'
+  | 'staff'
+  | 'member';
+
+// ── Shared types ─────────────────────────────────────────────────────────────
 
 export type SidebarItem = {
   label: string;
@@ -21,41 +40,86 @@ export type NotificationItem = {
   unread?: boolean;
 };
 
+// ── Current user (replaced by real session in Day 9+) ────────────────────────
+
 export const currentUser: TeamMember = {
   name: 'Solomon Leek',
-  role: 'manager',
-  title: 'Project Lead',
+  role: 'admin',
+  title: 'System Administrator',
   initials: 'SL',
 };
 
+// ── Notifications ────────────────────────────────────────────────────────────
+
 export const notifications: NotificationItem[] = [
   {
-    title: 'Day 8 wizard is live',
-    detail: 'Church onboarding wizard is available at /onboarding.',
+    title: 'Church onboarding wizard live',
+    detail: 'Register a new church at /onboarding.',
     time: 'Just now',
     unread: true,
   },
   {
     title: 'Protected routes active',
-    detail: 'Middleware now redirects unauthenticated users to /login.',
+    detail: 'Unauthenticated users are redirected to /login.',
     time: '1d ago',
     unread: true,
   },
   {
-    title: 'Supabase session persistence',
-    detail: 'Auto token refresh and localStorage persistence are wired up.',
+    title: 'Design system updated',
+    detail: 'Tailwind CSS, Inter and Playfair Display fonts applied.',
     time: '2d ago',
     unread: false,
   },
 ];
 
+// ── Sidebar navigation — ChMS routes with RBAC ───────────────────────────────
+
 export const sidebarItems: SidebarItem[] = [
-  { label: 'Overview',  href: '#overview',  icon: 'overview',  roles: ['admin', 'manager', 'member'] },
-  { label: 'Progress',  href: '#progress',  icon: 'progress',  roles: ['admin', 'manager'] },
-  { label: 'Team',      href: '#team',      icon: 'team',      roles: ['admin', 'manager'] },
-  { label: 'Tasks',     href: '#tasks',     icon: 'tasks',     roles: ['admin', 'manager', 'member'] },
-  { label: 'Reports',   href: '#reports',   icon: 'reports',   roles: ['admin'] },
+  {
+    label: 'Dashboard',
+    href: '/',
+    icon: 'dashboard',
+    roles: ['admin', 'pastor', 'finance', 'ministry_leader', 'staff', 'member'],
+  },
+  {
+    label: 'Members',
+    href: '/members',
+    icon: 'members',
+    roles: ['admin', 'pastor', 'ministry_leader', 'staff'],
+  },
+  {
+    label: 'Attendance',
+    href: '/attendance',
+    icon: 'attendance',
+    roles: ['admin', 'pastor', 'ministry_leader', 'staff'],
+  },
+  {
+    label: 'Events',
+    href: '/events',
+    icon: 'events',
+    roles: ['admin', 'pastor', 'ministry_leader', 'staff', 'member'],
+  },
+  {
+    label: 'Communication',
+    href: '/communication',
+    icon: 'communication',
+    roles: ['admin', 'pastor', 'ministry_leader', 'staff'],
+  },
+  {
+    label: 'Finance',
+    href: '/finance',
+    icon: 'finance',
+    roles: ['admin', 'finance'],
+  },
+  {
+    label: 'Settings',
+    href: '/settings',
+    icon: 'settings',
+    roles: ['admin'],
+  },
 ];
+
+// ── Sprint log ────────────────────────────────────────────────────────────────
 
 export type DayEntry = {
   day: string;
@@ -79,7 +143,7 @@ export const sprintLog: DayEntry[] = [
     date: '2026-05-26',
     title: 'Design system foundation',
     status: 'complete',
-    detail: 'Tailwind CSS v3 + shadcn/ui + Radix UI installed. Design token system (colors, fonts, spacing) in tailwind.config.ts. Google Fonts switched to Playfair Display (display) + Inter (body). Full typography scale applied to global CSS.',
+    detail: 'Tailwind CSS v3 + shadcn/ui + Radix UI installed. Design token system in tailwind.config.ts. Google Fonts: Playfair Display (display) + Inter (body). Full typography scale in global CSS.',
   },
   {
     day: 'Day 3',
@@ -107,7 +171,7 @@ export const sprintLog: DayEntry[] = [
     date: '2026-06-02',
     title: 'Authentication flows',
     status: 'complete',
-    detail: 'Login and signup pages with magic-link and password auth, Supabase client integration, and explicit error states.',
+    detail: 'Login and signup pages with magic-link and password auth via Supabase. Explicit error states for all failure cases.',
     href: '/login',
   },
   {
@@ -127,8 +191,11 @@ export const sprintLog: DayEntry[] = [
   },
 ];
 
+// ── Team pulse (populated from database in Day 9+) ───────────────────────────
+
 export const teamPulse: { name: string; role: string; update: string }[] = [];
-// Day 9 — member management (invite flow, role assignment, member list) will populate this.
+
+// ── Task board ────────────────────────────────────────────────────────────────
 
 export const taskBoard = [
   {
@@ -141,16 +208,18 @@ export const taskBoard = [
   },
   {
     lane: 'Next up',
-    item: 'Add NEXT_PUBLIC_SUPABASE_URL + ANON_KEY to .env.local and run the churches table migration.',
+    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run the churches table migration.',
   },
   {
     lane: 'Next up',
-    item: 'Day 9 — member management: invite flow, role assignment, and member list.',
+    item: 'Day 9 — RBAC: roles, permissions, user_church_roles tables + seed data for 6 roles.',
   },
 ];
 
+// ── Quick links ───────────────────────────────────────────────────────────────
+
 export const quickLinks = [
-  { label: 'Start onboarding',  href: '/onboarding', description: 'Register a new church through the 5-step wizard.' },
-  { label: 'Sign in',           href: '/login',       description: 'Access your workspace with magic link or password.' },
+  { label: 'Register a church', href: '/onboarding', description: 'Run the 5-step church registration wizard.' },
+  { label: 'Sign in',           href: '/login',      description: 'Access your workspace with magic link or password.' },
   { label: 'Sign up',           href: '/signup',      description: 'Create a new workspace account.' },
 ];

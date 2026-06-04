@@ -1,12 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import {
-  Bell,
-  PlusCircle,
-  ChevronRight,
-} from 'lucide-react';
+import { Bell, PlusCircle, ChevronRight } from 'lucide-react';
 import type { NotificationItem, TeamMember } from '@/lib/site';
 
 type TopNavProps = {
@@ -20,7 +16,7 @@ export function TopNav({
   user,
   notifications = [],
   title = 'Dashboard',
-  subtitle = 'Church management system — Elevanda Ventures.',
+  subtitle = 'Church Management System',
 }: TopNavProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -50,7 +46,7 @@ export function TopNav({
     <header className="topnav" role="banner">
       {/* Left — title block */}
       <div className="topnav__brand">
-        <p className="topnav__eyebrow">Elevanda Ventures · CHMS</p>
+        <p className="topnav__eyebrow">Elevanda ChMS</p>
         <h1 className="topnav__title">{title}</h1>
         <p className="topnav__subtitle">{subtitle}</p>
       </div>
@@ -121,7 +117,7 @@ export function TopNav({
 
               <Link
                 className="topnav__notifications-link"
-                href="#overview"
+                href="/"
                 onClick={() => setOpen(false)}
               >
                 View all updates
