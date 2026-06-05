@@ -151,7 +151,7 @@ export const sprintLog: DayEntry[] = [
   },
   {
     day: 'Day 6',
-    date: '2026-06-02',
+    date: '2026-06-01',
     title: 'Authentication flows',
     status: 'complete',
     detail: 'Login and signup pages with magic-link and password auth via Supabase. Explicit error states for all failure cases.',

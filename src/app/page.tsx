@@ -97,7 +97,7 @@ export default function HomePage() {
         <div className="dash-sprint-grid">
           {site.sprintLog.map((entry) => (
             <article
-              key={entry.date}
+              key={entry.day}
               className={`content-card dash-sprint-card dash-sprint-card--${entry.status}`}
             >
               <div className="dash-sprint-card__meta">
