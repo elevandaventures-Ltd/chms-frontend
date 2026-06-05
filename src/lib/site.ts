@@ -180,6 +180,20 @@ export const sprintLog: DayEntry[] = [
     detail: 'Plan selection step (Community/Growth/Enterprise), review + confirm step with Supabase insert, profile settings page with avatar upload and password change.',
     href: '/settings/profile',
   },
+  {
+    day: 'Day 10',
+    date: '2026-06-05',
+    title: 'Admin layout + role-aware navigation',
+    status: 'complete',
+    detail: 'AdminShell with dark sidebar, breadcrumbs, and top nav with logout. Role-aware menu — Finance hidden from non-finance roles. Active link highlighting. All ChMS routes scaffolded.',
+  },
+  {
+    day: 'Day 10',
+    date: '2026-06-05',
+    title: 'Admin layout with role-aware navigation',
+    status: 'complete',
+    detail: 'AdminShell with dark sidebar, active link highlighting, breadcrumbs, Finance hidden for non-finance roles, logout button in top nav, and placeholder pages for all ChMS routes.',
+  },
 ];
 
 // ── Team pulse (populated from database in a later sprint) ───────────────────
@@ -191,11 +205,11 @@ export const teamPulse: { name: string; role: string; update: string }[] = [];
 export const taskBoard = [
   {
     lane: 'Done',
-    item: '6-step church onboarding wizard with plan selection.',
+    item: 'Admin layout with role-aware sidebar, breadcrumbs, and logout.',
   },
   {
     lane: 'Done',
-    item: 'Profile settings page with Supabase Storage avatar upload.',
+    item: '6-step church onboarding wizard with plan selection.',
   },
   {
     lane: 'Next up',
@@ -203,7 +217,7 @@ export const taskBoard = [
   },
   {
     lane: 'Next up',
-    item: 'Day 10 — RBAC: roles, permissions, user_church_roles tables + seed data.',
+    item: 'Day 11 — Member directory with DataTable, search, and filters.',
   },
 ];
 

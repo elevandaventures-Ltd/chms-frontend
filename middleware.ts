@@ -39,7 +39,6 @@ const PUBLIC_PATHS: RegExp[] = [
   /^\/onboarding(\/.*)?$/,      // Church onboarding wizard (pre-auth flow)
   /^\/api\/onboarding(\/.*)?$/, // Onboarding API route
 ];
-
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((pattern) => pattern.test(pathname));
 }
