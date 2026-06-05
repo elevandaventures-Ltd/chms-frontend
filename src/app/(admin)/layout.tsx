@@ -1,12 +1,9 @@
 /**
- * Admin layout — wraps all protected ChMS pages.
+ * Admin layout — wraps all protected ChMS pages in AdminShell.
  *
- * Uses a route group `(admin)` so the folder doesn't appear in the URL.
- * All pages placed inside (admin)/ automatically get the AdminShell
- * with role-aware sidebar, breadcrumbs, and top nav.
- *
- * The middleware.ts already protects these routes — unauthenticated
- * users are redirected to /login before this layout ever renders.
+ * Route group `(admin)` — folder name does not appear in URLs.
+ * Pages inside this group must NOT render their own AdminShell —
+ * they should only return their page content (no layout wrapper).
  */
 import { type ReactNode } from 'react';
 import { AdminShell } from '@/components/AdminShell';

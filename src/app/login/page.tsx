@@ -40,7 +40,7 @@ export default function LoginPage() {
     if (Object.keys(errs).length) { setErrors(errs); setStatus({ kind: 'error', message: errs.email ?? 'Check the form.' }); return; }
     setErrors({}); setLoading(true); setStatus({ kind: 'idle' });
     const sb = getSupabaseClient();
-    if (!sb) { setStatus({ kind: 'error', message: 'Authentication is not configured. Contact your administrator.' }); setLoading(false); return; }
+    if (!sb) { setStatus({ kind: 'error', message: 'Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your .env.local file.' }); setLoading(false); return; }
     try {
       const { error } = await sb.auth.signInWithOtp({ email: t });
       if (!error) { setStatus({ kind: 'magic-sent', email: t }); }
@@ -58,7 +58,7 @@ export default function LoginPage() {
     if (Object.keys(errs).length) { setErrors(errs); setStatus({ kind: 'error', message: errs.password ?? errs.email ?? 'Check the form.' }); return; }
     setErrors({}); setLoading(true); setStatus({ kind: 'idle' });
     const sb = getSupabaseClient();
-    if (!sb) { setStatus({ kind: 'error', message: 'Authentication is not configured. Contact your administrator.' }); setLoading(false); return; }
+    if (!sb) { setStatus({ kind: 'error', message: 'Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your .env.local file.' }); setLoading(false); return; }
     try {
       const { data, error } = await sb.auth.signInWithPassword({ email: t, password });
       if (!error && data?.session?.access_token) {
