@@ -187,13 +187,6 @@ export const sprintLog: DayEntry[] = [
     status: 'complete',
     detail: 'AdminShell with dark sidebar, breadcrumbs, and top nav with logout. Role-aware menu — Finance hidden from non-finance roles. Active link highlighting. All ChMS routes scaffolded.',
   },
-  {
-    day: 'Day 10',
-    date: '2026-06-05',
-    title: 'Admin layout with role-aware navigation',
-    status: 'complete',
-    detail: 'AdminShell with dark sidebar, active link highlighting, breadcrumbs, Finance hidden for non-finance roles, logout button in top nav, and placeholder pages for all ChMS routes.',
-  },
 ];
 
 // ── Team pulse (populated from database in a later sprint) ───────────────────
