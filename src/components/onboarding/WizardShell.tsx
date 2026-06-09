@@ -4,12 +4,11 @@ import { Check } from 'lucide-react';
 import { useOnboarding } from '@/context/OnboardingContext';
 
 const STEP_META = [
-  { label: 'Identity',     description: 'Name your church and add a logo.' },
-  { label: 'Denomination', description: 'Select your church affiliation.' },
-  { label: 'Contact',      description: 'Add contact details and address.' },
-  { label: 'Plan',         description: 'Choose the right plan for your church.' },
-  { label: 'Review',       description: 'Confirm everything looks right.' },
-  { label: 'Done',         description: 'Your church is registered.' },
+  { label: 'Church details', description: 'Name, logo and denomination.' },
+  { label: 'Contact',        description: 'Contact person and address.' },
+  { label: 'Plan',           description: 'Choose the right plan for your church.' },
+  { label: 'Review',         description: 'Confirm everything looks right.' },
+  { label: 'Done',           description: 'Your church is registered.' },
 ] as const;
 
 export default function WizardShell({ children }: { children: React.ReactNode }) {
@@ -39,7 +38,7 @@ export default function WizardShell({ children }: { children: React.ReactNode })
 
       <nav className="wizard__steps" aria-label="Wizard steps">
         {STEP_META.map((meta, idx) => {
-          const stepNum   = (idx + 1) as 1 | 2 | 3 | 4 | 5 | 6;
+          const stepNum     = (idx + 1) as 1 | 2 | 3 | 4 | 5;
           const isCompleted = stepNum < step;
           const isActive    = stepNum === step;
 

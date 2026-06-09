@@ -1,16 +1,15 @@
 'use client';
 
 /**
- * OnboardingContext — wizard state management for the 6-step church
+ * OnboardingContext — wizard state management for the 5-step church
  * registration flow.
  *
  * Steps:
- *   1 — Identity      (church name + logo)
- *   2 — Denomination  (affiliation selector)
- *   3 — Contact       (contact details + address)
- *   4 — Plan          (Community / Growth / Enterprise)
- *   5 — Review        (read-only summary + submit)
- *   6 — Done          (success screen)
+ *   1 — Identity + Denomination (church name, logo, affiliation — merged)
+ *   2 — Contact       (contact details + address)
+ *   3 — Plan          (Community / Growth / Enterprise)
+ *   4 — Review        (read-only summary + submit)
+ *   5 — Done          (success screen)
  */
 import {
   createContext,
@@ -106,7 +105,7 @@ export type OnboardingData = {
   plan: PlanId;
 };
 
-export type StepId = 1 | 2 | 3 | 4 | 5 | 6;
+export type StepId = 1 | 2 | 3 | 4 | 5;
 
 type OnboardingContextValue = {
   step: StepId;
@@ -138,7 +137,7 @@ const DEFAULT_DATA: OnboardingData = {
   plan: 'community',
 };
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 5;
 
 // ── Context ───────────────────────────────────────────────────────────────────
 

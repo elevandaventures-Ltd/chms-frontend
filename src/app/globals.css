@@ -5757,3 +5757,11 @@ input:checked + .data-table__check-box,
   padding: 0;
   margin-left: 4px;
 }
+
+/* ── Wizard section divider (used in merged identity+denomination step) ──── */
+
+.wizard-section-divider {
+  height: 1px;
+  background: rgba(35, 29, 24, 0.10);
+  margin: 4px 0;
+}

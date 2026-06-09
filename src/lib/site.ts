@@ -169,7 +169,7 @@ export const sprintLog: DayEntry[] = [
     date: '2026-06-03',
     title: 'Church onboarding wizard',
     status: 'complete',
-    detail: '6-step wizard: identity, denomination, contact, plan selection, review + confirm, done. React context state, progress bar, step-back navigation.',
+    detail: '5-step wizard: church name + logo + denomination (merged step 1), contact, plan selection, review + confirm, done. React context state, progress bar, step-back navigation.',
     href: '/onboarding',
   },
   {
