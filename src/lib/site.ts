@@ -187,6 +187,56 @@ export const sprintLog: DayEntry[] = [
     status: 'complete',
     detail: 'AdminShell with dark sidebar, breadcrumbs, and top nav with logout. Role-aware menu — Finance hidden from non-finance roles. Active link highlighting. All ChMS routes scaffolded.',
   },
+  {
+    day: 'Day 11',
+    date: '2026-06-06',
+    title: 'Member Directory',
+    status: 'complete',
+    detail: 'Masonry photo-card grid with 2/3/4 column breakpoints. MemberCard with photo, status badge (Active/Inactive/Visitor), ministry tags, and role label. Live search and status filter. Members table SQL migration with RLS policies.',
+    href: '/members',
+  },
+];
+
+// ── Member types (Day 11) ─────────────────────────────────────────────────────
+
+export type MemberStatus = 'active' | 'inactive' | 'visitor';
+
+export type Member = {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  photoUrl?: string;
+  status: MemberStatus;
+  role: UserRole;
+  ministries: string[];
+  joinedDate: string; // ISO date string
+  notes?: string;
+};
+
+// ── Mock member data — 20 realistic members for development ──────────────────
+
+export const mockMembers: Member[] = [
+  { id: 'm1',  fullName: 'Abena Mensah',       email: 'abena@elevanda.org',    phone: '+233 24 111 2233', status: 'active',   role: 'pastor',          ministries: ['Worship', 'Prayer'],              joinedDate: '2021-03-15' },
+  { id: 'm2',  fullName: 'Kwame Asante',        email: 'kwame@elevanda.org',    phone: '+233 20 234 5678', status: 'active',   role: 'ministry_leader', ministries: ['Youth', 'Evangelism'],            joinedDate: '2020-08-22' },
+  { id: 'm3',  fullName: 'Ama Boateng',         email: 'ama@elevanda.org',      phone: '+233 26 345 6789', status: 'active',   role: 'staff',           ministries: ['Children', 'Admin'],              joinedDate: '2022-01-10' },
+  { id: 'm4',  fullName: 'Kofi Owusu',          email: 'kofi@elevanda.org',     phone: '+233 55 456 7890', status: 'visitor',  role: 'member',          ministries: [],                                 joinedDate: '2024-04-01' },
+  { id: 'm5',  fullName: 'Efua Darko',          email: 'efua@elevanda.org',     phone: '+233 24 567 8901', status: 'active',   role: 'finance',         ministries: ['Finance', 'Admin'],               joinedDate: '2019-11-30' },
+  { id: 'm6',  fullName: 'Yaw Appiah',          email: 'yaw@elevanda.org',      phone: '+233 20 678 9012', status: 'active',   role: 'ministry_leader', ministries: ['Men\'s Ministry', 'Evangelism'],  joinedDate: '2021-06-18' },
+  { id: 'm7',  fullName: 'Akosua Frimpong',     email: 'akosua@elevanda.org',   phone: '+233 26 789 0123', status: 'inactive', role: 'member',          ministries: ['Women\'s Ministry'],              joinedDate: '2018-02-14' },
+  { id: 'm8',  fullName: 'Nana Ama Tetteh',     email: 'nana@elevanda.org',     phone: '+233 55 890 1234', status: 'active',   role: 'staff',           ministries: ['Ushering', 'Hospitality'],        joinedDate: '2023-07-05' },
+  { id: 'm9',  fullName: 'Kwabena Adjei',       email: 'kwabena@elevanda.org',  phone: '+233 24 901 2345', status: 'active',   role: 'member',          ministries: ['Choir', 'Worship'],               joinedDate: '2022-09-12' },
+  { id: 'm10', fullName: 'Adwoa Osei',          email: 'adwoa@elevanda.org',    phone: '+233 20 012 3456', status: 'visitor',  role: 'member',          ministries: [],                                 joinedDate: '2024-05-20' },
+  { id: 'm11', fullName: 'Ekow Hammond',        email: 'ekow@elevanda.org',     phone: '+233 26 123 4567', status: 'active',   role: 'admin',           ministries: ['Leadership', 'Admin'],            joinedDate: '2017-01-01' },
+  { id: 'm12', fullName: 'Maame Serwaa',        email: 'maame@elevanda.org',    phone: '+233 55 234 5678', status: 'active',   role: 'member',          ministries: ['Women\'s Ministry', 'Prayer'],    joinedDate: '2021-12-03' },
+  { id: 'm13', fullName: 'Fiifi Barimah',       email: 'fiifi@elevanda.org',    phone: '+233 24 345 6789', status: 'inactive', role: 'member',          ministries: ['Youth'],                          joinedDate: '2020-04-17' },
+  { id: 'm14', fullName: 'Esi Kyere',           email: 'esi@elevanda.org',      phone: '+233 20 456 7890', status: 'active',   role: 'ministry_leader', ministries: ['Children', 'Sunday School'],      joinedDate: '2019-08-25' },
+  { id: 'm15', fullName: 'Kweku Annan',         email: 'kweku@elevanda.org',    phone: '+233 26 567 8901', status: 'active',   role: 'staff',           ministries: ['Media', 'Tech'],                  joinedDate: '2022-03-30' },
+  { id: 'm16', fullName: 'Abeba Asiedu',        email: 'abeba@elevanda.org',    phone: '+233 55 678 9012', status: 'visitor',  role: 'member',          ministries: [],                                 joinedDate: '2024-06-07' },
+  { id: 'm17', fullName: 'Kojo Dankwa',         email: 'kojo@elevanda.org',     phone: '+233 24 789 0123', status: 'active',   role: 'member',          ministries: ['Choir', 'Worship'],               joinedDate: '2023-01-14' },
+  { id: 'm18', fullName: 'Akua Gyamfi',         email: 'akua@elevanda.org',     phone: '+233 20 890 1234', status: 'active',   role: 'ministry_leader', ministries: ['Prayer', 'Intercession'],         joinedDate: '2020-10-09' },
+  { id: 'm19', fullName: 'Nii Teye Lartey',     email: 'nii@elevanda.org',      phone: '+233 26 901 2345', status: 'active',   role: 'finance',         ministries: ['Finance', 'Stewardship'],         joinedDate: '2021-05-22' },
+  { id: 'm20', fullName: 'Afia Boadu',          email: 'afia@elevanda.org',     phone: '+233 55 012 3456', status: 'inactive', role: 'member',          ministries: ['Women\'s Ministry'],              joinedDate: '2019-03-11' },
 ];
 
 // ── Team pulse (populated from database in a later sprint) ───────────────────
@@ -202,15 +252,15 @@ export const taskBoard = [
   },
   {
     lane: 'Done',
-    item: '6-step church onboarding wizard with plan selection.',
+    item: 'Member Directory — masonry card grid, search, status filter, SQL migration.',
   },
   {
     lane: 'Next up',
-    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run migrations.',
+    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run the members migration.',
   },
   {
     lane: 'Next up',
-    item: 'Day 11 — Member directory with DataTable, search, and filters.',
+    item: 'Day 12 — Member profile drawer with Tabs component, edit form.',
   },
 ];
 

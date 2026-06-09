@@ -5341,3 +5341,352 @@ input:checked + .data-table__check-box,
   .admin-breadcrumbs-bar { padding: 8px 16px 0; }
   .admin-topnav { padding: 12px 16px; }
 }
+
+/* ── Day 11 · Member Directory ───────────────────────────────────────────── */
+
+/* ── MemberDirectory toolbar ────────────────────────────────────────────── */
+
+.member-dir {
+  display: grid;
+  gap: 20px;
+}
+
+.member-dir__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.member-dir__search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.member-dir__search-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.member-dir__search {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px 0 38px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.92);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.member-dir__search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(178,81,49,0.10);
+}
+
+.member-dir__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── Filter tabs ─────────────────────────────────────────────────────────── */
+
+.member-dir__tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.member-dir__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.8);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.member-dir__tab:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.97);
+  box-shadow: var(--shadow-strong);
+}
+
+.member-dir__tab--active {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(178,81,49,0.22);
+}
+
+.member-dir__tab--active:hover {
+  background: #a8492d;
+  box-shadow: 0 6px 18px rgba(178,81,49,0.28);
+}
+
+.member-dir__tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.08);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.member-dir__tab--active .member-dir__tab-count {
+  background: rgba(255,255,255,0.22);
+}
+
+/* ── Masonry photo-card grid ─────────────────────────────────────────────── */
+/*
+ * CSS Grid masonry:
+ *   - 2 columns  <  640px
+ *   - 3 columns  640px – 1023px
+ *   - 4 columns  ≥ 1024px
+ *
+ * auto-rows: 1fr makes cards equal height within each row.
+ * Cards with more tags naturally push content down; cards are
+ * aligned to the grid row height for a clean, even grid.
+ */
+
+.member-dir__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 640px) {
+  .member-dir__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .member-dir__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.member-dir__empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 56px 24px;
+  border: 1px dashed var(--panel-border-strong);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.5);
+  text-align: center;
+  color: var(--muted);
+}
+
+.member-dir__empty strong {
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.member-dir__empty p {
+  margin: 0;
+  font-size: 0.9rem;
+  max-width: 36ch;
+  line-height: 1.6;
+}
+
+/* ── MemberCard ──────────────────────────────────────────────────────────── */
+
+.member-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.88);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.member-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-strong);
+  border-color: rgba(178,81,49,0.22);
+}
+
+.member-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(178,81,49,0.18), var(--shadow-strong);
+}
+
+/* ── Photo area ── */
+
+.member-card__photo-wrap {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(178,81,49,0.12), rgba(39,76,63,0.10));
+}
+
+.member-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.member-card__initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+/* Status badge overlaid on photo */
+.member-card__status {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.member-card__status--active {
+  background: rgba(22,163,74,0.85);
+  color: #fff;
+}
+
+.member-card__status--inactive {
+  background: rgba(100,116,139,0.82);
+  color: #fff;
+}
+
+.member-card__status--visitor {
+  background: rgba(234,179,8,0.88);
+  color: #422006;
+}
+
+/* ── Card body ── */
+
+.member-card__body {
+  display: grid;
+  gap: 10px;
+  padding: 14px 14px 16px;
+}
+
+.member-card__identity {
+  display: grid;
+  gap: 2px;
+}
+
+.member-card__name {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-card__role {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+/* Contact lines */
+.member-card__contact {
+  display: grid;
+  gap: 4px;
+}
+
+.member-card__contact-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  overflow: hidden;
+}
+
+.member-card__contact-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ministry tags */
+.member-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.member-card__tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(39,76,63,0.09);
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.member-card__tag--more {
+  background: rgba(35,29,24,0.07);
+  color: var(--muted);
+}
