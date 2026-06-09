@@ -5690,3 +5690,70 @@ input:checked + .data-table__check-box,
   background: rgba(35,29,24,0.07);
   color: var(--muted);
 }
+
+/* ── Day 12 · Skeleton loading state ────────────────────────────────────── */
+
+/* Shimmer keyframe — reusable across all skeleton elements */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(35, 29, 24, 0.07) 25%,
+    rgba(35, 29, 24, 0.13) 50%,
+    rgba(35, 29, 24, 0.07) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+/* Skeleton card */
+.member-card--skeleton {
+  pointer-events: none;
+  cursor: default;
+}
+
+.member-card--skeleton:hover {
+  transform: none;
+  box-shadow: var(--shadow);
+  border-color: var(--panel-border);
+}
+
+/* Skeleton text lines */
+.skeleton-line {
+  height: 14px;
+  border-radius: 999px;
+}
+
+.skeleton-line--name  { width: 70%; height: 16px; }
+.skeleton-line--role  { width: 40%; height: 11px; margin-top: 4px; }
+.skeleton-line--email { width: 85%; height: 11px; }
+.skeleton-line--phone { width: 60%; height: 11px; margin-top: 3px; }
+
+/* Skeleton ministry tags */
+.skeleton-tag {
+  width: 56px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+/* Retry button inside error alert */
+.member-dir__retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+}

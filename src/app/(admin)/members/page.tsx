@@ -1,15 +1,15 @@
 /**
- * /members — Member Directory page (Day 11).
+ * /members — Member Directory page (Day 12).
  *
- * Uses mock data for now. When Supabase is configured and the members
- * table migration has been applied, replace mockMembers with a real
- * data fetch from the `members` table.
+ * MemberDirectory handles its own data fetching via GET /api/members.
+ * Skeleton loading state shows during the initial request.
+ * Pagination is built in.
  *
- * SQL migration in: supabase/migrations/20260606_members.sql
+ * When Supabase is not configured, the API falls back to mock data
+ * from src/lib/site.ts so the page works in dev without credentials.
  */
 import { MemberDirectory } from '@/components/members/MemberDirectory';
-import { mockMembers } from '@/lib/site';
 
 export default function MembersPage() {
-  return <MemberDirectory members={mockMembers} />;
+  return <MemberDirectory />;
 }

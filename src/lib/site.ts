@@ -195,6 +195,14 @@ export const sprintLog: DayEntry[] = [
     detail: 'Masonry photo-card grid with 2/3/4 column breakpoints. MemberCard with photo, status badge (Active/Inactive/Visitor), ministry tags, and role label. Live search and status filter. Members table SQL migration with RLS policies.',
     href: '/members',
   },
+  {
+    day: 'Day 12',
+    date: '2026-06-07',
+    title: 'Skeleton loading + API connection',
+    status: 'complete',
+    detail: 'Skeleton shimmer cards during load, GET /api/members with search/filter/pagination, debounced search, error banner with retry, Pagination component wired to directory.',
+    href: '/members',
+  },
 ];
 
 // ── Member types (Day 11) ─────────────────────────────────────────────────────
@@ -248,11 +256,11 @@ export const teamPulse: { name: string; role: string; update: string }[] = [];
 export const taskBoard = [
   {
     lane: 'Done',
-    item: 'Admin layout with role-aware sidebar, breadcrumbs, and logout.',
+    item: 'Member Directory with skeleton loading, API, search, filter and pagination.',
   },
   {
     lane: 'Done',
-    item: 'Member Directory — masonry card grid, search, status filter, SQL migration.',
+    item: 'Admin layout with role-aware sidebar, breadcrumbs, and logout.',
   },
   {
     lane: 'Next up',
@@ -260,7 +268,7 @@ export const taskBoard = [
   },
   {
     lane: 'Next up',
-    item: 'Day 12 — Member profile drawer with Tabs component, edit form.',
+    item: 'Day 13 — Member profile page with Tabs, edit form, attendance history.',
   },
 ];
 

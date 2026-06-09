@@ -1,29 +1,39 @@
 'use client';
 
 /**
- * MemberDirectory — masonry photo-card grid with search and filter (Day 11).
+ * MemberDirectory — Day 12 upgrade.
  *
- * Layout:
- *   - 2 columns  < 640px
- *   - 3 columns  640px – 1023px
- *   - 4 columns  ≥ 1024px
+ * Fetches from GET /api/members with:
+ *   - Debounced search query
+ *   - Status filter
+ *   - Server-side pagination (Pagination component)
  *
- * Cards use CSS Grid with auto-rows to produce a masonry-style effect.
- * Cards with more ministry tags are slightly taller than simpler ones,
- * giving the grid natural visual rhythm without JavaScript masonry libs.
- *
- * Features:
- *   - Live text search (name, email, ministry)
- *   - Status filter tabs (All / Active / Inactive / Visitor)
- *   - Member count in header
- *   - Empty state when no results match
+ * Shows MemberDirectorySkeleton while loading.
+ * Shows an error banner on failure.
+ * Resets to page 1 on any filter/search change.
  */
-import { useMemo, useState } from 'react';
-import { Search, Users } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Search, Users, AlertCircle, RefreshCw } from 'lucide-react';
 import { MemberCard } from '@/components/members/MemberCard';
+import { MemberDirectorySkeleton } from '@/components/members/MemberCardSkeleton';
+import { Pagination } from '@/components/ui/Pagination';
+import { Alert } from '@/components/ui/Alert';
 import type { Member, MemberStatus } from '@/lib/site';
 
+// ── Types ─────────────────────────────────────────────────────────────────────
+
 type FilterTab = 'all' | MemberStatus;
+
+type ApiResponse = {
+  data: Member[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const PAGE_SIZE = 12;
 
 const FILTER_TABS: { value: FilterTab; label: string }[] = [
   { value: 'all',      label: 'All' },
@@ -32,39 +42,80 @@ const FILTER_TABS: { value: FilterTab; label: string }[] = [
   { value: 'visitor',  label: 'Visitor' },
 ];
 
-type MemberDirectoryProps = {
-  members: Member[];
-};
+// ── Simple debounce hook ──────────────────────────────────────────────────────
 
-export function MemberDirectory({ members }: MemberDirectoryProps) {
+function useDebounced<T>(value: T, delay = 300): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+export function MemberDirectory() {
   const [query,  setQuery]  = useState('');
   const [filter, setFilter] = useState<FilterTab>('all');
+  const [page,   setPage]   = useState(1);
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    return members.filter((m) => {
-      const matchesStatus = filter === 'all' || m.status === filter;
-      const matchesQuery  = !q
-        || m.fullName.toLowerCase().includes(q)
-        || m.email.toLowerCase().includes(q)
-        || m.ministries.some((t) => t.toLowerCase().includes(q));
-      return matchesStatus && matchesQuery;
+  const [members, setMembers] = useState<Member[]>([]);
+  const [total,   setTotal]   = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState('');
+
+  const debouncedQuery = useDebounced(query, 300);
+
+  // Reset page to 1 whenever search or filter changes
+  useEffect(() => { setPage(1); }, [debouncedQuery, filter]);
+
+  // ── Fetch ────────────────────────────────────────────────────────────────
+
+  const fetchMembers = useCallback(async () => {
+    setLoading(true);
+    setError('');
+
+    const params = new URLSearchParams({
+      page:     String(page),
+      pageSize: String(PAGE_SIZE),
+      status:   filter,
     });
-  }, [members, query, filter]);
+    if (debouncedQuery) params.set('q', debouncedQuery);
 
-  // Count per status for tab badges
-  const counts = useMemo(() => ({
-    all:      members.length,
-    active:   members.filter((m) => m.status === 'active').length,
-    inactive: members.filter((m) => m.status === 'inactive').length,
-    visitor:  members.filter((m) => m.status === 'visitor').length,
-  }), [members]);
+    try {
+      const res = await fetch(`/api/members?${params.toString()}`);
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const json = (await res.json()) as ApiResponse;
+      setMembers(json.data);
+      setTotal(json.total);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load members.');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, filter, debouncedQuery]);
+
+  useEffect(() => { void fetchMembers(); }, [fetchMembers]);
+
+  // ── Counts for tabs (derived from total per status; quick local counts) ──
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  // Optimistic tab counts — only accurate for the current unfiltered total
+  // A real implementation would fetch counts separately or use a summary endpoint
+  const tabCount = useMemo(() => ({
+    all: filter === 'all' ? total : undefined,
+    active:   filter === 'active'   ? total : undefined,
+    inactive: filter === 'inactive' ? total : undefined,
+    visitor:  filter === 'visitor'  ? total : undefined,
+  }), [filter, total]);
 
   return (
     <div className="member-dir">
+
       {/* ── Toolbar ── */}
       <div className="member-dir__toolbar">
-        {/* Search */}
         <div className="member-dir__search-wrap">
           <Search size={15} className="member-dir__search-icon" aria-hidden="true" />
           <input
@@ -76,11 +127,9 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             aria-label="Search members"
           />
         </div>
-
-        {/* Member count */}
         <p className="member-dir__count" aria-live="polite">
           <Users size={14} aria-hidden="true" />
-          {filtered.length} {filtered.length === 1 ? 'member' : 'members'}
+          {loading ? '…' : `${total} ${total === 1 ? 'member' : 'members'}`}
         </p>
       </div>
 
@@ -96,21 +145,43 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
             onClick={() => setFilter(tab.value)}
           >
             {tab.label}
-            <span className="member-dir__tab-count">{counts[tab.value]}</span>
+            {tabCount[tab.value] !== undefined && (
+              <span className="member-dir__tab-count">{tabCount[tab.value]}</span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* ── Card grid ── */}
-      {filtered.length > 0 ? (
+      {/* ── Error banner ── */}
+      {error && (
+        <Alert
+          variant="destructive"
+          title="Could not load members"
+          onClose={() => setError('')}
+        >
+          {error}{' '}
+          <button
+            type="button"
+            className="member-dir__retry-btn"
+            onClick={() => void fetchMembers()}
+          >
+            <RefreshCw size={13} aria-hidden="true" /> Retry
+          </button>
+        </Alert>
+      )}
+
+      {/* ── Skeleton / Cards / Empty ── */}
+      {loading ? (
+        <MemberDirectorySkeleton count={PAGE_SIZE} />
+      ) : members.length > 0 ? (
         <div className="member-dir__grid" aria-label="Member cards">
-          {filtered.map((member) => (
+          {members.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}
         </div>
-      ) : (
+      ) : !error ? (
         <div className="member-dir__empty" role="status">
-          <Users size={36} strokeWidth={1.5} aria-hidden="true" />
+          <AlertCircle size={36} strokeWidth={1.5} aria-hidden="true" />
           <strong>No members found</strong>
           <p>
             {query
@@ -118,7 +189,21 @@ export function MemberDirectory({ members }: MemberDirectoryProps) {
               : 'No members match the selected filter.'}
           </p>
         </div>
+      ) : null}
+
+      {/* ── Pagination ── */}
+      {!loading && totalPages > 1 && (
+        <Pagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={total}
+          onPageChange={(p) => {
+            setPage(p);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
       )}
+
     </div>
   );
 }
