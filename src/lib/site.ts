@@ -203,6 +203,14 @@ export const sprintLog: DayEntry[] = [
     detail: 'Skeleton shimmer cards during load, GET /api/members with search/filter/pagination, debounced search, error banner with retry, Pagination component wired to directory.',
     href: '/members',
   },
+  {
+    day: 'Day 13',
+    date: '2026-06-08',
+    title: 'Meilisearch instant search',
+    status: 'complete',
+    detail: 'MemberSearchBar with 300ms debounce, fuzzy matching, highlighted matched terms from Meilisearch _formatted fields. /api/search/members endpoint with Meilisearch → Supabase → mock fallback chain. Soft-delete SQL migration.',
+    href: '/members',
+  },
 ];
 
 // ── Member types (Day 11) ─────────────────────────────────────────────────────
