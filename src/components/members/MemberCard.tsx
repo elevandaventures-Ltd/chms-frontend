@@ -58,11 +58,12 @@ function initials(name: string): string {
 type MemberCardProps = {
   member: Member;
   className?: string;
+  onClick?: (member: Member) => void;
 };
 
 const MAX_TAGS = 3;
 
-export function MemberCard({ member, className }: MemberCardProps) {
+export function MemberCard({ member, className, onClick }: MemberCardProps) {
   const statusCfg = STATUS_CONFIG[member.status];
   const visibleTags = member.ministries.slice(0, MAX_TAGS);
   const extraTags   = member.ministries.length - MAX_TAGS;
@@ -73,6 +74,7 @@ export function MemberCard({ member, className }: MemberCardProps) {
       href={`/members/${member.id}`}
       className={cn('member-card', className)}
       aria-label={`View profile for ${member.fullName}`}
+      onClick={onClick ? (e) => { e.preventDefault(); onClick(member); } : undefined}
     >
       {/* ── Photo / Avatar ── */}
       <div className="member-card__photo-wrap">

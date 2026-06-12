@@ -219,6 +219,14 @@ export const sprintLog: DayEntry[] = [
     detail: 'Filter bar with Ministry dropdown (multi-select), Status pills, Age Group range, Join Date range picker, and Geographic Zone. Active filter count badge, chip summary, clear all. Filters combine with Meilisearch search. Household SQL migration.',
     href: '/members',
   },
+  {
+    day: 'Day 15',
+    date: '2026-06-10',
+    title: 'Member profile drawer',
+    status: 'complete',
+    detail: 'Slide-out profile drawer from member directory cards: header with photo, name, status badge, and quick actions (email, call, message, activate/deactivate); Info tab with contact, church details, ministry teams, and notes; Family & Household tab with one-click member navigation. Groups hierarchy table + member_groups assignment table SQL migration with RLS. POST/DELETE /api/members/groups for group assignment.',
+    href: '/members',
+  },
 ];
 
 // ── Member types (Day 11) ─────────────────────────────────────────────────────
@@ -276,19 +284,19 @@ export const teamPulse: { name: string; role: string; update: string }[] = [];
 export const taskBoard = [
   {
     lane: 'Done',
-    item: 'Filter bar — Ministry, Status, Age Group, Join Date, Zone. Active badge + clear all.',
+    item: 'Member profile drawer — photo header, quick actions, Info tab, Family & Household tab with one-click navigation.',
   },
   {
     lane: 'Done',
-    item: 'Meilisearch instant search with fuzzy matching and highlighted terms.',
+    item: 'Groups hierarchy DB + member assignment API (POST/DELETE /api/members/groups).',
   },
   {
     lane: 'Next up',
-    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run migrations (members, households).',
+    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run migrations (members, households, groups).',
   },
   {
     lane: 'Next up',
-    item: 'Day 15 — Member profile page with Tabs (Overview, Attendance, Family).',
+    item: 'Day 16 — Member attendance tracking and reporting.',
   },
 ];
 

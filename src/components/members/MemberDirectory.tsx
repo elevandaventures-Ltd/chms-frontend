@@ -13,6 +13,7 @@ import { MemberSearchBar }  from '@/components/members/MemberSearchBar';
 import { MemberFilterBar }  from '@/components/members/MemberFilterBar';
 import { MemberCard }       from '@/components/members/MemberCard';
 import { MemberDirectorySkeleton } from '@/components/members/MemberCardSkeleton';
+import { MemberProfileDrawer } from '@/components/members/MemberProfileDrawer';
 import { Pagination }       from '@/components/ui/Pagination';
 import { Alert }            from '@/components/ui/Alert';
 import { useMemberFilters } from '@/hooks/useMemberFilters';
@@ -33,6 +34,7 @@ function useDebounced<T>(value: T, ms = 300): T {
 export function MemberDirectory() {
   const [query,  setQuery]  = useState('');
   const [page,   setPage]   = useState(1);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   const filterHook = useMemberFilters();
   const { filters, toParams, activeCount } = filterHook;
@@ -116,7 +118,7 @@ export function MemberDirectory() {
         <MemberDirectorySkeleton count={PAGE_SIZE} />
       ) : members.length > 0 ? (
         <div className="member-dir__grid" aria-label="Member cards">
-          {members.map((m) => <MemberCard key={m.id} member={m} />)}
+          {members.map((m) => <MemberCard key={m.id} member={m} onClick={setSelectedMember} />)}
         </div>
       ) : !error ? (
         <div className="member-dir__empty" role="status">
@@ -139,6 +141,13 @@ export function MemberDirectory() {
           onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         />
       )}
+
+      <MemberProfileDrawer
+        member={selectedMember}
+        allMembers={members}
+        onClose={() => setSelectedMember(null)}
+        onNavigate={(m) => setSelectedMember(m)}
+      />
     </div>
   );
 }

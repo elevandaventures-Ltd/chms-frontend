@@ -18,6 +18,7 @@ Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 - [x] Day 12: skeleton shimmer loading state, GET /api/members with search/filter/pagination, debounced search, error banner with retry, Pagination wired to directory. — complete (2026-06-07)
 - [x] Day 13: Meilisearch instant search — MemberSearchBar, 300ms debounce, fuzzy matching, highlighted terms, /api/search/members with 3-tier fallback chain. — complete (2026-06-08)
 - [x] Day 14: Member filter bar — Ministry dropdown, Status multi-select, Age Group range, Join Date range, Geographic Zone; active filter count badge + clear all; filters combine with search; household SQL migration. — complete (2026-06-09)
+- [x] Day 15: Member profile drawer — slide-out drawer from directory cards; header with photo, name, status badge, quick actions (email, call, message, activate/deactivate); Info tab (contact, church details, ministry teams, notes); Family & Household tab with one-click member navigation; groups hierarchy + member_groups SQL migration with RLS; POST/DELETE /api/members/groups. — complete (2026-06-10)
 
 ## Run It
 
@@ -113,6 +114,11 @@ npm run typecheck
 - [.storybook/main.ts](.storybook/main.ts) — Storybook configuration.
 - [.storybook/preview.tsx](.storybook/preview.tsx) — Storybook global preview setup.
 - [.github/workflows/ci.yml](.github/workflows/ci.yml) — CI workflow for typecheck, build, and Storybook build.
+- [src/components/members/MemberProfileDrawer.tsx](src/components/members/MemberProfileDrawer.tsx) — Day 15 slide-out profile drawer with header, tabs, and keyboard/Escape handling.
+- [src/components/members/MemberInfoTab.tsx](src/components/members/MemberInfoTab.tsx) — Day 15 Info tab: contact, church details, ministry teams, notes.
+- [src/components/members/MemberHouseholdTab.tsx](src/components/members/MemberHouseholdTab.tsx) — Day 15 Family & Household tab with one-click member navigation.
+- [src/app/api/members/groups/route.ts](src/app/api/members/groups/route.ts) — Day 15 POST/DELETE group assignment API.
+- [supabase/migrations/20260610_groups.sql](supabase/migrations/20260610_groups.sql) — Day 15 groups hierarchy + member_groups SQL migration with RLS.
 
 ## Authentication (Day 6 & 7)
 ### How the middleware works
@@ -168,7 +174,7 @@ Find these in your Supabase project under **Settings → API**.
 
 - The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
 - Generated build output such as `storybook-static` is ignored and should not be committed.
-- **Status:** Days 1–14 are complete and pass TypeScript checks.
+- **Status:** Days 1–15 are complete and pass TypeScript checks.
 
 ## Church Onboarding Wizard (Day 8)
 

@@ -6334,3 +6334,520 @@ input:checked + .data-table__check-box,
   color: var(--muted);
   margin-top: 20px;
 }
+
+/* ── Day 15 · Member Profile Drawer (mpd) ───────────────────────────────── */
+
+/* Backdrop */
+.mpd-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 9, 7, 0.42);
+  z-index: 40;
+  animation: mpd-fade-in 180ms ease;
+}
+
+@keyframes mpd-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Drawer sheet */
+.mpd-sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(480px, 100vw);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background: #faf7f2;
+  border-left: 1px solid var(--panel-border-strong);
+  box-shadow: -16px 0 48px rgba(31, 23, 17, 0.16);
+  transform: translateX(100%);
+  transition: transform 260ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.mpd-sheet--open {
+  transform: translateX(0);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.mpd-header {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding: 24px 20px 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,243,236,0.90));
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.mpd-header__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.88);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 130ms ease, color 130ms ease, box-shadow 130ms ease;
+}
+
+.mpd-header__close:hover {
+  background: rgba(255,255,255,0.98);
+  color: var(--text);
+  box-shadow: var(--shadow-strong);
+}
+
+.mpd-header__close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(178,81,49,0.22);
+}
+
+/* Photo */
+.mpd-header__photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  overflow: hidden;
+  flex: none;
+  box-shadow: 0 6px 20px rgba(31,23,17,0.14);
+}
+
+.mpd-header__photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mpd-header__initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display), serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+/* Identity row — photo + name + status inline */
+.mpd-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mpd-header__name {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.mpd-header__role {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Status badge */
+.mpd-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.mpd-status--active   { background: rgba(22,163,74,0.12);  color: #166534; }
+.mpd-status--inactive { background: rgba(100,116,139,0.12); color: #475569; }
+.mpd-status--visitor  { background: rgba(234,179,8,0.14);  color: #713f12; }
+
+/* Quick action buttons row */
+.mpd-header__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mpd-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.88);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 130ms ease, box-shadow 130ms ease, transform 130ms ease;
+}
+
+.mpd-action-btn:hover {
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-1px);
+}
+
+.mpd-action-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(178,81,49,0.18);
+}
+
+.mpd-action-btn--danger {
+  color: #b91c1c;
+  border-color: rgba(185,28,28,0.22);
+  background: rgba(185,28,28,0.05);
+}
+
+.mpd-action-btn--danger:hover {
+  background: rgba(185,28,28,0.10);
+}
+
+.mpd-action-btn--success {
+  color: #166534;
+  border-color: rgba(22,163,74,0.22);
+  background: rgba(22,163,74,0.05);
+}
+
+.mpd-action-btn--success:hover {
+  background: rgba(22,163,74,0.10);
+}
+
+/* ── Tab bar ─────────────────────────────────────────────────────────────── */
+
+.mpd-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--panel-border);
+  background: rgba(255,255,255,0.92);
+  flex-shrink: 0;
+}
+
+.mpd-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease;
+  white-space: nowrap;
+}
+
+.mpd-tab:hover { color: var(--text); }
+
+.mpd-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.mpd-tab:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(178,81,49,0.22);
+}
+
+/* ── Body (scroll area) ──────────────────────────────────────────────────── */
+
+.mpd-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(35,29,24,0.14) transparent;
+}
+
+.mpd-body::-webkit-scrollbar { width: 5px; }
+.mpd-body::-webkit-scrollbar-track { background: transparent; }
+.mpd-body::-webkit-scrollbar-thumb { background: rgba(35,29,24,0.14); border-radius: 999px; }
+
+/* ── Info tab ────────────────────────────────────────────────────────────── */
+
+.mpd-info {
+  display: grid;
+  gap: 0;
+  padding: 0 0 24px;
+}
+
+.mpd-info__section {
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(35,29,24,0.06);
+}
+
+.mpd-info__section:last-child { border-bottom: 0; }
+
+.mpd-info__section-title {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.mpd-info__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(35,29,24,0.04);
+}
+
+.mpd-info__row:last-child { border-bottom: 0; }
+
+.mpd-info__row-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  margin-top: 1px;
+}
+
+.mpd-info__row-copy {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mpd-info__row-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--muted);
+}
+
+.mpd-info__row-value {
+  font-size: 0.92rem;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.mpd-info__row-empty {
+  font-style: normal;
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+/* Ministry tags */
+.mpd-info__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mpd-info__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(39,76,63,0.09);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.mpd-info__empty {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.mpd-info__notes {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+/* ── Household tab ───────────────────────────────────────────────────────── */
+
+.mpd-household {
+  padding: 16px 20px 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.mpd-household__hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.55;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(35,29,24,0.04);
+  border: 1px solid rgba(35,29,24,0.07);
+}
+
+.mpd-household__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.mpd-household__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.82);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 130ms ease, box-shadow 130ms ease, transform 130ms ease;
+}
+
+.mpd-household__item:hover {
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-1px);
+}
+
+.mpd-household__item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(178,81,49,0.18);
+}
+
+.mpd-household__avatar {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+}
+
+.mpd-household__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mpd-household__copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.mpd-household__name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mpd-household__relation {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.mpd-household__email {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mpd-household__status {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.70rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mpd-household__status--active   { background: rgba(22,163,74,0.12);  color: #166534; }
+.mpd-household__status--inactive { background: rgba(100,116,139,0.12); color: #475569; }
+.mpd-household__status--visitor  { background: rgba(234,179,8,0.14);  color: #713f12; }
+
+.mpd-household__arrow {
+  flex: none;
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+.mpd-household__empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+}
+
+.mpd-household__empty p { margin: 0; font-size: 0.9rem; }
+.mpd-household__empty-hint { font-size: 0.82rem; opacity: 0.75; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 520px) {
+  .mpd-sheet {
+    width: 100vw;
+  }
+
+  .mpd-header__actions {
+    gap: 6px;
+  }
+
+  .mpd-action-btn span {
+    display: none;
+  }
+}
