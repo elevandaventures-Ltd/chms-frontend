@@ -16,6 +16,8 @@ Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 - [x] Day 10: admin layout with dark sidebar, breadcrumbs, role-aware navigation (Finance hidden for non-finance roles), auto-derived page titles, logout button in top bar. — complete (2026-06-05)
 - [x] Day 11: Member Directory — masonry photo-card grid (2/3/4 column breakpoints), MemberCard with status badge + ministry tags, live search + status filter, members table SQL migration with RLS. — complete (2026-06-06)
 - [x] Day 12: skeleton shimmer loading state, GET /api/members with search/filter/pagination, debounced search, error banner with retry, Pagination wired to directory. — complete (2026-06-07)
+- [x] Day 13: Meilisearch instant search — MemberSearchBar, 300ms debounce, fuzzy matching, highlighted terms, /api/search/members with 3-tier fallback chain. — complete (2026-06-08)
+- [x] Day 14: Member filter bar — Ministry dropdown, Status multi-select, Age Group range, Join Date range, Geographic Zone; active filter count badge + clear all; filters combine with search; household SQL migration. — complete (2026-06-09)
 
 ## Run It
 
@@ -166,7 +168,7 @@ Find these in your Supabase project under **Settings → API**.
 
 - The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
 - Generated build output such as `storybook-static` is ignored and should not be committed.
-- **Status:** Days 1–12 are complete and pass TypeScript checks.
+- **Status:** Days 1–14 are complete and pass TypeScript checks.
 
 ## Church Onboarding Wizard (Day 8)
 

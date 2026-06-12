@@ -211,11 +211,21 @@ export const sprintLog: DayEntry[] = [
     detail: 'MemberSearchBar with 300ms debounce, fuzzy matching, highlighted matched terms from Meilisearch _formatted fields. /api/search/members endpoint with Meilisearch → Supabase → mock fallback chain. Soft-delete SQL migration.',
     href: '/members',
   },
+  {
+    day: 'Day 14',
+    date: '2026-06-09',
+    title: 'Member filter bar',
+    status: 'complete',
+    detail: 'Filter bar with Ministry dropdown (multi-select), Status pills, Age Group range, Join Date range picker, and Geographic Zone. Active filter count badge, chip summary, clear all. Filters combine with Meilisearch search. Household SQL migration.',
+    href: '/members',
+  },
 ];
 
 // ── Member types (Day 11) ─────────────────────────────────────────────────────
 
 export type MemberStatus = 'active' | 'inactive' | 'visitor';
+
+export type AgeGroup = 'child' | 'youth' | 'young_adult' | 'adult' | 'senior';
 
 export type Member = {
   id: string;
@@ -226,33 +236,35 @@ export type Member = {
   status: MemberStatus;
   role: UserRole;
   ministries: string[];
-  joinedDate: string; // ISO date string
+  joinedDate: string;   // ISO date string YYYY-MM-DD
+  ageGroup?: AgeGroup;  // Day 14
+  zone?: string;        // Geographic zone — Day 14
   notes?: string;
 };
 
 // ── Mock member data — 20 realistic members for development ──────────────────
 
 export const mockMembers: Member[] = [
-  { id: 'm1',  fullName: 'Abena Mensah',       email: 'abena@elevanda.org',    phone: '+233 24 111 2233', status: 'active',   role: 'pastor',          ministries: ['Worship', 'Prayer'],              joinedDate: '2021-03-15' },
-  { id: 'm2',  fullName: 'Kwame Asante',        email: 'kwame@elevanda.org',    phone: '+233 20 234 5678', status: 'active',   role: 'ministry_leader', ministries: ['Youth', 'Evangelism'],            joinedDate: '2020-08-22' },
-  { id: 'm3',  fullName: 'Ama Boateng',         email: 'ama@elevanda.org',      phone: '+233 26 345 6789', status: 'active',   role: 'staff',           ministries: ['Children', 'Admin'],              joinedDate: '2022-01-10' },
-  { id: 'm4',  fullName: 'Kofi Owusu',          email: 'kofi@elevanda.org',     phone: '+233 55 456 7890', status: 'visitor',  role: 'member',          ministries: [],                                 joinedDate: '2024-04-01' },
-  { id: 'm5',  fullName: 'Efua Darko',          email: 'efua@elevanda.org',     phone: '+233 24 567 8901', status: 'active',   role: 'finance',         ministries: ['Finance', 'Admin'],               joinedDate: '2019-11-30' },
-  { id: 'm6',  fullName: 'Yaw Appiah',          email: 'yaw@elevanda.org',      phone: '+233 20 678 9012', status: 'active',   role: 'ministry_leader', ministries: ['Men\'s Ministry', 'Evangelism'],  joinedDate: '2021-06-18' },
-  { id: 'm7',  fullName: 'Akosua Frimpong',     email: 'akosua@elevanda.org',   phone: '+233 26 789 0123', status: 'inactive', role: 'member',          ministries: ['Women\'s Ministry'],              joinedDate: '2018-02-14' },
-  { id: 'm8',  fullName: 'Nana Ama Tetteh',     email: 'nana@elevanda.org',     phone: '+233 55 890 1234', status: 'active',   role: 'staff',           ministries: ['Ushering', 'Hospitality'],        joinedDate: '2023-07-05' },
-  { id: 'm9',  fullName: 'Kwabena Adjei',       email: 'kwabena@elevanda.org',  phone: '+233 24 901 2345', status: 'active',   role: 'member',          ministries: ['Choir', 'Worship'],               joinedDate: '2022-09-12' },
-  { id: 'm10', fullName: 'Adwoa Osei',          email: 'adwoa@elevanda.org',    phone: '+233 20 012 3456', status: 'visitor',  role: 'member',          ministries: [],                                 joinedDate: '2024-05-20' },
-  { id: 'm11', fullName: 'Ekow Hammond',        email: 'ekow@elevanda.org',     phone: '+233 26 123 4567', status: 'active',   role: 'admin',           ministries: ['Leadership', 'Admin'],            joinedDate: '2017-01-01' },
-  { id: 'm12', fullName: 'Maame Serwaa',        email: 'maame@elevanda.org',    phone: '+233 55 234 5678', status: 'active',   role: 'member',          ministries: ['Women\'s Ministry', 'Prayer'],    joinedDate: '2021-12-03' },
-  { id: 'm13', fullName: 'Fiifi Barimah',       email: 'fiifi@elevanda.org',    phone: '+233 24 345 6789', status: 'inactive', role: 'member',          ministries: ['Youth'],                          joinedDate: '2020-04-17' },
-  { id: 'm14', fullName: 'Esi Kyere',           email: 'esi@elevanda.org',      phone: '+233 20 456 7890', status: 'active',   role: 'ministry_leader', ministries: ['Children', 'Sunday School'],      joinedDate: '2019-08-25' },
-  { id: 'm15', fullName: 'Kweku Annan',         email: 'kweku@elevanda.org',    phone: '+233 26 567 8901', status: 'active',   role: 'staff',           ministries: ['Media', 'Tech'],                  joinedDate: '2022-03-30' },
-  { id: 'm16', fullName: 'Abeba Asiedu',        email: 'abeba@elevanda.org',    phone: '+233 55 678 9012', status: 'visitor',  role: 'member',          ministries: [],                                 joinedDate: '2024-06-07' },
-  { id: 'm17', fullName: 'Kojo Dankwa',         email: 'kojo@elevanda.org',     phone: '+233 24 789 0123', status: 'active',   role: 'member',          ministries: ['Choir', 'Worship'],               joinedDate: '2023-01-14' },
-  { id: 'm18', fullName: 'Akua Gyamfi',         email: 'akua@elevanda.org',     phone: '+233 20 890 1234', status: 'active',   role: 'ministry_leader', ministries: ['Prayer', 'Intercession'],         joinedDate: '2020-10-09' },
-  { id: 'm19', fullName: 'Nii Teye Lartey',     email: 'nii@elevanda.org',      phone: '+233 26 901 2345', status: 'active',   role: 'finance',         ministries: ['Finance', 'Stewardship'],         joinedDate: '2021-05-22' },
-  { id: 'm20', fullName: 'Afia Boadu',          email: 'afia@elevanda.org',     phone: '+233 55 012 3456', status: 'inactive', role: 'member',          ministries: ['Women\'s Ministry'],              joinedDate: '2019-03-11' },
+  { id: 'm1',  fullName: 'Abena Mensah',       email: 'abena@elevanda.org',    phone: '+233 24 111 2233', status: 'active',   role: 'pastor',          ministries: ['Worship', 'Prayer'],             joinedDate: '2021-03-15', ageGroup: 'adult',       zone: 'North' },
+  { id: 'm2',  fullName: 'Kwame Asante',        email: 'kwame@elevanda.org',    phone: '+233 20 234 5678', status: 'active',   role: 'ministry_leader', ministries: ['Youth', 'Evangelism'],           joinedDate: '2020-08-22', ageGroup: 'young_adult', zone: 'South' },
+  { id: 'm3',  fullName: 'Ama Boateng',         email: 'ama@elevanda.org',      phone: '+233 26 345 6789', status: 'active',   role: 'staff',           ministries: ['Children', 'Admin'],             joinedDate: '2022-01-10', ageGroup: 'adult',       zone: 'East' },
+  { id: 'm4',  fullName: 'Kofi Owusu',          email: 'kofi@elevanda.org',     phone: '+233 55 456 7890', status: 'visitor',  role: 'member',          ministries: [],                                joinedDate: '2024-04-01', ageGroup: 'youth',       zone: 'West' },
+  { id: 'm5',  fullName: 'Efua Darko',          email: 'efua@elevanda.org',     phone: '+233 24 567 8901', status: 'active',   role: 'finance',         ministries: ['Finance', 'Admin'],              joinedDate: '2019-11-30', ageGroup: 'senior',      zone: 'North' },
+  { id: 'm6',  fullName: 'Yaw Appiah',          email: 'yaw@elevanda.org',      phone: '+233 20 678 9012', status: 'active',   role: 'ministry_leader', ministries: ["Men's Ministry", 'Evangelism'],  joinedDate: '2021-06-18', ageGroup: 'adult',       zone: 'Central' },
+  { id: 'm7',  fullName: 'Akosua Frimpong',     email: 'akosua@elevanda.org',   phone: '+233 26 789 0123', status: 'inactive', role: 'member',          ministries: ["Women's Ministry"],              joinedDate: '2018-02-14', ageGroup: 'senior',      zone: 'South' },
+  { id: 'm8',  fullName: 'Nana Ama Tetteh',     email: 'nana@elevanda.org',     phone: '+233 55 890 1234', status: 'active',   role: 'staff',           ministries: ['Ushering', 'Hospitality'],       joinedDate: '2023-07-05', ageGroup: 'young_adult', zone: 'East' },
+  { id: 'm9',  fullName: 'Kwabena Adjei',       email: 'kwabena@elevanda.org',  phone: '+233 24 901 2345', status: 'active',   role: 'member',          ministries: ['Choir', 'Worship'],              joinedDate: '2022-09-12', ageGroup: 'adult',       zone: 'West' },
+  { id: 'm10', fullName: 'Adwoa Osei',          email: 'adwoa@elevanda.org',    phone: '+233 20 012 3456', status: 'visitor',  role: 'member',          ministries: [],                                joinedDate: '2024-05-20', ageGroup: 'youth',       zone: 'North' },
+  { id: 'm11', fullName: 'Ekow Hammond',        email: 'ekow@elevanda.org',     phone: '+233 26 123 4567', status: 'active',   role: 'admin',           ministries: ['Leadership', 'Admin'],           joinedDate: '2017-01-01', ageGroup: 'adult',       zone: 'Central' },
+  { id: 'm12', fullName: 'Maame Serwaa',        email: 'maame@elevanda.org',    phone: '+233 55 234 5678', status: 'active',   role: 'member',          ministries: ["Women's Ministry", 'Prayer'],    joinedDate: '2021-12-03', ageGroup: 'adult',       zone: 'South' },
+  { id: 'm13', fullName: 'Fiifi Barimah',       email: 'fiifi@elevanda.org',    phone: '+233 24 345 6789', status: 'inactive', role: 'member',          ministries: ['Youth'],                         joinedDate: '2020-04-17', ageGroup: 'youth',       zone: 'East' },
+  { id: 'm14', fullName: 'Esi Kyere',           email: 'esi@elevanda.org',      phone: '+233 20 456 7890', status: 'active',   role: 'ministry_leader', ministries: ['Children', 'Sunday School'],     joinedDate: '2019-08-25', ageGroup: 'young_adult', zone: 'West' },
+  { id: 'm15', fullName: 'Kweku Annan',         email: 'kweku@elevanda.org',    phone: '+233 26 567 8901', status: 'active',   role: 'staff',           ministries: ['Media', 'Tech'],                 joinedDate: '2022-03-30', ageGroup: 'young_adult', zone: 'North' },
+  { id: 'm16', fullName: 'Abeba Asiedu',        email: 'abeba@elevanda.org',    phone: '+233 55 678 9012', status: 'visitor',  role: 'member',          ministries: [],                                joinedDate: '2024-06-07', ageGroup: 'adult',       zone: 'Central' },
+  { id: 'm17', fullName: 'Kojo Dankwa',         email: 'kojo@elevanda.org',     phone: '+233 24 789 0123', status: 'active',   role: 'member',          ministries: ['Choir', 'Worship'],              joinedDate: '2023-01-14', ageGroup: 'young_adult', zone: 'South' },
+  { id: 'm18', fullName: 'Akua Gyamfi',         email: 'akua@elevanda.org',     phone: '+233 20 890 1234', status: 'active',   role: 'ministry_leader', ministries: ['Prayer', 'Intercession'],        joinedDate: '2020-10-09', ageGroup: 'adult',       zone: 'East' },
+  { id: 'm19', fullName: 'Nii Teye Lartey',     email: 'nii@elevanda.org',      phone: '+233 26 901 2345', status: 'active',   role: 'finance',         ministries: ['Finance', 'Stewardship'],        joinedDate: '2021-05-22', ageGroup: 'senior',      zone: 'West' },
+  { id: 'm20', fullName: 'Afia Boadu',          email: 'afia@elevanda.org',     phone: '+233 55 012 3456', status: 'inactive', role: 'member',          ministries: ["Women's Ministry"],              joinedDate: '2019-03-11', ageGroup: 'senior',      zone: 'Central' },
 ];
 
 // ── Team pulse (populated from database in a later sprint) ───────────────────
@@ -264,19 +276,19 @@ export const teamPulse: { name: string; role: string; update: string }[] = [];
 export const taskBoard = [
   {
     lane: 'Done',
-    item: 'Member Directory with skeleton loading, API, search, filter and pagination.',
+    item: 'Filter bar — Ministry, Status, Age Group, Join Date, Zone. Active badge + clear all.',
   },
   {
     lane: 'Done',
-    item: 'Admin layout with role-aware sidebar, breadcrumbs, and logout.',
+    item: 'Meilisearch instant search with fuzzy matching and highlighted terms.',
   },
   {
     lane: 'Next up',
-    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run the members migration.',
+    item: 'Configure NEXT_PUBLIC_SUPABASE_URL + ANON_KEY and run migrations (members, households).',
   },
   {
     lane: 'Next up',
-    item: 'Day 13 — Member profile page with Tabs, edit form, attendance history.',
+    item: 'Day 15 — Member profile page with Tabs (Overview, Attendance, Family).',
   },
 ];
 

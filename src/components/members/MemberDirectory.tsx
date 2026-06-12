@@ -1,39 +1,25 @@
 'use client';
 
 /**
- * MemberDirectory — Day 13 upgrade.
+ * MemberDirectory — Day 14 upgrade.
  *
- * Uses MemberSearchBar (Meilisearch-powered) for instant fuzzy search.
- * Clicking a search result navigates to that member.
- * Typing and pressing Enter filters the full grid.
- * Status tabs + Pagination remain from Day 12.
+ * Adds MemberFilterBar (Ministry, Status, Age Group, Join Date, Zone).
+ * Filters combine with the Meilisearch search query.
+ * Active filter count badge + clear all button.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Users, AlertCircle, RefreshCw } from 'lucide-react';
-import { MemberSearchBar } from '@/components/members/MemberSearchBar';
-import { MemberCard } from '@/components/members/MemberCard';
+import { MemberSearchBar }  from '@/components/members/MemberSearchBar';
+import { MemberFilterBar }  from '@/components/members/MemberFilterBar';
+import { MemberCard }       from '@/components/members/MemberCard';
 import { MemberDirectorySkeleton } from '@/components/members/MemberCardSkeleton';
-import { Pagination } from '@/components/ui/Pagination';
-import { Alert } from '@/components/ui/Alert';
-import type { Member, MemberStatus } from '@/lib/site';
+import { Pagination }       from '@/components/ui/Pagination';
+import { Alert }            from '@/components/ui/Alert';
+import { useMemberFilters } from '@/hooks/useMemberFilters';
+import type { Member }      from '@/lib/site';
 
-type FilterTab = 'all' | MemberStatus;
-
-type ApiResponse = {
-  data: Member[];
-  total: number;
-  page: number;
-  pageSize: number;
-};
-
+type ApiResponse = { data: Member[]; total: number; page: number; pageSize: number };
 const PAGE_SIZE = 12;
-
-const FILTER_TABS: { value: FilterTab; label: string }[] = [
-  { value: 'all',      label: 'All' },
-  { value: 'active',   label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'visitor',  label: 'Visitor' },
-];
 
 function useDebounced<T>(value: T, ms = 300): T {
   const [v, setV] = useState(value);
@@ -46,8 +32,10 @@ function useDebounced<T>(value: T, ms = 300): T {
 
 export function MemberDirectory() {
   const [query,  setQuery]  = useState('');
-  const [filter, setFilter] = useState<FilterTab>('all');
   const [page,   setPage]   = useState(1);
+
+  const filterHook = useMemberFilters();
+  const { filters, toParams, activeCount } = filterHook;
 
   const [members, setMembers] = useState<Member[]>([]);
   const [total,   setTotal]   = useState(0);
@@ -56,15 +44,17 @@ export function MemberDirectory() {
 
   const debouncedQuery = useDebounced(query, 300);
 
-  useEffect(() => { setPage(1); }, [debouncedQuery, filter]);
+  // Reset to page 1 when search or any filter changes
+  useEffect(() => { setPage(1); }, [debouncedQuery, filters]);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     setError('');
-    const params = new URLSearchParams({
-      page: String(page), pageSize: String(PAGE_SIZE), status: filter,
-    });
+    const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
     if (debouncedQuery) params.set('q', debouncedQuery);
+    // Inject all active filters into the query
+    toParams(params);
+
     try {
       const res = await fetch(`/api/members?${params.toString()}`);
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -76,58 +66,42 @@ export function MemberDirectory() {
     } finally {
       setLoading(false);
     }
-  }, [page, filter, debouncedQuery]);
+  }, [page, debouncedQuery, toParams]);
 
   useEffect(() => { void fetchMembers(); }, [fetchMembers]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  const tabCount = useMemo(() => ({
-    all:      filter === 'all'      ? total : undefined,
-    active:   filter === 'active'   ? total : undefined,
-    inactive: filter === 'inactive' ? total : undefined,
-    visitor:  filter === 'visitor'  ? total : undefined,
-  }), [filter, total]);
+  const countLabel = useMemo(() => {
+    if (loading) return '…';
+    const suffix = total === 1 ? 'member' : 'members';
+    const filterNote = activeCount > 0 ? ` (${activeCount} filter${activeCount > 1 ? 's' : ''} active)` : '';
+    return `${total} ${suffix}${filterNote}`;
+  }, [loading, total, activeCount]);
 
   return (
     <div className="member-dir">
 
-      {/* ── Search bar (Meilisearch-powered) ── */}
+      {/* Search (Meilisearch) */}
       <MemberSearchBar
         value={query}
-        onChange={(q) => setQuery(q)}
-        onSearch={(q) => setQuery(q)}
+        onChange={setQuery}
+        onSearch={setQuery}
         className="member-dir__meilisearch"
       />
 
-      {/* ── Toolbar: count ── */}
+      {/* Filter bar */}
+      <MemberFilterBar filterHook={filterHook} />
+
+      {/* Count */}
       <div className="member-dir__toolbar member-dir__toolbar--compact">
         <p className="member-dir__count" aria-live="polite">
           <Users size={14} aria-hidden="true" />
-          {loading ? '…' : `${total} ${total === 1 ? 'member' : 'members'}`}
+          {countLabel}
         </p>
       </div>
 
-      {/* ── Status filter tabs ── */}
-      <div className="member-dir__tabs" role="tablist" aria-label="Filter by status">
-        {FILTER_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            role="tab"
-            aria-selected={filter === tab.value ? 'true' : 'false'}
-            className={`member-dir__tab${filter === tab.value ? ' member-dir__tab--active' : ''}`}
-            onClick={() => setFilter(tab.value)}
-          >
-            {tab.label}
-            {tabCount[tab.value] !== undefined && (
-              <span className="member-dir__tab-count">{tabCount[tab.value]}</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Error ── */}
+      {/* Error */}
       {error && (
         <Alert variant="destructive" title="Could not load members" onClose={() => setError('')}>
           {error}{' '}
@@ -137,28 +111,26 @@ export function MemberDirectory() {
         </Alert>
       )}
 
-      {/* ── Grid / Skeleton / Empty ── */}
+      {/* Grid / Skeleton / Empty */}
       {loading ? (
         <MemberDirectorySkeleton count={PAGE_SIZE} />
       ) : members.length > 0 ? (
         <div className="member-dir__grid" aria-label="Member cards">
-          {members.map((member) => (
-            <MemberCard key={member.id} member={member} />
-          ))}
+          {members.map((m) => <MemberCard key={m.id} member={m} />)}
         </div>
       ) : !error ? (
         <div className="member-dir__empty" role="status">
           <AlertCircle size={36} strokeWidth={1.5} aria-hidden="true" />
           <strong>No members found</strong>
           <p>
-            {query
-              ? `No results for "${query}". Try a different search term.`
-              : 'No members match the selected filter.'}
+            {query || activeCount > 0
+              ? 'Try adjusting your search or removing some filters.'
+              : 'No members match the current view.'}
           </p>
         </div>
       ) : null}
 
-      {/* ── Pagination ── */}
+      {/* Pagination */}
       {!loading && totalPages > 1 && (
         <Pagination
           page={page}

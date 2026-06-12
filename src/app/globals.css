@@ -6020,3 +6020,317 @@ input:checked + .data-table__check-box,
 .member-dir__toolbar--compact {
   margin-top: -4px;
 }
+
+/* ── Day 14 · Member filter bar ─────────────────────────────────────────── */
+
+.filter-bar {
+  display: grid;
+  gap: 10px;
+}
+
+/* Toggle row */
+.filter-bar__toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-bar__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.88);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.filter-bar__toggle:hover {
+  background: rgba(255,255,255,0.97);
+  box-shadow: var(--shadow-strong);
+}
+
+.filter-bar__toggle--active {
+  border-color: var(--accent);
+  background: rgba(178,81,49,0.06);
+  color: var(--accent);
+}
+
+.filter-bar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.filter-bar__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+
+.filter-bar__clear:hover { background: rgba(185,28,28,0.08); color: #b91c1c; }
+
+/* Active filter chips */
+.filter-bar__active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255,255,255,0.85);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.filter-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(35,29,24,0.10);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  transition: background-color 120ms ease;
+}
+
+.filter-chip__remove:hover { background: rgba(185,28,28,0.14); color: #b91c1c; }
+
+/* Expanded filter panel */
+.filter-bar__panel {
+  display: grid;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.88);
+  box-shadow: var(--shadow);
+}
+
+@media (min-width: 860px) {
+  .filter-bar__panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Filter group */
+.filter-group {
+  display: grid;
+  gap: 8px;
+}
+
+.filter-group__label {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--muted);
+}
+
+/* Multi-select pill group */
+.filter-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-pill {
+  padding: 5px 12px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.8);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 130ms ease, background-color 130ms ease, color 130ms ease;
+}
+
+.filter-pill:hover { color: var(--text); border-color: rgba(35,29,24,0.24); }
+
+.filter-pill--active {
+  border-color: var(--accent);
+  background: rgba(178,81,49,0.08);
+  color: var(--accent);
+}
+
+/* Ministry dropdown */
+.filter-dropdown {
+  position: relative;
+}
+
+.filter-dropdown__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 130ms ease;
+}
+
+.filter-dropdown__trigger:hover { border-color: rgba(35,29,24,0.26); }
+
+.filter-dropdown__trigger--open {
+  border-color: var(--accent);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+}
+
+.filter-dropdown__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.70rem;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.filter-dropdown__menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 1px);
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1.5px solid var(--accent);
+  border-top: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: var(--shadow-strong);
+  z-index: 40;
+}
+
+.filter-dropdown__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--text);
+  transition: background-color 110ms ease;
+}
+
+.filter-dropdown__option:hover { background: rgba(178,81,49,0.05); }
+
+.filter-dropdown__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--panel-border-strong);
+  background: rgba(255,255,255,0.9);
+  color: #fff;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.filter-dropdown__check--on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Join date range */
+.filter-date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-date-range__field {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.filter-date-range__label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.filter-date-range__input {
+  height: 38px;
+  padding: 0 10px;
+  border: 1.5px solid var(--panel-border);
+  border-radius: 9px;
+  background: rgba(255,255,255,0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.86rem;
+  outline: none;
+  transition: border-color 130ms ease, box-shadow 130ms ease;
+}
+
+.filter-date-range__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(178,81,49,0.10);
+}
+
+.filter-date-range__sep {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 20px;
+}
