@@ -227,6 +227,14 @@ export const sprintLog: DayEntry[] = [
     detail: 'Slide-out profile drawer from member directory cards: header with photo, name, status badge, and quick actions (email, call, message, activate/deactivate); Info tab with contact, church details, ministry teams, and notes; Family & Household tab with one-click member navigation. Groups hierarchy table + member_groups assignment table SQL migration with RLS. POST/DELETE /api/members/groups for group assignment.',
     href: '/members',
   },
+  {
+    day: 'Day 16',
+    date: '2026-06-11',
+    title: 'Profile drawer — Timeline, Groups, Notes + enhanced quick actions',
+    status: 'complete',
+    detail: 'Three new drawer tabs: Timeline (chronological interactions, group joins, milestones), Groups (memberships with join dates, type labels, role badges), Notes (pastoral notes with inline compose form, visibility selector, optimistic add). Quick actions upgraded: WhatsApp (wa.me link), Add Note and Prayer Request (jump to Notes tab), Call (tel: link), Email (mailto:), Message, Activate/Deactivate.',
+    href: '/members',
+  },
 ];
 
 // ── Member types (Day 11) ─────────────────────────────────────────────────────
@@ -284,11 +292,19 @@ export const teamPulse: { name: string; role: string; update: string }[] = [];
 export const taskBoard = [
   {
     lane: 'Done',
-    item: 'Member profile drawer — photo header, quick actions, Info tab, Family & Household tab with one-click navigation.',
+    item: 'Timeline tab — chronological interactions, group joins, prayer requests, milestones.',
   },
   {
     lane: 'Done',
-    item: 'Groups hierarchy DB + member assignment API (POST/DELETE /api/members/groups).',
+    item: 'Groups tab — memberships with join dates, type labels, and role badges (Leader/Co-leader/Member).',
+  },
+  {
+    lane: 'Done',
+    item: 'Notes tab — pastoral notes list with inline compose, visibility selector, optimistic add.',
+  },
+  {
+    lane: 'Done',
+    item: 'Quick actions upgraded: WhatsApp, Add Note, Prayer Request, Call, Email, Message.',
   },
   {
     lane: 'Next up',
@@ -296,7 +312,7 @@ export const taskBoard = [
   },
   {
     lane: 'Next up',
-    item: 'Day 16 — Member attendance tracking and reporting.',
+    item: 'Day 17 — CSV member import with 50-row test file and summary report.',
   },
 ];
 

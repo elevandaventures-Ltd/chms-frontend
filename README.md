@@ -19,6 +19,7 @@ Next.js App Router workspace for the Elevanda Ventures frontend tasks.
 - [x] Day 13: Meilisearch instant search — MemberSearchBar, 300ms debounce, fuzzy matching, highlighted terms, /api/search/members with 3-tier fallback chain. — complete (2026-06-08)
 - [x] Day 14: Member filter bar — Ministry dropdown, Status multi-select, Age Group range, Join Date range, Geographic Zone; active filter count badge + clear all; filters combine with search; household SQL migration. — complete (2026-06-09)
 - [x] Day 15: Member profile drawer — slide-out drawer from directory cards; header with photo, name, status badge, quick actions (email, call, message, activate/deactivate); Info tab (contact, church details, ministry teams, notes); Family & Household tab with one-click member navigation; groups hierarchy + member_groups SQL migration with RLS; POST/DELETE /api/members/groups. — complete (2026-06-10)
+- [x] Day 16: Profile drawer completed — Timeline tab (chronological interactions, group joins, milestones), Groups tab (memberships with join dates + role badges), Notes tab (pastoral notes with inline compose + visibility selector); quick actions upgraded with WhatsApp (wa.me), Add Note, Prayer Request buttons. — complete (2026-06-11)
 
 ## Run It
 
@@ -119,6 +120,9 @@ npm run typecheck
 - [src/components/members/MemberHouseholdTab.tsx](src/components/members/MemberHouseholdTab.tsx) — Day 15 Family & Household tab with one-click member navigation.
 - [src/app/api/members/groups/route.ts](src/app/api/members/groups/route.ts) — Day 15 POST/DELETE group assignment API.
 - [supabase/migrations/20260610_groups.sql](supabase/migrations/20260610_groups.sql) — Day 15 groups hierarchy + member_groups SQL migration with RLS.
+- [src/components/members/MemberTimelineTab.tsx](src/components/members/MemberTimelineTab.tsx) — Day 16 Timeline tab: chronological events with type-coloured dots and connecting line.
+- [src/components/members/MemberGroupsTab.tsx](src/components/members/MemberGroupsTab.tsx) — Day 16 Groups tab: memberships with join dates, group type, member count, and role badge.
+- [src/components/members/MemberNotesTab.tsx](src/components/members/MemberNotesTab.tsx) — Day 16 Notes tab: pastoral notes list with inline compose form and visibility selector.
 
 ## Authentication (Day 6 & 7)
 ### How the middleware works
@@ -174,7 +178,7 @@ Find these in your Supabase project under **Settings → API**.
 
 - The app includes `allowedDevOrigins` in [next.config.mjs](next.config.mjs) so LAN access in dev is allowed from `192.168.1.9`.
 - Generated build output such as `storybook-static` is ignored and should not be committed.
-- **Status:** Days 1–15 are complete and pass TypeScript checks.
+- **Status:** Days 1–16 are complete and pass TypeScript checks.
 
 ## Church Onboarding Wizard (Day 8)
 

@@ -6851,3 +6851,452 @@ input:checked + .data-table__check-box,
     display: none;
   }
 }
+
+/* ── Day 16 · mpd extensions ─────────────────────────────────────────────── */
+
+/* WhatsApp action button */
+.mpd-action-btn--whatsapp {
+  color: #16a34a;
+  border-color: rgba(22,163,74,0.22);
+  background: rgba(22,163,74,0.05);
+}
+.mpd-action-btn--whatsapp:hover {
+  background: rgba(22,163,74,0.10);
+}
+
+/* Prayer action button */
+.mpd-action-btn--prayer {
+  color: #7c3aed;
+  border-color: rgba(124,58,237,0.22);
+  background: rgba(124,58,237,0.05);
+}
+.mpd-action-btn--prayer:hover {
+  background: rgba(124,58,237,0.10);
+}
+
+/* ── Timeline tab ────────────────────────────────────────────────────────── */
+
+.mpd-timeline {
+  padding: 16px 20px 28px;
+  display: grid;
+  gap: 12px;
+}
+
+.mpd-timeline__hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.55;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(35,29,24,0.04);
+  border: 1px solid rgba(35,29,24,0.07);
+}
+
+.mpd-timeline__hint em { font-style: normal; }
+
+.mpd-timeline__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  position: relative;
+}
+
+/* Vertical connecting line */
+.mpd-timeline__list::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 20px;
+  bottom: 20px;
+  width: 1px;
+  background: rgba(35,29,24,0.10);
+  z-index: 0;
+}
+
+.mpd-timeline__item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 10px 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Event dot */
+.mpd-timeline__dot {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(35,29,24,0.10);
+  color: #fff;
+  font-size: 0.7rem;
+  margin-top: 1px;
+}
+
+.mpd-timeline__dot--joined    { background: var(--accent); }
+.mpd-timeline__dot--group     { background: var(--accent-strong); }
+.mpd-timeline__dot--note      { background: #0891b2; }
+.mpd-timeline__dot--prayer    { background: #7c3aed; }
+.mpd-timeline__dot--status    { background: #d97706; }
+.mpd-timeline__dot--milestone { background: #16a34a; }
+
+.mpd-timeline__content {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  padding-top: 4px;
+}
+
+.mpd-timeline__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mpd-timeline__title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.mpd-timeline__date {
+  flex: none;
+  font-size: 0.74rem;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-top: 1px;
+}
+
+.mpd-timeline__detail {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.mpd-timeline__actor {
+  font-size: 0.74rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.mpd-timeline__empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.mpd-timeline__empty p { margin: 0; font-size: 0.9rem; }
+
+/* ── Groups tab ──────────────────────────────────────────────────────────── */
+
+.mpd-groups {
+  padding: 16px 20px 28px;
+  display: grid;
+  gap: 12px;
+}
+
+.mpd-groups__count {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--muted);
+}
+
+.mpd-groups__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.mpd-groups__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.82);
+}
+
+.mpd-groups__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.mpd-groups__copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.mpd-groups__name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mpd-groups__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.mpd-groups__sep { opacity: 0.4; }
+
+.mpd-groups__role {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.70rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.mpd-groups__role--leader    { background: rgba(178,81,49,0.10); color: var(--accent); }
+.mpd-groups__role--co-leader { background: rgba(39,76,63,0.10);  color: var(--accent-strong); }
+.mpd-groups__role--member    { background: rgba(35,29,24,0.07);  color: var(--muted); }
+
+.mpd-groups__empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.mpd-groups__empty p { margin: 0; font-size: 0.9rem; }
+.mpd-groups__empty-hint { font-size: 0.82rem; opacity: 0.75; }
+
+/* ── Notes tab ───────────────────────────────────────────────────────────── */
+
+.mpd-notes {
+  padding: 16px 20px 28px;
+  display: grid;
+  gap: 14px;
+}
+
+/* Toolbar / Add button */
+.mpd-notes__toolbar { }
+
+.mpd-notes__add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: 1.5px dashed var(--panel-border-strong);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+
+.mpd-notes__add-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(178,81,49,0.04);
+}
+
+/* Compose area */
+.mpd-notes__compose {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px solid var(--accent);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 0 0 4px rgba(178,81,49,0.08);
+}
+
+.mpd-notes__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(35,29,24,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.95);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 140ms ease;
+}
+
+.mpd-notes__textarea:focus {
+  border-color: var(--accent);
+}
+
+.mpd-notes__compose-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mpd-notes__vis-select {
+  height: 34px;
+  padding: 0 28px 0 10px;
+  border: 1px solid rgba(35,29,24,0.14);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235d544e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  outline: none;
+  cursor: pointer;
+}
+
+.mpd-notes__compose-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mpd-notes__cancel-btn {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 130ms ease;
+}
+.mpd-notes__cancel-btn:hover { background: rgba(255,255,255,0.98); color: var(--text); }
+
+.mpd-notes__save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--accent), #d46845);
+  color: #fff;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 140ms ease;
+}
+.mpd-notes__save-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Notes list */
+.mpd-notes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.mpd-notes__item {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.82);
+}
+
+.mpd-notes__item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mpd-notes__author {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mpd-notes__date {
+  font-size: 0.74rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mpd-notes__body {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.mpd-notes__vis {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.70rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.mpd-notes__empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.mpd-notes__empty p { margin: 0; font-size: 0.9rem; }
+.mpd-notes__empty-hint { font-size: 0.82rem; opacity: 0.75; }
