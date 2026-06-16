@@ -1,23 +1,17 @@
 'use client';
 
-/**
- * MemberDirectory — Day 14 upgrade.
- *
- * Adds MemberFilterBar (Ministry, Status, Age Group, Join Date, Zone).
- * Filters combine with the Meilisearch search query.
- * Active filter count badge + clear all button.
- */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Users, AlertCircle, RefreshCw } from 'lucide-react';
-import { MemberSearchBar }  from '@/components/members/MemberSearchBar';
-import { MemberFilterBar }  from '@/components/members/MemberFilterBar';
-import { MemberCard }       from '@/components/members/MemberCard';
+import { Users, AlertCircle, RefreshCw, UserPlus } from 'lucide-react';
+import { MemberSearchBar }    from '@/components/members/MemberSearchBar';
+import { MemberFilterBar }    from '@/components/members/MemberFilterBar';
+import { MemberCard }         from '@/components/members/MemberCard';
 import { MemberDirectorySkeleton } from '@/components/members/MemberCardSkeleton';
-import { MemberProfileDrawer } from '@/components/members/MemberProfileDrawer';
-import { Pagination }       from '@/components/ui/Pagination';
-import { Alert }            from '@/components/ui/Alert';
-import { useMemberFilters } from '@/hooks/useMemberFilters';
-import type { Member }      from '@/lib/site';
+import { MemberProfileDrawer }from '@/components/members/MemberProfileDrawer';
+import { AddMemberForm }      from '@/components/members/AddMemberForm';
+import { Pagination }         from '@/components/ui/Pagination';
+import { Alert }              from '@/components/ui/Alert';
+import { useMemberFilters }   from '@/hooks/useMemberFilters';
+import type { Member }        from '@/lib/site';
 
 type ApiResponse = { data: Member[]; total: number; page: number; pageSize: number };
 const PAGE_SIZE = 12;
@@ -32,9 +26,10 @@ function useDebounced<T>(value: T, ms = 300): T {
 }
 
 export function MemberDirectory() {
-  const [query,  setQuery]  = useState('');
-  const [page,   setPage]   = useState(1);
+  const [query,          setQuery]          = useState('');
+  const [page,           setPage]           = useState(1);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [addingMember,   setAddingMember]   = useState(false);
 
   const filterHook = useMemberFilters();
   const { filters, toParams, activeCount } = filterHook;
@@ -46,7 +41,6 @@ export function MemberDirectory() {
 
   const debouncedQuery = useDebounced(query, 300);
 
-  // Reset to page 1 when search or any filter changes
   useEffect(() => { setPage(1); }, [debouncedQuery, filters]);
 
   const fetchMembers = useCallback(async () => {
@@ -54,11 +48,10 @@ export function MemberDirectory() {
     setError('');
     const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
     if (debouncedQuery) params.set('q', debouncedQuery);
-    // Inject all active filters into the query
     toParams(params);
 
     try {
-      const res = await fetch(`/api/members?${params.toString()}`);
+      const res  = await fetch(`/api/members?${params.toString()}`);
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const json = (await res.json()) as ApiResponse;
       setMembers(json.data);
@@ -76,7 +69,7 @@ export function MemberDirectory() {
 
   const countLabel = useMemo(() => {
     if (loading) return '…';
-    const suffix = total === 1 ? 'member' : 'members';
+    const suffix     = total === 1 ? 'member' : 'members';
     const filterNote = activeCount > 0 ? ` (${activeCount} filter${activeCount > 1 ? 's' : ''} active)` : '';
     return `${total} ${suffix}${filterNote}`;
   }, [loading, total, activeCount]);
@@ -84,13 +77,24 @@ export function MemberDirectory() {
   return (
     <div className="member-dir">
 
-      {/* Search (Meilisearch) */}
-      <MemberSearchBar
-        value={query}
-        onChange={setQuery}
-        onSearch={setQuery}
-        className="member-dir__meilisearch"
-      />
+      {/* Top row: search + Add Member */}
+      <div className="member-dir__top-row">
+        <MemberSearchBar
+          value={query}
+          onChange={setQuery}
+          onSearch={setQuery}
+          className="member-dir__meilisearch"
+        />
+        <button
+          type="button"
+          className="member-dir__add-btn"
+          onClick={() => setAddingMember(true)}
+          aria-label="Add new member"
+        >
+          <UserPlus size={15} aria-hidden="true" />
+          Add Member
+        </button>
+      </div>
 
       {/* Filter bar */}
       <MemberFilterBar filterHook={filterHook} />
@@ -142,12 +146,21 @@ export function MemberDirectory() {
         />
       )}
 
+      {/* Profile drawer */}
       <MemberProfileDrawer
         member={selectedMember}
         allMembers={members}
         onClose={() => setSelectedMember(null)}
         onNavigate={(m) => setSelectedMember(m)}
       />
+
+      {/* Add Member form (modal overlay) */}
+      {addingMember && (
+        <AddMemberForm
+          onClose={() => setAddingMember(false)}
+          onCreated={() => { setAddingMember(false); void fetchMembers(); }}
+        />
+      )}
     </div>
   );
 }

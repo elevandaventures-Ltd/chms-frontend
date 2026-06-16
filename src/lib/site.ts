@@ -235,6 +235,14 @@ export const sprintLog: DayEntry[] = [
     detail: 'Three new drawer tabs: Timeline (chronological interactions, group joins, milestones), Groups (memberships with join dates, type labels, role badges), Notes (pastoral notes with inline compose form, visibility selector, optimistic add). Quick actions upgraded: WhatsApp (wa.me link), Add Note and Prayer Request (jump to Notes tab), Call (tel: link), Email (mailto:), Message, Activate/Deactivate.',
     href: '/members',
   },
+  {
+    day: 'Day 17',
+    date: '2026-06-12',
+    title: 'Add Member form',
+    status: 'complete',
+    detail: 'Full Add Member form in a slide-out drawer: photo upload (JPEG/PNG/WebP ≤ 2 MB), personal details, contact info + address, family/household linking, denomination custom fields, ministry assignment pill grid, pastoral notes. Zod schema + React Hook Form validation: required fields, email format, phone regex. POST /api/members with Supabase Storage photo upload and mock fallback. Add Member button wired into Member Directory.',
+    href: '/members',
+  },
 ];
 
 // ── Member types (Day 11) ─────────────────────────────────────────────────────

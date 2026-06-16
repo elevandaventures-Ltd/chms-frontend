@@ -1,25 +1,14 @@
 /**
- * GET /api/members
+ * GET  /api/members — paginated, filtered member list.
+ * POST /api/members — create a new member (multipart/form-data).
  *
- * Returns a paginated, filtered list of church members.
- *
- * Query params:
- *   page        (number, default 1)
- *   pageSize    (number, default 12, max 48)
- *   status      ('active'|'inactive'|'visitor'|'all')
- *   q           (search string)
- *   ministries  (comma-separated ministry names)
- *   ageGroups   (comma-separated: child|youth|young_adult|adult|senior)
- *   joinFrom    (ISO date YYYY-MM-DD)
- *   joinTo      (ISO date YYYY-MM-DD)
- *   zones       (comma-separated zone names)
- *
- * Falls back to mock data when Supabase env vars are absent.
+ * Falls back to mock data / mock insert when Supabase env vars are absent.
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { mockMembers } from '@/lib/site';
 import type { AgeGroup } from '@/lib/site';
+import { memberSchema } from '@/lib/member-schema';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -116,7 +105,137 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: members, total: count ?? 0, page, pageSize });
   } catch (err) {
-    console.error('[api/members] error:', err);
+    console.error('[api/members GET] error:', err);
     return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
+  }
+}
+
+// ── POST /api/members ─────────────────────────────────────────────────────────
+
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+    const raw      = formData.get('data');
+    if (!raw || typeof raw !== 'string') {
+      return NextResponse.json({ error: 'Missing form data.' }, { status: 400 });
+    }
+
+    const parsed = memberSchema.safeParse(JSON.parse(raw));
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Validation failed.', issues: parsed.error.flatten().fieldErrors },
+        { status: 422 },
+      );
+    }
+
+    const data = parsed.data;
+    const fullName = `${data.firstName} ${data.lastName}`;
+
+    const supabaseUrl     = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    // ── Mock fallback ─────────────────────────────────────────────────────
+    if (!supabaseUrl || !supabaseAnonKey) {
+      const mockId = `m${Date.now()}`;
+      const phone = data.phone?.trim();
+      if (phone) await sendWelcomeSms(phone, data.firstName);
+      return NextResponse.json({ id: mockId, fullName }, { status: 201 });
+    }
+
+    // ── Supabase insert ───────────────────────────────────────────────────
+    const response = NextResponse.next();
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() { return request.cookies.getAll(); },
+        setAll(cookies: { name: string; value: string; options?: CookieOptions }[]) {
+          cookies.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options ?? {}),
+          );
+        },
+      },
+    });
+
+    // Handle photo upload to Supabase Storage
+    let photoUrl: string | undefined;
+    const photo = formData.get('photo');
+    if (photo instanceof Blob) {
+      const ext      = photo.type.split('/')[1] ?? 'jpg';
+      const fileName = `members/${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, photo, { contentType: photo.type, upsert: false });
+      if (!uploadErr) {
+        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        photoUrl = urlData.publicUrl;
+      }
+    }
+
+    const { data: row, error } = await supabase
+      .from('members')
+      .insert({
+        full_name:   fullName,
+        email:       data.email,
+        phone:       data.phone       || null,
+        photo_url:   photoUrl         || null,
+        status:      data.status,
+        role:        data.role,
+        ministries:  data.ministries  ?? [],
+        joined_date: data.joinedDate,
+        age_group:   data.ageGroup    || null,
+        zone:        data.zone        || null,
+        notes:       data.notes       || null,
+        denomination: data.denomination || null,
+        baptised:    data.baptised    ?? false,
+        address:     data.address     || null,
+        city:        data.city        || null,
+        country:     data.country     || null,
+        date_of_birth: data.dateOfBirth || null,
+        gender:      data.gender      || null,
+        household_head_id: data.householdHeadId || null,
+        household_role:    data.householdRole    || null,
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    // ── Welcome SMS ───────────────────────────────────────────────────────
+    const phone = data.phone?.trim();
+    if (phone) await sendWelcomeSms(phone, data.firstName);
+
+    return NextResponse.json({ id: row.id, fullName }, { status: 201 });
+
+  } catch (err) {
+    console.error('[api/members POST] error:', err);
+    return NextResponse.json({ error: 'Failed to create member.' }, { status: 500 });
+  }
+}
+
+// ── Twilio welcome SMS ────────────────────────────────────────────────────────
+
+async function sendWelcomeSms(to: string, firstName: string): Promise<void> {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken  = process.env.TWILIO_AUTH_TOKEN;
+  const from       = process.env.TWILIO_PHONE_NUMBER;
+
+  if (!accountSid || !authToken || !from) return; // silently skip when not configured
+
+  const body = `Hi ${firstName}! Welcome to the church family. We're glad to have you with us. 🙏`;
+
+  const res = await fetch(
+    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ To: to, From: from, Body: body }).toString(),
+    },
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.warn('[api/members] Twilio SMS failed:', text);
   }
 }
