@@ -37,3 +37,29 @@ export const memberSchema = z.object({
 });
 
 export type MemberFormValues = z.infer<typeof memberSchema>;
+
+// ── Status change (Day 18) ────────────────────────────────────────────────────
+//
+// Used by the Member Status change modal and PATCH /api/members/:id/status.
+// Mirrors the `status` enum above so the same three values stay the single
+// source of truth across add, edit, and status-change flows.
+
+export const MEMBER_STATUSES = ['active', 'inactive', 'visitor'] as const;
+export type MemberStatusValue = (typeof MEMBER_STATUSES)[number];
+
+// Transitions that need an explicit confirmation step in the UI. Moving a
+// member to "inactive" is treated as destructive — it removes them from active
+// rosters and communications — so it requires a reason.
+export const DESTRUCTIVE_STATUSES: readonly MemberStatusValue[] = ['inactive'];
+
+export const statusChangeSchema = z
+  .object({
+    status: z.enum(MEMBER_STATUSES),
+    reason: z.string().trim().max(500, 'Reason must be 500 characters or fewer').optional(),
+  })
+  .refine(
+    (v) => !DESTRUCTIVE_STATUSES.includes(v.status) || Boolean(v.reason && v.reason.length > 0),
+    { path: ['reason'], message: 'A reason is required when deactivating a member' },
+  );
+
+export type StatusChangeValues = z.infer<typeof statusChangeSchema>;

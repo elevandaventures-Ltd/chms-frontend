@@ -18,7 +18,7 @@ import {
   LogOut, User, UserPlus, Copy, PlusCircle,
   LayoutDashboard, Users, CalendarCheck,
   CalendarDays, MessageSquare, Landmark,
-  Settings, Circle,
+  Settings, Circle, Home,
 } from 'lucide-react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -32,6 +32,7 @@ type AdminSidebarProps = {
 const NAV_ICONS: Record<string, React.ReactNode> = {
   '/':              <LayoutDashboard size={16} aria-hidden="true" />,
   '/members':       <Users           size={16} aria-hidden="true" />,
+  '/households':    <Home            size={16} aria-hidden="true" />,
   '/attendance':    <CalendarCheck   size={16} aria-hidden="true" />,
   '/events':        <CalendarDays    size={16} aria-hidden="true" />,
   '/communication': <MessageSquare   size={16} aria-hidden="true" />,

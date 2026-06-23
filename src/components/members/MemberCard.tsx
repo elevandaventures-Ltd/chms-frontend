@@ -13,7 +13,7 @@
  * Clicking the card navigates to the member profile page (future sprint).
  */
 import Link from 'next/link';
-import { Mail, Phone } from 'lucide-react';
+import { Mail, Phone, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Member, MemberStatus } from '@/lib/site';
 
@@ -59,23 +59,47 @@ type MemberCardProps = {
   member: Member;
   className?: string;
   onClick?: (member: Member) => void;
+  selected?: boolean;
+  onToggleSelect?: (id: string) => void;
 };
 
 const MAX_TAGS = 3;
 
-export function MemberCard({ member, className, onClick }: MemberCardProps) {
+export function MemberCard({ member, className, onClick, selected, onToggleSelect }: MemberCardProps) {
   const statusCfg = STATUS_CONFIG[member.status];
   const visibleTags = member.ministries.slice(0, MAX_TAGS);
   const extraTags   = member.ministries.length - MAX_TAGS;
   const bgColour    = avatarColour(member.fullName);
 
+  const selectable = Boolean(onToggleSelect);
+
+  function handleToggle(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    onToggleSelect?.(member.id);
+  }
+
   return (
     <Link
       href={`/members/${member.id}`}
-      className={cn('member-card', className)}
+      className={cn('member-card', selected && 'member-card--selected', className)}
       aria-label={`View profile for ${member.fullName}`}
       onClick={onClick ? (e) => { e.preventDefault(); onClick(member); } : undefined}
     >
+      {/* ── Selection checkbox — appears on hover / when selected ── */}
+      {selectable && (
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={selected ? 'true' : 'false'}
+          aria-label={selected ? `Deselect ${member.fullName}` : `Select ${member.fullName}`}
+          className={cn('member-card__select', selected && 'member-card__select--checked')}
+          onClick={handleToggle}
+        >
+          {selected && <Check size={13} strokeWidth={3} aria-hidden="true" />}
+        </button>
+      )}
+
       {/* ── Photo / Avatar ── */}
       <div className="member-card__photo-wrap">
         {member.photoUrl ? (

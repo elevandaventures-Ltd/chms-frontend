@@ -1,6 +1,7 @@
 'use client';
 
 import { Mail, Phone, MapPin, Calendar, Tag, Users, Briefcase } from 'lucide-react';
+import { MemberQRCode } from '@/components/members/MemberQRCode';
 import type { Member } from '@/lib/site';
 
 const AGE_GROUP_LABELS: Record<string, string> = {
@@ -97,6 +98,9 @@ export function MemberInfoTab({ member }: MemberInfoTabProps) {
           <p className="mpd-info__notes">{member.notes}</p>
         </section>
       )}
+
+      {/* Check-in QR */}
+      <MemberQRCode member={member} />
     </div>
   );
 }

@@ -1,8 +1,11 @@
+/**
+ * /attendance — Attendance sessions page (Day 21).
+ *
+ * AttendanceView handles its own data fetching via GET /api/attendance/sessions.
+ * Falls back to mock test data when Supabase is not configured.
+ */
+import { AttendanceView } from '@/components/attendance/AttendanceView';
+
 export default function AttendancePage() {
-  return (
-    <div className="admin-placeholder">
-      <h2>Attendance</h2>
-      <p>Attendance tracking and reporting will be built in a future sprint.</p>
-    </div>
-  );
+  return <AttendanceView />;
 }

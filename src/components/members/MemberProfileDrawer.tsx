@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   X, Mail, Phone, MessageSquare, UserCheck, UserX,
-  FileText, Heart, MessageCircle,
+  FileText, Heart, MessageCircle, Pencil,
 } from 'lucide-react';
 import { MemberInfoTab }      from '@/components/members/MemberInfoTab';
 import { MemberHouseholdTab } from '@/components/members/MemberHouseholdTab';
@@ -65,10 +65,12 @@ const TABS: { id: TabId; label: string }[] = [
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 type MemberProfileDrawerProps = {
-  member:     Member | null;
-  allMembers: Member[];
-  onClose:    () => void;
-  onNavigate: (member: Member) => void;
+  member:        Member | null;
+  allMembers:    Member[];
+  onClose:       () => void;
+  onNavigate:    (member: Member) => void;
+  onEdit?:       (member: Member) => void;
+  onChangeStatus?: (member: Member) => void;
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -78,6 +80,8 @@ export function MemberProfileDrawer({
   allMembers,
   onClose,
   onNavigate,
+  onEdit,
+  onChangeStatus,
 }: MemberProfileDrawerProps) {
   const [activeTab, setActiveTab] = useState<TabId>('info');
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -155,6 +159,18 @@ export function MemberProfileDrawer({
 
               {/* Quick actions */}
               <div className="mpd-header__actions" role="group" aria-label="Quick actions">
+
+                {/* Edit member */}
+                <button
+                  type="button"
+                  className="mpd-action-btn mpd-action-btn--edit"
+                  aria-label={`Edit ${member.fullName}`}
+                  title="Edit member"
+                  onClick={() => onEdit?.(member)}
+                >
+                  <Pencil size={15} />
+                  <span>Edit</span>
+                </button>
 
                 {/* Email */}
                 <a
@@ -238,9 +254,9 @@ export function MemberProfileDrawer({
                 <button
                   type="button"
                   className={`mpd-action-btn ${member.status === 'active' ? 'mpd-action-btn--danger' : 'mpd-action-btn--success'}`}
-                  aria-label={member.status === 'active' ? 'Mark as inactive' : 'Mark as active'}
-                  title={member.status === 'active' ? 'Deactivate' : 'Activate'}
-                  onClick={() => {/* status toggle — future sprint */}}
+                  aria-label="Change member status"
+                  title="Change status"
+                  onClick={() => onChangeStatus?.(member)}
                 >
                   {member.status === 'active'
                     ? <><UserX size={15} /><span>Deactivate</span></>
