@@ -10,7 +10,7 @@ import {
   type AttendanceSession, type SessionType,
 } from '@/lib/attendance';
 
-export function AttendanceView() {
+export function AttendanceView({ onActiveSession }: { onActiveSession?: (id: string | null) => void }) {
   const [sessions, setSessions] = useState<AttendanceSession[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState('');
