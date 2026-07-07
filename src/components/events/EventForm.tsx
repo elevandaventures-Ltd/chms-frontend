@@ -11,9 +11,10 @@ import { useState, type FormEvent } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
+import { CustomFieldsBuilder } from '@/components/events/CustomFieldsBuilder';
 import {
   EVENT_TYPES, EVENT_TYPE_LABELS,
-  type ChmsEvent, type EventType, type RecurrencePattern,
+  type ChmsEvent, type EventType, type RecurrencePattern, type CustomField,
 } from '@/lib/events';
 
 const DAYS_OF_WEEK = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -51,6 +52,7 @@ export function EventForm({ initial, onSaved, onCancel }: EventFormProps) {
   const [rrule,       setRrule]      = useState(
     initial?.recurrence?.type === 'custom' ? initial.recurrence.rrule : '',
   );
+  const [customFields, setCustomFields] = useState<CustomField[]>(initial?.customFields ?? []);
   const [saving,  setSaving]  = useState(false);
   const [error,   setError]   = useState('');
 
@@ -73,6 +75,7 @@ export function EventForm({ initial, onSaved, onCancel }: EventFormProps) {
       type, start, end, location: location.trim() || undefined,
       capacity: capacity ? parseInt(capacity, 10) : undefined,
       recurrence: buildRecurrence(),
+      customFields,
     };
 
     try {
@@ -194,6 +197,11 @@ export function EventForm({ initial, onSaved, onCancel }: EventFormProps) {
                 <input className="amf-input" value={rrule} onChange={(e) => setRrule(e.target.value)} placeholder="FREQ=WEEKLY;BYDAY=MO,WE;COUNT=10" />
               </label>
             )}
+          </div>
+
+          {/* Custom fields builder */}
+          <div className="amf-field">
+            <CustomFieldsBuilder fields={customFields} onChange={setCustomFields} />
           </div>
 
           {/* Actions */}

@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { MapPin, Clock, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { EVENT_TYPE_LABELS, EVENT_TYPE_COLOURS, mockEvents, type ChmsEvent } from '@/lib/events';
-import { EventDetailModal } from '@/components/events/EventDetailModal';
+import { EventDetailPage } from '@/components/events/EventDetailPage';
 
 export function EventDiscovery() {
   const [events,   setEvents]   = useState<ChmsEvent[]>([]);
@@ -97,7 +97,7 @@ export function EventDiscovery() {
       )}
 
       {selected && (
-        <EventDetailModal event={selected} onClose={() => setSelected(null)} />
+        <EventDetailPage event={selected} onClose={() => setSelected(null)} />
       )}
     </div>
   );

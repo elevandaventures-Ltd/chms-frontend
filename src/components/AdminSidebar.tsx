@@ -30,7 +30,7 @@ type AdminSidebarProps = {
 };
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
-  '/':              <LayoutDashboard size={16} aria-hidden="true" />,
+  '/dashboard':    <LayoutDashboard size={16} aria-hidden="true" />,
   '/members':       <Users           size={16} aria-hidden="true" />,
   '/households':    <Home            size={16} aria-hidden="true" />,
   '/attendance':    <CalendarCheck   size={16} aria-hidden="true" />,
@@ -57,10 +57,11 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
 
-  // Filter by role — Finance is only visible to admin and finance roles
-  const visibleItems = currentUser.loading
-    ? []
-    : items.filter((item) => item.roles.includes(currentUser.role));
+  // Show all items while loading to avoid flash of empty sidebar.
+  // Once resolved, filter by the user's actual role.
+  const visibleItems = items.filter((item) =>
+    currentUser.loading ? true : item.roles.includes(currentUser.role)
+  );
 
   // Close profile menu on outside click / Escape
   useEffect(() => {
@@ -96,7 +97,6 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
   }
 
   function isActive(href: string): boolean {
-    if (href === '/') return pathname === '/';
     return pathname === href || pathname.startsWith(href + '/');
   }
 
@@ -249,12 +249,6 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
               </span>
               {!collapsed && (
                 <span className="admin-sidebar__nav-label">{item.label}</span>
-              )}
-              {/* Finance indicator for finance/admin roles */}
-              {item.href === '/finance' && !collapsed && (
-                <span className="admin-sidebar__nav-badge" aria-label="Finance access">
-                  Finance
-                </span>
               )}
             </Link>
           );

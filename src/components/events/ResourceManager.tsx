@@ -128,9 +128,11 @@ export function ResourceManager() {
 
         <div className="resource-list">
           {resources.map((r) => (
-            <button key={r.id} type="button"
+            <div key={r.id}
+              role="button" tabIndex={0}
               className={`resource-item${selected?.id === r.id ? ' resource-item--active' : ''}`}
-              onClick={() => setSelected(r)}>
+              onClick={() => setSelected(r)}
+              onKeyDown={(e) => e.key === 'Enter' && setSelected(r)}>
               <span className="resource-item__icon" aria-hidden="true">{TYPE_ICONS[r.type]}</span>
               <span className="resource-item__info">
                 <strong>{r.name}</strong>
@@ -138,7 +140,7 @@ export function ResourceManager() {
               </span>
               <button type="button" className="resource-item__edit" onClick={(e) => { e.stopPropagation(); setEditRes(r); setResForm({ name: r.name, type: r.type, capacity: String(r.capacity ?? ''), description: r.description ?? '' }); setFormOpen(true); }}
                 aria-label={`Edit ${r.name}`}><Edit2 size={13} /></button>
-            </button>
+            </div>
           ))}
         </div>
       </div>

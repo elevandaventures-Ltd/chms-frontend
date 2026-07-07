@@ -12,11 +12,10 @@ import { Calendar, dateFnsLocalizer, type View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import {
-  mockEvents, EVENT_TYPE_COLOURS, EVENT_TYPE_LABELS,
+import { mockEvents, EVENT_TYPE_COLOURS, EVENT_TYPE_LABELS,
   type ChmsEvent, type EventType,
 } from '@/lib/events';
-import { EventDetailModal } from '@/components/events/EventDetailModal';
+import { EventDetailPage } from '@/components/events/EventDetailPage';
 
 const localizer = dateFnsLocalizer({
   format,
@@ -119,10 +118,9 @@ export function EventCalendar() {
       )}
 
       {selected && (
-        <EventDetailModal
+        <EventDetailPage
           event={selected}
           onClose={() => setSelected(null)}
-          onRsvp={() => setSelected(null)}
         />
       )}
     </div>

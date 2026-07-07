@@ -57,6 +57,31 @@ export type ChmsEvent = {
   recurrence: RecurrencePattern;
   isRecurringInstance?: boolean;
   parentId?: string;
+  customFields?: CustomField[];
+  attendees?: Attendee[];
+};
+
+// ── Custom registration fields ───────────────────────────────────────────────
+
+export type CustomFieldType = 'text' | 'dropdown' | 'checkbox';
+
+export type CustomField = {
+  id:       string;
+  type:     CustomFieldType;
+  label:    string;
+  required: boolean;
+  options?: string[];   // dropdown choices
+  placeholder?: string; // text hint
+};
+
+// ── Attendee ─────────────────────────────────────────────────────────────────
+
+export type Attendee = {
+  id:       string;
+  name:     string;
+  email:    string;
+  status:   'going' | 'waitlisted' | 'cancelled';
+  rsvpedAt: string; // ISO
 };
 
 // ── RSVP ─────────────────────────────────────────────────────────────────────
@@ -104,6 +129,19 @@ export const mockEvents: ChmsEvent[] = [
     location: 'Main Sanctuary', capacity: 400, rsvpCount: 312,
     recurrence: { type: 'weekly', days: [0] },
     description: 'Weekly Sunday worship service.',
+    customFields: [
+      { id: 'cf1', type: 'text',     label: 'Dietary requirements', required: false, placeholder: 'e.g. vegetarian, gluten-free' },
+      { id: 'cf2', type: 'dropdown', label: 'Service preference',   required: true,  options: ['First Service (8am)', 'Second Service (10am)', 'Third Service (12pm)'] },
+      { id: 'cf3', type: 'checkbox', label: 'I will bring a guest', required: false },
+    ],
+    attendees: [
+      { id: 'a1', name: 'Abena Mensah',   email: 'abena@elevanda.org',   status: 'going',       rsvpedAt: '2026-06-10T09:00:00Z' },
+      { id: 'a2', name: 'Kwame Asante',   email: 'kwame@elevanda.org',   status: 'going',       rsvpedAt: '2026-06-10T09:15:00Z' },
+      { id: 'a3', name: 'Ama Boateng',    email: 'ama@elevanda.org',     status: 'going',       rsvpedAt: '2026-06-10T10:00:00Z' },
+      { id: 'a4', name: 'Kofi Owusu',     email: 'kofi@elevanda.org',    status: 'waitlisted',  rsvpedAt: '2026-06-11T08:00:00Z' },
+      { id: 'a5', name: 'Efua Darko',     email: 'efua@elevanda.org',    status: 'going',       rsvpedAt: '2026-06-11T08:30:00Z' },
+      { id: 'a6', name: 'Yaw Appiah',     email: 'yaw@elevanda.org',     status: 'cancelled',   rsvpedAt: '2026-06-09T14:00:00Z' },
+    ],
   },
   {
     id: 'ev2', title: 'Youth Fellowship', type: 'youth',

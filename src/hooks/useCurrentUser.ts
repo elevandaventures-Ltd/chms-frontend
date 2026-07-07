@@ -57,8 +57,8 @@ export function useCurrentUser(): CurrentUser {
     const sb = getSupabaseBrowserClient();
 
     if (!sb) {
-      // No Supabase credentials configured — resolve immediately with empty user.
-      setUser({ ...FALLBACK, loading: false });
+      // No Supabase credentials — default to admin so all nav items are visible in dev.
+      setUser({ ...FALLBACK, role: 'admin', loading: false });
       return;
     }
 

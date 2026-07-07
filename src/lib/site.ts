@@ -60,7 +60,7 @@ export const notifications: NotificationItem[] = [
 export const sidebarItems: SidebarItem[] = [
   {
     label: 'Dashboard',
-    href: '/',
+    href: '/dashboard',
     icon: 'dashboard',
     roles: ['admin', 'pastor', 'finance', 'ministry_leader', 'staff', 'member'],
   },
@@ -68,7 +68,7 @@ export const sidebarItems: SidebarItem[] = [
     label: 'Members',
     href: '/members',
     icon: 'members',
-    roles: ['admin', 'pastor', 'ministry_leader', 'staff'],
+    roles: ['admin', 'pastor', 'ministry_leader', 'staff', 'member'],
   },
   {
     label: 'Households',
