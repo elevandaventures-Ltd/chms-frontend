@@ -66,12 +66,12 @@ export default function ProfileSettingsPage() {
     const sb = getSupabaseBrowserClient();
     if (!sb) { setLoading(false); return; }
 
-    sb.auth.getUser().then(({ data: { user } }) => {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      const user = session?.user ?? null;
       if (user) {
         setUser(user);
         setDisplayName(user.user_metadata?.name ?? user.email ?? '');
-        const url = user.user_metadata?.avatar_url ?? '';
-        setAvatarUrl(url);
+        setAvatarUrl(user.user_metadata?.avatar_url ?? '');
       }
       setLoading(false);
     });
@@ -121,6 +121,9 @@ export default function ProfileSettingsPage() {
     setProfileStatus({ kind: 'saving' });
 
     try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) throw new Error('Your session has expired. Please sign in again.');
+
       let newAvatarUrl = avatarUrl;
 
       // Upload avatar to Supabase Storage if a new file was selected
@@ -176,6 +179,9 @@ export default function ProfileSettingsPage() {
     setPwdStatus({ kind: 'saving' });
 
     try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { setPwdStatus({ kind: 'error', message: 'Your session has expired. Please sign in again.' }); return; }
+
       const { error } = await sb.auth.updateUser({ password: newPwd });
       if (error) throw new Error(error.message);
 

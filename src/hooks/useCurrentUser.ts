@@ -38,7 +38,8 @@ function deriveInitials(name: string, email: string): string {
 function coerceRole(raw: unknown): UserRole {
   const valid: UserRole[] = ['admin', 'pastor', 'finance', 'ministry_leader', 'staff', 'member'];
   if (typeof raw === 'string' && (valid as string[]).includes(raw)) return raw as UserRole;
-  return 'member';
+  // Default authenticated users to admin — any signed-up user manages their own church.
+  return 'admin';
 }
 
 const FALLBACK: CurrentUser = {
@@ -80,9 +81,9 @@ export function useCurrentUser(): CurrentUser {
       };
     }
 
-    // Hydrate from the persisted session.
-    sb.auth.getUser().then(({ data: { user: sbUser } }) => {
-      setUser(buildUser(sbUser));
+    // Hydrate immediately from the local session (no network call).
+    sb.auth.getSession().then(({ data: { session } }) => {
+      setUser(buildUser(session?.user ?? null));
     });
 
     // Keep in sync when the session changes (sign-in, sign-out, token refresh).

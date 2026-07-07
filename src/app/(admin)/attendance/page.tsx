@@ -1,18 +1,12 @@
 'use client';
 
-/**
- * /attendance — Attendance page with tabs (Day 23 + 24).
- *
- * Tabs:
- *   - Sessions   — existing AttendanceView with live counter widget
- *   - Kids Church — KidsCheckIn component
- *   - History     — attendance history list (Day 25)
- */
 import { useState } from 'react';
-import { AttendanceView } from '@/components/attendance/AttendanceView';
-import { KidsCheckIn }    from '@/components/attendance/KidsCheckIn';
-import { AttendanceHistory } from '@/components/attendance/AttendanceHistory';
+import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
+
+const AttendanceView   = dynamic(() => import('@/components/attendance/AttendanceView').then(m => m.AttendanceView), { ssr: false, loading: () => <div className="att-card att-card--skeleton" style={{ height: 200 }} /> });
+const KidsCheckIn      = dynamic(() => import('@/components/attendance/KidsCheckIn').then(m => m.KidsCheckIn), { ssr: false });
+const AttendanceHistory = dynamic(() => import('@/components/attendance/AttendanceHistory').then(m => m.AttendanceHistory), { ssr: false });
 
 export default function AttendancePage() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);

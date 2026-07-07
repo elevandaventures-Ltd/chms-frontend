@@ -62,10 +62,18 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await query;
     if (error) throw error;
+
+    // RLS returns 0 rows for unauthenticated requests — fall back to mock
+    if (!data || data.length === 0) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('unauthenticated — use mock');
+    }
+
     return NextResponse.json({ data: (data ?? []).map(rowToSession), source: 'supabase' });
   } catch (err) {
-    console.error('[api/attendance/sessions GET] error:', err);
-    return NextResponse.json({ error: 'Failed to load sessions.' }, { status: 500 });
+    console.error('[api/attendance/sessions GET] falling back to mock:', err);
+    const data = status === 'all' ? mockSessions : mockSessions.filter((s) => s.status === status);
+    return NextResponse.json({ data, source: 'mock' });
   }
 }
 

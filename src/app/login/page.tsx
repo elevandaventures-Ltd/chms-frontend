@@ -63,7 +63,9 @@ export default function LoginPage() {
       const { data, error } = await sb.auth.signInWithPassword({ email: t, password });
       if (!error && data?.session?.access_token) {
         try { localStorage.setItem('token', data.session.access_token); } catch {}
-        setStatus({ kind: 'success', message: 'Signed in successfully.' });
+        const next = new URLSearchParams(window.location.search).get('next') ?? '/dashboard';
+        window.location.href = next;
+        return;
       } else if (error) {
         if (error.status === 400 || error.status === 401) {
           setErrors({ password: 'Incorrect email or password.' });

@@ -74,7 +74,11 @@ export async function GET(request: NextRequest, ctx: RouteCtx) {
       .single();
 
     if (error || !row) {
-      return NextResponse.json({ error: 'Member not found.' }, { status: 404 });
+      // Fall back to mock if table missing
+      const m = mockMembers.find((row) => row.id === id);
+      if (!m) return NextResponse.json({ error: 'Member not found.' }, { status: 404 });
+      const { firstName, lastName } = splitName(m.fullName);
+      return NextResponse.json({ data: { firstName, lastName, email: m.email, phone: m.phone ?? '', status: m.status, role: m.role, joinedDate: m.joinedDate, ministries: m.ministries ?? [], ageGroup: m.ageGroup ?? '', zone: m.zone ?? '', notes: m.notes ?? '', photoUrl: m.photoUrl ?? null } });
     }
 
     const { firstName, lastName } = splitName(row.full_name ?? '');

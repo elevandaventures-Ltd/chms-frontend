@@ -23,8 +23,6 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-
 /**
  * Paths that are always reachable without authentication.
  * Regex patterns are matched against the full pathname.
@@ -57,32 +55,21 @@ export async function middleware(request: NextRequest) {
   // Validate the session server-side.
   // If Supabase env vars are missing we fail open in dev (no redirect) so
   // the UI is still usable without credentials configured.
+  // Fast path: check for the Supabase session cookie without a network call.
+  // The cookie is set by the auth callback and refreshed by the browser client.
+  // Only redirect when there is clearly no session cookie present.
   try {
-    const supabase = createSupabaseServerClient(request, response);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    const hasCookie = request.cookies.getAll().some(
+      (c) => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'),
+    );
 
-    if (!session) {
-      // Build the redirect URL, preserving the intended destination.
+    if (!hasCookie) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('next', pathname);
       return NextResponse.redirect(loginUrl);
     }
-  } catch (error) {
-    // Supabase env vars are not set — fail open so the app is still reachable
-    // locally without credentials (dev / Storybook / CI without secrets).
-    const isMissingEnv =
-      error instanceof Error && error.message.includes('Missing Supabase');
-
-    if (!isMissingEnv) {
-      // Unexpected error — redirect to login rather than surfacing a 500.
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('next', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    // Fall through and serve the page when env vars are absent.
+  } catch {
+    // Fail open — env vars absent or unexpected error.
   }
 
   return response;

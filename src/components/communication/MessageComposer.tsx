@@ -7,9 +7,11 @@
  * - Email: delegates to EmailComposer (TipTap rich text, Day 32).
  */
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { MessageSquare, Mail, Send, Bell } from 'lucide-react';
-import { EmailComposer } from './EmailComposer';
 import type { AudienceFilters } from './AudienceSelector';
+
+const EmailComposer = dynamic(() => import('./EmailComposer').then(m => m.EmailComposer), { ssr: false });
 
 export type Channel = 'sms' | 'email' | 'whatsapp' | 'push';
 

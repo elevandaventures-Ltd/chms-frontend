@@ -10,17 +10,16 @@
  *   - Logout button directly accessible in the sidebar
  *   - Keyboard-accessible collapse toggle
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  ChevronLeft, ChevronRight, ChevronDown,
-  LogOut, User, UserPlus, Copy, PlusCircle,
+  ChevronLeft, ChevronRight,
+  User,
   LayoutDashboard, Users, CalendarCheck,
   CalendarDays, MessageSquare, Landmark,
-  Settings, Circle, Home,
+  Settings, Circle, Home, Church,
 } from 'lucide-react';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { cn } from '@/lib/utils';
 import type { SidebarItem } from '@/lib/site';
@@ -38,6 +37,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   '/communication': <MessageSquare   size={16} aria-hidden="true" />,
   '/finance':       <Landmark        size={16} aria-hidden="true" />,
   '/settings':      <Settings        size={16} aria-hidden="true" />,
+  '/onboarding':    <Church          size={16} aria-hidden="true" />,
 };
 
 /** Role display labels and color tokens */
@@ -51,50 +51,13 @@ const ROLE_META: Record<string, { label: string; color: string }> = {
 };
 
 export function AdminSidebar({ items }: AdminSidebarProps) {
-  const currentUser  = useCurrentUser();
-  const pathname     = usePathname();
-  const [collapsed, setCollapsed]     = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement | null>(null);
+  const currentUser = useCurrentUser();
+  const pathname    = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
-  // Show all items while loading to avoid flash of empty sidebar.
-  // Once resolved, filter by the user's actual role.
   const visibleItems = items.filter((item) =>
     currentUser.loading ? true : item.roles.includes(currentUser.role)
   );
-
-  // Close profile menu on outside click / Escape
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false);
-      }
-    }
-    function onEsc(e: KeyboardEvent) {
-      if (e.key === 'Escape') setProfileOpen(false);
-    }
-    document.addEventListener('mousedown', onDocClick);
-    document.addEventListener('keydown', onEsc);
-    return () => {
-      document.removeEventListener('mousedown', onDocClick);
-      document.removeEventListener('keydown', onEsc);
-    };
-  }, []);
-
-  async function handleSignOut() {
-    try {
-      const sb = getSupabaseBrowserClient();
-      if (sb) await sb.auth.signOut();
-      localStorage.removeItem('token');
-    } catch { /* ignore */ }
-    window.location.href = '/login';
-  }
-
-  async function handleCopyLabel() {
-    const label = currentUser.name || currentUser.email;
-    try { await navigator.clipboard.writeText(label); } catch { /* ignore */ }
-    setProfileOpen(false);
-  }
 
   function isActive(href: string): boolean {
     return pathname === href || pathname.startsWith(href + '/');
@@ -136,96 +99,20 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
         </button>
       </div>
 
-      {/* ── User profile ─────────────────────────────────────────────── */}
-      <div className="admin-sidebar__profile-shell" ref={profileRef}>
-        <button
-          type="button"
-          className="admin-sidebar__profile-btn"
-          aria-haspopup="menu"
-          aria-expanded={profileOpen}
-          onClick={() => setProfileOpen((v) => !v)}
-        >
-          <div className={cn(
-            'admin-sidebar__avatar',
-            currentUser.avatarUrl && 'admin-sidebar__avatar--photo',
-          )}>
-            {avatarContent}
-          </div>
-
-          {!collapsed && (
-            <div className="admin-sidebar__profile-info">
-              <span className="admin-sidebar__profile-name">{displayName}</span>
-              <span
-                className="admin-sidebar__role-badge"
-                style={{ color: roleMeta.color }}
-              >
-                {roleMeta.label}
-              </span>
-            </div>
-          )}
-
-          {!collapsed && (
-            <ChevronDown size={14} className="admin-sidebar__chevron" aria-hidden="true" />
-          )}
-        </button>
-
-        {profileOpen && (
-          <div className="admin-sidebar__profile-menu" role="menu" aria-label="Account actions">
-            <div className="admin-sidebar__profile-meta">
-              <strong>{displayName}</strong>
-              {currentUser.email && displayName !== currentUser.email && (
-                <span>{currentUser.email}</span>
-              )}
-              <span
-                className="admin-sidebar__role-badge"
-                style={{ color: roleMeta.color, fontSize: '0.8rem' }}
-              >
-                {roleMeta.label}
-              </span>
-            </div>
-
-            <div className="admin-sidebar__profile-actions">
-              <Link
-                className="admin-sidebar__menu-item"
-                href="/settings/profile"
-                role="menuitem"
-                onClick={() => setProfileOpen(false)}
-              >
-                <User size={14} aria-hidden="true" /> Profile settings
-              </Link>
-              <button
-                type="button"
-                className="admin-sidebar__menu-item"
-                role="menuitem"
-                onClick={handleCopyLabel}
-              >
-                <Copy size={14} aria-hidden="true" /> Copy account label
-              </button>
-              <Link
-                className="admin-sidebar__menu-item"
-                href="/onboarding"
-                role="menuitem"
-                onClick={() => setProfileOpen(false)}
-              >
-                <PlusCircle size={14} aria-hidden="true" /> Register a church
-              </Link>
-              <Link
-                className="admin-sidebar__menu-item"
-                href="/signup"
-                role="menuitem"
-                onClick={() => setProfileOpen(false)}
-              >
-                <UserPlus size={14} aria-hidden="true" /> Create another account
-              </Link>
-              <button
-                type="button"
-                className="admin-sidebar__menu-item admin-sidebar__menu-item--danger"
-                role="menuitem"
-                onClick={handleSignOut}
-              >
-                <LogOut size={14} aria-hidden="true" /> Sign out
-              </button>
-            </div>
+      {/* ── User profile — static display, no dropdown ───────────────── */}
+      <div className="admin-sidebar__profile-static">
+        <div className={cn(
+          'admin-sidebar__avatar',
+          currentUser.avatarUrl && 'admin-sidebar__avatar--photo',
+        )}>
+          {avatarContent}
+        </div>
+        {!collapsed && (
+          <div className="admin-sidebar__profile-info">
+            <span className="admin-sidebar__profile-name">{displayName}</span>
+            <span className="admin-sidebar__role-badge" style={{ color: roleMeta.color }}>
+              {roleMeta.label}
+            </span>
           </div>
         )}
       </div>
@@ -254,20 +141,6 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
           );
         })}
       </nav>
-
-      {/* ── Sign out shortcut ─────────────────────────────────────────── */}
-      <div className="admin-sidebar__footer">
-        <button
-          type="button"
-          className="admin-sidebar__signout-btn"
-          onClick={handleSignOut}
-          aria-label="Sign out"
-          title="Sign out"
-        >
-          <LogOut size={16} aria-hidden="true" />
-          {!collapsed && <span>Sign out</span>}
-        </button>
-      </div>
     </aside>
   );
 }

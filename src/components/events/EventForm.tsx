@@ -95,14 +95,13 @@ export function EventForm({ initial, onSaved, onCancel }: EventFormProps) {
   }
 
   return (
-    <div className="event-form-overlay" role="dialog" aria-modal="true" aria-label="Create event">
-      <div className="event-form-panel">
-        <div className="event-form-panel__head">
-          <h2>{initial?.id ? 'Edit event' : 'Create event'}</h2>
-          <button type="button" className="msm-close" onClick={onCancel} aria-label="Close"><X size={16} /></button>
-        </div>
+    <div className="event-form-card">
+      <div className="event-form-card__head">
+        <h2 className="event-form-card__title">{initial?.id ? 'Edit event' : 'Create event'}</h2>
+        <button type="button" className="msm-close" onClick={onCancel} aria-label="Close"><X size={16} /></button>
+      </div>
 
-        {error && <Alert variant="destructive" onClose={() => setError('')}>{error}</Alert>}
+      {error && <Alert variant="destructive" onClose={() => setError('')}>{error}</Alert>}
 
         <form className="event-form" onSubmit={handleSubmit} noValidate>
           {/* Title */}
@@ -205,14 +204,13 @@ export function EventForm({ initial, onSaved, onCancel }: EventFormProps) {
           </div>
 
           {/* Actions */}
-          <div className="event-form-panel__actions">
+          <div className="event-form__actions">
             <Button type="button" variant="secondary" size="lg" onClick={onCancel} disabled={saving}>Cancel</Button>
             <Button type="submit" size="lg" loading={saving}>
               {initial?.id ? 'Save changes' : 'Create event'}
             </Button>
           </div>
         </form>
-      </div>
     </div>
   );
 }

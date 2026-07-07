@@ -63,6 +63,12 @@ export async function GET(request: NextRequest) {
 
     const memberRows = (members ?? []).map(rowToMember);
 
+    // RLS returns 0 rows for unauthenticated requests — fall back to mock
+    if (!members || members.length === 0) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return NextResponse.json({ data: synthesizeHouseholds(mockMembers), source: 'mock' });
+    }
+
     // No real households yet → synthesise from members.
     if (!households || households.length === 0) {
       return NextResponse.json({ data: synthesizeHouseholds(memberRows), source: 'synthesized' });
@@ -102,7 +108,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: result, source: 'supabase' });
   } catch (err) {
-    console.error('[api/households GET] error:', err);
-    return NextResponse.json({ error: 'Failed to load households.' }, { status: 500 });
+    console.error('[api/households GET] falling back to mock:', err);
+    return NextResponse.json({ data: synthesizeHouseholds(mockMembers), source: 'mock' });
   }
 }

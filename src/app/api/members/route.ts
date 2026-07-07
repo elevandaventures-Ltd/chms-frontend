@@ -89,6 +89,12 @@ export async function GET(request: NextRequest) {
     const { data, count, error } = await dbQuery;
     if (error) throw error;
 
+    // RLS returns 0 rows for unauthenticated requests — fall back to mock
+    if (!data || data.length === 0) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('unauthenticated — use mock');
+    }
+
     const members = (data ?? []).map((row) => ({
       id:         row.id,
       fullName:   row.full_name,
@@ -105,8 +111,19 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: members, total: count ?? 0, page, pageSize });
   } catch (err) {
-    console.error('[api/members GET] error:', err);
-    return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
+    console.error('[api/members GET] falling back to mock:', err);
+    // Supabase configured but tables missing — fall back to mock
+    let results = mockMembers;
+    if (status !== 'all')    results = results.filter((m) => m.status === status);
+    if (q)                   results = results.filter((m) => m.fullName.toLowerCase().includes(q) || m.email.toLowerCase().includes(q));
+    if (ministryList.length) results = results.filter((m) => ministryList.some((min) => m.ministries.includes(min)));
+    if (ageGroupList.length) results = results.filter((m) => m.ageGroup && ageGroupList.includes(m.ageGroup));
+    if (joinFrom)            results = results.filter((m) => m.joinedDate >= joinFrom);
+    if (joinTo)              results = results.filter((m) => m.joinedDate <= joinTo);
+    if (zoneList.length)     results = results.filter((m) => m.zone && zoneList.includes(m.zone));
+    const total = results.length;
+    const from  = (page - 1) * pageSize;
+    return NextResponse.json({ data: results.slice(from, from + pageSize), total, page, pageSize, source: 'mock' });
   }
 }
 

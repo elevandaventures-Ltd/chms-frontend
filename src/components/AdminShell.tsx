@@ -27,11 +27,7 @@ export function AdminShell({
     <div className="admin-shell">
       <AdminSidebar items={site.sidebarItems} />
       <div className="admin-main">
-        <AdminTopNav
-          title={title}
-          subtitle={subtitle}
-          notifications={site.notifications}
-        />
+        <AdminTopNav title={title} subtitle={subtitle} />
         {breadcrumbs && (
           <div className="admin-breadcrumbs-bar">
             <Breadcrumbs />

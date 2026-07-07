@@ -106,6 +106,12 @@ export const sidebarItems: SidebarItem[] = [
     icon: 'settings',
     roles: ['admin'],
   },
+  {
+    label: 'Register a Church',
+    href: '/onboarding',
+    icon: 'onboarding',
+    roles: ['admin'],
+  },
 ];
 
 // ── Sprint log ────────────────────────────────────────────────────────────────

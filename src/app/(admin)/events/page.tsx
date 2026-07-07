@@ -1,16 +1,14 @@
 'use client';
 
-/**
- * /events — Events page (Days 26–29)
- * Tabs: Calendar | Create | Resources
- */
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
-import { EventCalendar }   from '@/components/events/EventCalendar';
-import { EventForm }       from '@/components/events/EventForm';
-import { ResourceManager } from '@/components/events/ResourceManager';
-import { EventDiscovery }  from '@/components/events/EventDiscovery';
-import type { ChmsEvent }  from '@/lib/events';
+import type { ChmsEvent } from '@/lib/events';
+
+const EventCalendar   = dynamic(() => import('@/components/events/EventCalendar').then(m => m.EventCalendar), { ssr: false, loading: () => <div className="skeleton-shimmer" style={{ height: 500, borderRadius: 16 }} /> });
+const EventForm       = dynamic(() => import('@/components/events/EventForm').then(m => m.EventForm), { ssr: false });
+const ResourceManager = dynamic(() => import('@/components/events/ResourceManager').then(m => m.ResourceManager), { ssr: false });
+const EventDiscovery  = dynamic(() => import('@/components/events/EventDiscovery').then(m => m.EventDiscovery), { ssr: false });
 
 export default function EventsPage() {
   const [tab, setTab] = useState('calendar');
@@ -44,12 +42,10 @@ export default function EventsPage() {
               </button>
             </div>
           ) : (
-            <div className="events-form-wrap">
-              <EventForm
-                onSaved={(ev) => { setCreated(ev); }}
-                onCancel={() => setTab('calendar')}
-              />
-            </div>
+            <EventForm
+              onSaved={(ev) => { setCreated(ev); }}
+              onCancel={() => setTab('calendar')}
+            />
           )}
         </TabsContent>
 
