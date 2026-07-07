@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Users, UserCheck, CalendarCheck, CalendarDays,
   UserPlus, Upload, QrCode, MessageSquare,
-  TrendingUp, TrendingDown, Minus,
   Bell, Church, Clock,
   BarChart3, Wifi,
 } from 'lucide-react';
@@ -16,8 +15,6 @@ type Stats = {
   todayAttendance: number;
   upcomingEvents: number;
 };
-
-type Trend = 'up' | 'down' | 'flat';
 
 const QUICK_ACTIONS = [
   { href: '/members?add=1',    icon: <UserPlus size={15} />,      label: 'Add Member',    color: '#b25131' },
@@ -35,12 +32,6 @@ const ACTIVITY = [
   { icon: <Church size={14} />,        color: '#274c3f',  title: 'Church onboarding complete',   detail: 'Your church profile is set up and ready to use.',        time: '1d ago' },
   { icon: <Clock size={14} />,         color: '#d97706',  title: 'Events calendar available',    detail: 'Create recurring events, manage RSVPs and resources.',   time: '2d ago' },
 ] as const;
-
-function TrendIcon({ trend }: { trend: Trend }) {
-  if (trend === 'up')   return <TrendingUp  size={13} />;
-  if (trend === 'down') return <TrendingDown size={13} />;
-  return <Minus size={13} />;
-}
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -70,15 +61,13 @@ export default function DashboardPage() {
     void load();
   }, []);
 
-  const kpis: { label: string; value: string | number; sub: string; icon: React.ReactNode; color: string; trend: Trend; delta: string }[] = [
+  const kpis: { label: string; value: string | number; sub: string; icon: React.ReactNode; color: string }[] = [
     {
       label: 'Total Members',
       value: stats?.totalMembers ?? '—',
       sub: 'Registered congregation',
       icon: <Users size={20} />,
       color: '#b25131',
-      trend: 'up',
-      delta: '+3 this month',
     },
     {
       label: 'Active Members',
@@ -86,8 +75,6 @@ export default function DashboardPage() {
       sub: `${stats ? Math.round((stats.activeMembers / stats.totalMembers) * 100) : '—'}% of total`,
       icon: <UserCheck size={20} />,
       color: '#274c3f',
-      trend: 'up',
-      delta: '+2 this week',
     },
     {
       label: "Today's Check-ins",
@@ -95,8 +82,6 @@ export default function DashboardPage() {
       sub: 'Live attendance count',
       icon: <Wifi size={20} />,
       color: '#2563eb',
-      trend: stats?.todayAttendance ? 'up' : 'flat',
-      delta: stats?.todayAttendance ? 'Session active' : 'No active session',
     },
     {
       label: 'Upcoming Events',
@@ -104,8 +89,6 @@ export default function DashboardPage() {
       sub: 'Next 30 days',
       icon: <CalendarDays size={20} />,
       color: '#d97706',
-      trend: 'flat',
-      delta: 'View calendar',
     },
   ];
 
@@ -119,10 +102,6 @@ export default function DashboardPage() {
             <div className="dash-v2__kpi-top">
               <span className="dash-v2__kpi-icon" style={{ background: `${k.color}14`, color: k.color }}>
                 {k.icon}
-              </span>
-              <span className={`dash-v2__kpi-trend dash-v2__kpi-trend--${k.trend}`}>
-                <TrendIcon trend={k.trend} />
-                {k.delta}
               </span>
             </div>
             <div className="dash-v2__kpi-value">{k.value}</div>
