@@ -1,18 +1,7 @@
 'use client';
 
-/**
- * useCurrentUser — resolves the authenticated user's display info from
- * the live Supabase session.
- *
- * Returns name, email, initials, avatar URL, and role derived from the
- * session's user_metadata. Falls back gracefully when Supabase env vars
- * are absent (dev without credentials) or no session exists.
- *
- * Used by TopNav and Sidebar so they always reflect the real signed-in user
- * rather than a hardcoded placeholder.
- */
 import { useEffect, useState } from 'react';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { subscribeAuth } from '@/lib/supabase/authStore';
 import type { UserRole } from '@/lib/site';
 
 export type CurrentUser = {
@@ -34,64 +23,29 @@ function deriveInitials(name: string, email: string): string {
     .join('');
 }
 
-/** Coerce an arbitrary metadata role string to a valid UserRole. */
 function coerceRole(raw: unknown): UserRole {
   const valid: UserRole[] = ['admin', 'pastor', 'finance', 'ministry_leader', 'staff', 'member'];
   if (typeof raw === 'string' && (valid as string[]).includes(raw)) return raw as UserRole;
-  // Default authenticated users to admin — any signed-up user manages their own church.
   return 'admin';
 }
 
-const FALLBACK: CurrentUser = {
-  name: '',
-  email: '',
-  initials: '?',
-  avatarUrl: '',
-  role: 'member',
-  loading: true,
-};
+const LOADING: CurrentUser = { name: '', email: '', initials: '?', avatarUrl: '', role: 'member', loading: true };
 
 export function useCurrentUser(): CurrentUser {
-  const [user, setUser] = useState<CurrentUser>(FALLBACK);
+  const [user, setUser] = useState<CurrentUser>(LOADING);
 
   useEffect(() => {
-    const sb = getSupabaseBrowserClient();
-
-    if (!sb) {
-      // No Supabase credentials — default to admin so all nav items are visible in dev.
-      setUser({ ...FALLBACK, role: 'admin', loading: false });
-      return;
-    }
-
-    function buildUser(sbUser: { email?: string; user_metadata?: Record<string, unknown> } | null): CurrentUser {
-      if (!sbUser) return { ...FALLBACK, loading: false };
+    return subscribeAuth((session) => {
+      const sbUser = session?.user ?? null;
+      if (!sbUser) { setUser({ ...LOADING, loading: false }); return; }
 
       const email     = sbUser.email ?? '';
       const name      = String(sbUser.user_metadata?.name ?? '');
       const avatarUrl = String(sbUser.user_metadata?.avatar_url ?? '');
       const role      = coerceRole(sbUser.user_metadata?.role);
 
-      return {
-        name,
-        email,
-        initials: deriveInitials(name, email),
-        avatarUrl,
-        role,
-        loading: false,
-      };
-    }
-
-    // Hydrate immediately from the local session (no network call).
-    sb.auth.getSession().then(({ data: { session } }) => {
-      setUser(buildUser(session?.user ?? null));
+      setUser({ name, email, initials: deriveInitials(name, email), avatarUrl, role, loading: false });
     });
-
-    // Keep in sync when the session changes (sign-in, sign-out, token refresh).
-    const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
-      setUser(buildUser(session?.user ?? null));
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   return user;
