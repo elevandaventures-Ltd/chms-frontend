@@ -6,10 +6,12 @@
  * - SMS: character counter with 160/320/480 segment boundaries.
  * - Email: delegates to EmailComposer (TipTap rich text, Day 32).
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { MessageSquare, Mail, Send, Bell } from 'lucide-react';
 import type { AudienceFilters } from './AudienceSelector';
+import { TemplateEditor } from './TemplateEditor';
+import type { MessageTemplate } from './TemplateLibrary';
 
 const EmailComposer = dynamic(() => import('./EmailComposer').then(m => m.EmailComposer), { ssr: false });
 
@@ -31,25 +33,53 @@ const TABS: { id: Channel; label: string; icon: React.ReactNode }[] = [
 ];
 
 type Props = {
-  filters:         AudienceFilters;
-  reach:           number;
-  channel:         Channel;
-  onChannelChange: (c: Channel) => void;
-  onSent?:         (result: { channel: Channel; sent: number }) => void;
+  filters:          AudienceFilters;
+  reach:            number;
+  channel:          Channel;
+  onChannelChange:  (c: Channel) => void;
+  onSent?:          (result: { channel: Channel; sent: number }) => void;
+  initialSubject?:  string;
+  initialBody?:     string;
+  activeTemplate?:  MessageTemplate | null;
+  onSubjectChange?: (v: string) => void;
+  onBodyChange?:    (v: string) => void;
 };
 
-export function MessageComposer({ filters, reach, channel, onChannelChange, onSent }: Props) {
-  const [subject,     setSubject]     = useState('');
-  const [body,        setBody]        = useState('');
+export function MessageComposer({ filters, reach, channel, onChannelChange, onSent, initialSubject = '', initialBody = '', activeTemplate, onSubjectChange, onBodyChange }: Props) {
+  const [subject,     setSubject]     = useState(initialSubject);
+  const [body,        setBody]        = useState(initialBody);
   const [sending,     setSending]     = useState(false);
   const [serverError, setServerError] = useState('');
   const [sent,        setSent]        = useState(false);
+  const [useEditor,   setUseEditor]   = useState(false);
+
+  // Sync when a template is loaded from the library
+  useEffect(() => {
+    if (activeTemplate) {
+      setSubject(initialSubject);
+      setBody(initialBody);
+      setSent(false);
+      setServerError('');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTemplate]);
+
+  function handleSubjectChange(v: string) {
+    setSubject(v);
+    onSubjectChange?.(v);
+  }
+
+  function handleBodyChange(v: string) {
+    setBody(v);
+    onBodyChange?.(v);
+  }
 
   const { limit, seg, over } = smsInfo(body.length);
 
   function switchChannel(c: Channel) {
     onChannelChange(c);
     setServerError('');
+    setSent(false);
   }
 
   async function handleSend() {
@@ -106,6 +136,37 @@ export function MessageComposer({ filters, reach, channel, onChannelChange, onSe
     );
   }
 
+  // Template editor mode (non-email channels)
+  if (useEditor) {
+    return (
+      <div className="comm-composer">
+        {tabBar}
+        <TemplateEditor
+          initialTemplate={activeTemplate}
+          subject={subject}
+          body={body}
+          onSubjectChange={handleSubjectChange}
+          onBodyChange={handleBodyChange}
+        />
+        {serverError && <p className="comm-error" role="alert">{serverError}</p>}
+        <div className="comm-composer__footer">
+          <button type="button" className="comm-btn comm-btn--secondary" onClick={() => setUseEditor(false)}>Simple mode</button>
+          <span className="comm-composer__reach-hint">
+            Sending to <strong>{reach.toLocaleString()}</strong> recipient{reach !== 1 ? 's' : ''}
+          </span>
+          <button
+            type="button"
+            className="comm-btn comm-btn--primary"
+            onClick={handleSend}
+            disabled={sending || !body.trim() || reach === 0}
+          >
+            {sending ? 'Sending…' : `Send ${channel.toUpperCase()}`}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (sent) {
     return (
       <div className="comm-composer comm-composer--sent">
@@ -137,7 +198,7 @@ export function MessageComposer({ filters, reach, channel, onChannelChange, onSe
               className="comm-input"
               type="text"
               value={subject}
-              onChange={(e) => { setSubject(e.target.value); setServerError(''); }}
+              onChange={(e) => { handleSubjectChange(e.target.value); setServerError(''); }}
               placeholder="Short title…"
             />
           </div>
@@ -156,7 +217,7 @@ export function MessageComposer({ filters, reach, channel, onChannelChange, onSe
             id="comm-body"
             className={`comm-textarea${over ? ' comm-textarea--error' : ''}`}
             value={body}
-            onChange={(e) => { setBody(e.target.value); setServerError(''); }}
+            onChange={(e) => { handleBodyChange(e.target.value); setServerError(''); }}
             placeholder={
               channel === 'sms'      ? 'Your SMS message…' :
               channel === 'whatsapp' ? 'WhatsApp message…' :
@@ -181,6 +242,7 @@ export function MessageComposer({ filters, reach, channel, onChannelChange, onSe
       {serverError && <p className="comm-error" role="alert">{serverError}</p>}
 
       <div className="comm-composer__footer">
+        <button type="button" className="comm-btn comm-btn--secondary" onClick={() => setUseEditor(true)}>Variable editor</button>
         <span className="comm-composer__reach-hint">
           Sending to <strong>{reach.toLocaleString()}</strong> recipient{reach !== 1 ? 's' : ''}
         </span>
