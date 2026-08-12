@@ -13,8 +13,9 @@
  * Clicking the card navigates to the member profile page (future sprint).
  */
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Phone, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, BLUR_PLACEHOLDER, isDataOrBlobUrl } from '@/lib/utils';
 import type { Member, MemberStatus } from '@/lib/site';
 
 // ── Status badge config ───────────────────────────────────────────────────────
@@ -102,12 +103,18 @@ export function MemberCard({ member, className, onClick, selected, onToggleSelec
 
       {/* ── Photo / Avatar ── */}
       <div className="member-card__photo-wrap">
-        {member.photoUrl ? (
+        {member.photoUrl && isDataOrBlobUrl(member.photoUrl) ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <img src={member.photoUrl} alt={member.fullName} className="member-card__photo" />
+        ) : member.photoUrl ? (
+          <Image
             src={member.photoUrl}
             alt={member.fullName}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 260px"
             className="member-card__photo"
+            placeholder="blur"
+            blurDataURL={BLUR_PLACEHOLDER}
           />
         ) : (
           <div

@@ -1,3 +1,4 @@
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 /**
  * GET /api/search/members
  *
@@ -145,7 +146,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             );
           },
         },
+        global: { fetch: timeoutFetch },
       });
+      disablePostgrestRetry(supabase);
 
       let dbQuery = supabase
         .from('members')

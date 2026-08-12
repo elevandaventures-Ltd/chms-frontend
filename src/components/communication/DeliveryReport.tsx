@@ -1,22 +1,14 @@
 'use client';
 
 /**
- * DeliveryReport — Day 32
- * Table of sent messages: Channel, Recipients, Delivered %, Opened % (email), Sent Time, Status.
+ * DeliveryReport / Sent History — Day 32, extended Day 35 with a search
+ * box and a Failed count column (searchable table of all past messages).
  */
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshCw, Mail, MessageSquare, Send, Bell } from 'lucide-react';
+import { RefreshCw, Mail, MessageSquare, Send, Bell, Search } from 'lucide-react';
+import { mockMessageReports, type MessageReport } from '@/lib/communication';
 
-export type MessageReport = {
-  id:           string;
-  channel:      'sms' | 'email' | 'whatsapp' | 'push';
-  subject?:     string;
-  recipients:   number;
-  delivered:    number;
-  opened?:      number;   // email only
-  sentAt:       string;   // ISO
-  status:       'sent' | 'sending' | 'failed' | 'partial';
-};
+export type { MessageReport };
 
 const CHANNEL_ICON: Record<MessageReport['channel'], React.ReactNode> = {
   sms:      <MessageSquare size={13} />,
@@ -48,19 +40,11 @@ function fmtDate(iso: string) {
   });
 }
 
-// Mock data shown when the API returns nothing
-const MOCK_REPORTS: MessageReport[] = [
-  { id: 'r1', channel: 'email',    subject: 'Sunday Service Reminder',  recipients: 18, delivered: 17, opened: 11, sentAt: new Date(Date.now() - 3_600_000).toISOString(),  status: 'sent' },
-  { id: 'r2', channel: 'sms',      subject: undefined,                  recipients: 14, delivered: 14, sentAt: new Date(Date.now() - 7_200_000).toISOString(),  status: 'sent' },
-  { id: 'r3', channel: 'whatsapp', subject: undefined,                  recipients: 8,  delivered: 7,  sentAt: new Date(Date.now() - 86_400_000).toISOString(), status: 'partial' },
-  { id: 'r4', channel: 'push',     subject: 'Youth Night Tonight',      recipients: 20, delivered: 19, sentAt: new Date(Date.now() - 172_800_000).toISOString(),status: 'sent' },
-  { id: 'r5', channel: 'email',    subject: 'Monthly Newsletter',       recipients: 20, delivered: 20, opened: 14, sentAt: new Date(Date.now() - 259_200_000).toISOString(),status: 'sent' },
-];
-
 export function DeliveryReport() {
   const [reports,  setReports]  = useState<MessageReport[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState('');
+  const [query,    setQuery]    = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -68,9 +52,9 @@ export function DeliveryReport() {
     try {
       const res  = await fetch('/api/communication/reports');
       const json = await res.json() as { data?: MessageReport[] };
-      setReports(json.data && json.data.length > 0 ? json.data : MOCK_REPORTS);
+      setReports(json.data && json.data.length > 0 ? json.data : mockMessageReports);
     } catch {
-      setReports(MOCK_REPORTS);
+      setReports(mockMessageReports);
     } finally {
       setLoading(false);
     }
@@ -78,10 +62,30 @@ export function DeliveryReport() {
 
   useEffect(() => { void load(); }, [load]);
 
+  const filtered = query.trim()
+    ? reports.filter((r) => {
+        const q = query.trim().toLowerCase();
+        return (r.subject ?? '').toLowerCase().includes(q)
+          || CHANNEL_LABEL[r.channel].toLowerCase().includes(q)
+          || r.status.toLowerCase().includes(q);
+      })
+    : reports;
+
   return (
     <div className="dr-wrap">
+      <div className="dr-search">
+        <Search size={14} aria-hidden="true" />
+        <input
+          type="search"
+          placeholder="Search by subject, channel, or status…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search sent messages"
+        />
+      </div>
+
       <div className="dr-header">
-        <h2 className="dr-title">Delivery Reports</h2>
+        <h2 className="dr-title">Sent History</h2>
         <button
           type="button"
           className="dr-refresh"
@@ -104,6 +108,7 @@ export function DeliveryReport() {
               <th className="dr-th">Subject / Message</th>
               <th className="dr-th dr-th--num">Recipients</th>
               <th className="dr-th dr-th--num">Delivered</th>
+              <th className="dr-th dr-th--num">Failed</th>
               <th className="dr-th dr-th--num">Opened</th>
               <th className="dr-th">Sent</th>
               <th className="dr-th">Status</th>
@@ -113,19 +118,19 @@ export function DeliveryReport() {
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i} className="dr-row dr-row--skeleton">
-                  {Array.from({ length: 7 }).map((__, j) => (
+                  {Array.from({ length: 8 }).map((__, j) => (
                     <td key={j} className="dr-td">
                       <div className="skeleton-shimmer" style={{ height: 12, borderRadius: 6, width: j === 1 ? '80%' : '60%' }} />
                     </td>
                   ))}
                 </tr>
               ))
-            ) : reports.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="dr-empty">No messages sent yet.</td>
+                <td colSpan={8} className="dr-empty">{query.trim() ? 'No messages match your search.' : 'No messages sent yet.'}</td>
               </tr>
             ) : (
-              reports.map((r) => (
+              filtered.map((r) => (
                 <tr key={r.id} className="dr-row">
                   <td className="dr-td">
                     <span className={`dr-channel dr-channel--${r.channel}`}>
@@ -145,6 +150,9 @@ export function DeliveryReport() {
                       />
                       {pct(r.delivered, r.recipients)}
                     </span>
+                  </td>
+                  <td className="dr-td dr-td--num">
+                    {r.failed > 0 ? <span className="dr-failed">{r.failed}</span> : <span className="dr-muted">0</span>}
                   </td>
                   <td className="dr-td dr-td--num">
                     {r.channel === 'email' && r.opened != null ? (

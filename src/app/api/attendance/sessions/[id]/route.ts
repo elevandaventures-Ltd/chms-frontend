@@ -7,6 +7,7 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 import { z } from 'zod';
 
 type RouteCtx = { params: Promise<{ id: string }> };
@@ -44,7 +45,9 @@ export async function PATCH(request: NextRequest, ctx: RouteCtx) {
           );
         },
       },
+      global: { fetch: timeoutFetch },
     });
+    disablePostgrestRetry(supabase);
 
     const { error } = await supabase
       .from('attendance_sessions')

@@ -9,7 +9,10 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 import { statusChangeSchema } from '@/lib/member-schema';
+import { mockMembers } from '@/lib/site';
+import { addAuditEntry } from '@/lib/church-store';
 
 type RouteCtx = { params: Promise<{ id: string }> };
 
@@ -31,6 +34,14 @@ export async function PATCH(request: NextRequest, ctx: RouteCtx) {
 
     // ── Mock fallback ──────────────────────────────────────────────────────
     if (!supabaseUrl || !supabaseAnonKey) {
+      const member = mockMembers.find((m) => m.id === id);
+      if (member && member.status !== status) {
+        addAuditEntry({
+          actorName: 'Solomon Leek', action: 'member.status_changed', resourceType: 'Member',
+          resourceId: id, resourceLabel: member.fullName,
+          changes: [{ field: 'status', before: member.status, after: status }, ...(reason ? [{ field: 'reason', before: null, after: reason }] : [])],
+        });
+      }
       return NextResponse.json({ id, status });
     }
 
@@ -44,7 +55,9 @@ export async function PATCH(request: NextRequest, ctx: RouteCtx) {
           );
         },
       },
+      global: { fetch: timeoutFetch },
     });
+    disablePostgrestRetry(supabase);
 
     // Current status + church for the history row.
     const { data: existing, error: fetchErr } = await supabase
@@ -71,6 +84,12 @@ export async function PATCH(request: NextRequest, ctx: RouteCtx) {
       .eq('id', id);
 
     if (updateErr) throw updateErr;
+
+    addAuditEntry({
+      actorName: 'Solomon Leek', action: 'member.status_changed', resourceType: 'Member',
+      resourceId: id, resourceLabel: id,
+      changes: [{ field: 'status', before: fromStatus, after: status }, ...(reason ? [{ field: 'reason', before: null, after: reason }] : [])],
+    });
 
     // Record the transition. Don't fail the request if history insert fails
     // (table may not exist yet on older deployments) — log and continue.

@@ -1,3 +1,4 @@
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 /**
  * GET  /api/members — paginated, filtered member list.
  * POST /api/members — create a new member (multipart/form-data).
@@ -7,14 +8,41 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { mockMembers } from '@/lib/site';
-import type { AgeGroup } from '@/lib/site';
+import type { AgeGroup, Member } from '@/lib/site';
 import { memberSchema } from '@/lib/member-schema';
+
+const STRESS_FIRST_NAMES = ['Abena', 'Kwame', 'Ama', 'Kofi', 'Efua', 'Yaw', 'Akosua', 'Nana', 'Kwabena', 'Adwoa', 'Ekow', 'Maame', 'Fiifi', 'Esi', 'Kweku'];
+const STRESS_LAST_NAMES = ['Mensah', 'Asante', 'Boateng', 'Owusu', 'Darko', 'Appiah', 'Frimpong', 'Tetteh', 'Adjei', 'Osei'];
+
+/** Day 57 load-testing aid: deterministically generate N synthetic
+ *  members so virtualized-scroll performance can actually be exercised
+ *  against a 5,000-row dataset without a real Supabase project that big. */
+function generateStressMembers(count: number): Member[] {
+  const list: Member[] = [];
+  for (let i = 0; i < count; i++) {
+    const first = STRESS_FIRST_NAMES[i % STRESS_FIRST_NAMES.length];
+    const last = STRESS_LAST_NAMES[Math.floor(i / STRESS_FIRST_NAMES.length) % STRESS_LAST_NAMES.length];
+    list.push({
+      id: `stress-${i}`,
+      fullName: `${first} ${last} ${i}`,
+      email: `${first.toLowerCase()}.${last.toLowerCase()}${i}@elevanda.org`,
+      status: (['active', 'inactive', 'visitor'] as const)[i % 3],
+      role: 'member',
+      ministries: [],
+      joinedDate: '2022-01-01',
+    });
+  }
+  return list;
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const page       = Math.max(1, parseInt(searchParams.get('page')     ?? '1', 10));
-  const pageSize   = Math.min(48, Math.max(1, parseInt(searchParams.get('pageSize') ?? '12', 10)));
+  // Capped at 48 for the paginated card grid; the virtualized list view
+  // (Day 57) requests a much larger batch since react-virtual — not
+  // pagination — is what keeps that view's DOM light.
+  const pageSize   = Math.min(10000, Math.max(1, parseInt(searchParams.get('pageSize') ?? '12', 10)));
   const status     = searchParams.get('status')     ?? 'all';
   const q          = searchParams.get('q')?.trim().toLowerCase()  ?? '';
   const ministries = searchParams.get('ministries') ?? '';
@@ -26,6 +54,20 @@ export async function GET(request: NextRequest) {
   const ministryList  = ministries ? ministries.split(',').map((s) => s.trim()) : [];
   const ageGroupList  = ageGroups  ? (ageGroups.split(',').map((s) => s.trim()) as AgeGroup[]) : [];
   const zoneList      = zones      ? zones.split(',').map((s) => s.trim()) : [];
+
+  // Day 57 load-testing aid: an explicit `stress` param always wins, even
+  // when Supabase is configured — otherwise this dev-only escape hatch
+  // would silently do nothing whenever a real (if empty) project is
+  // connected, which is exactly the environment it's most useful in.
+  const stressCount = Math.min(20000, Math.max(0, parseInt(searchParams.get('stress') ?? '0', 10)));
+  if (stressCount > 0) {
+    let results = generateStressMembers(stressCount);
+    if (status !== 'all') results = results.filter((m) => m.status === status);
+    if (q) results = results.filter((m) => m.fullName.toLowerCase().includes(q) || m.email.toLowerCase().includes(q));
+    const total = results.length;
+    const from  = (page - 1) * pageSize;
+    return NextResponse.json({ data: results.slice(from, from + pageSize), total, page, pageSize });
+  }
 
   const supabaseUrl     = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -68,7 +110,9 @@ export async function GET(request: NextRequest) {
         );
       },
     },
+    global: { fetch: timeoutFetch },
   });
+  disablePostgrestRetry(supabase);
 
   try {
     let dbQuery = supabase
@@ -170,7 +214,9 @@ export async function POST(request: NextRequest) {
           );
         },
       },
+      global: { fetch: timeoutFetch },
     });
+    disablePostgrestRetry(supabase);
 
     // Handle photo upload to Supabase Storage
     let photoUrl: string | undefined;

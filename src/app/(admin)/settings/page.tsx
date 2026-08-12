@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { User, Shield, Bell, Church, Plug, Database, ChevronRight } from 'lucide-react';
+import { User, Shield, Bell, Church, Plug, Database, ChevronRight, Users, Palette, Settings2, ScrollText, ListChecks } from 'lucide-react';
 
 const SETTINGS_SECTIONS = [
   {
@@ -12,20 +12,25 @@ const SETTINGS_SECTIONS = [
     title: 'Church',
     items: [
       { href: '/onboarding', label: 'Church profile', desc: 'Edit your church name, denomination, and contact details.', icon: <Church size={20} strokeWidth={1.5} />, live: true },
-      { href: '#', label: 'Roles & permissions', desc: 'Assign admin, pastor, finance, and staff roles to members.', icon: <Shield size={20} strokeWidth={1.5} />, live: false },
+      { href: '/settings/branding', label: 'Branding', desc: 'Logo, accent color, and welcome message — with a live preview.', icon: <Palette size={20} strokeWidth={1.5} />, live: true },
+      { href: '/settings/general', label: 'General', desc: 'Denomination, timezone, currency, and language.', icon: <Settings2 size={20} strokeWidth={1.5} />, live: true },
+      { href: '/settings/team', label: 'Team', desc: 'Invite staff and manage their roles.', icon: <Users size={20} strokeWidth={1.5} />, live: true },
+      { href: '/settings/permissions', label: 'Roles & permissions', desc: 'See what each of the 6 roles can access.', icon: <Shield size={20} strokeWidth={1.5} />, live: true },
+      { href: '/settings/custom-fields', label: 'Custom fields', desc: 'Add denomination-specific fields to member profiles.', icon: <ListChecks size={20} strokeWidth={1.5} />, live: true },
     ],
   },
   {
     title: 'Notifications',
     items: [
-      { href: '#', label: 'Notification preferences', desc: 'Email and in-app notification settings.', icon: <Bell size={20} strokeWidth={1.5} />, live: false },
+      { href: '/settings/notifications', label: 'Notification preferences', desc: 'Choose which updates you receive, and on which channel.', icon: <Bell size={20} strokeWidth={1.5} />, live: true },
     ],
   },
   {
     title: 'Integrations & Data',
     items: [
       { href: '#', label: 'Integrations', desc: 'Connect Twilio, Mailgun, Meilisearch, and other services.', icon: <Plug size={20} strokeWidth={1.5} />, live: false },
-      { href: '#', label: 'Data & exports', desc: 'Export member data, attendance records, and financial reports.', icon: <Database size={20} strokeWidth={1.5} />, live: false },
+      { href: '/settings/audit-log', label: 'Audit log', desc: 'Every change made in this church, with before/after detail.', icon: <ScrollText size={20} strokeWidth={1.5} />, live: true },
+      { href: '/settings/data-export', label: 'Data & exports', desc: 'Download members, households, attendance, events, and giving as CSV.', icon: <Database size={20} strokeWidth={1.5} />, live: true },
     ],
   },
 ];

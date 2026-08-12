@@ -7,6 +7,7 @@ import { X, Upload, Plus, Check, User, Save } from 'lucide-react';
 import { memberSchema, type MemberFormValues } from '@/lib/member-schema';
 import { MINISTRIES } from '@/lib/ministries';
 import type { Member } from '@/lib/site';
+import type { ChurchCustomField } from '@/lib/church-branding';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -84,7 +85,17 @@ export function MemberForm({
   const [saving,       setSaving]       = useState(false);
   const [serverError,  setServerError]  = useState('');
   const [members,      setMembers]      = useState<Pick<Member, 'id' | 'fullName'>[]>([]);
+  const [customFields, setCustomFields] = useState<ChurchCustomField[]>([]);
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string | boolean>>({});
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Church-defined custom fields (Day 49) — rendered dynamically below Notes.
+  useEffect(() => {
+    fetch('/api/church/custom-fields')
+      .then((r) => r.json())
+      .then((j: { data?: ChurchCustomField[] }) => setCustomFields(j.data ?? []))
+      .catch(() => setCustomFields([]));
+  }, []);
 
   // Household-head dropdown options — exclude self in edit mode.
   useEffect(() => {
@@ -158,6 +169,7 @@ export function MemberForm({
       // Edit mode: signal an explicit photo removal (no replacement uploaded).
       if (isEdit && photoRemoved && !photoFile) body.append('removePhoto', '1');
       body.append('data', JSON.stringify(data));
+      body.append('customFieldValues', JSON.stringify(customFieldValues));
 
       const url    = isEdit ? `/api/members/${memberId}` : '/api/members';
       const method = isEdit ? 'PUT' : 'POST';
@@ -422,6 +434,43 @@ export function MemberForm({
               rows={3}
             />
           </Field>
+
+          {/* ── Custom fields (Day 49) ───────────────────────────────────── */}
+          {customFields.length > 0 && (
+            <>
+              <Section title="Additional information" />
+              {customFields.map((cf) => (
+                <Field key={cf.id} label={cf.label} required={cf.required}>
+                  {cf.type === 'boolean' ? (
+                    <label className="amf-checkbox-row">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(customFieldValues[cf.id])}
+                        onChange={(e) => setCustomFieldValues((v) => ({ ...v, [cf.id]: e.target.checked }))}
+                      />
+                      {cf.label}
+                    </label>
+                  ) : cf.type === 'dropdown' ? (
+                    <select
+                      className="amf-input"
+                      value={String(customFieldValues[cf.id] ?? '')}
+                      onChange={(e) => setCustomFieldValues((v) => ({ ...v, [cf.id]: e.target.value }))}
+                    >
+                      <option value="">Select…</option>
+                      {(cf.options ?? []).map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                  ) : (
+                    <input
+                      className="amf-input"
+                      type={cf.type === 'date' ? 'date' : cf.type === 'number' ? 'number' : 'text'}
+                      value={String(customFieldValues[cf.id] ?? '')}
+                      onChange={(e) => setCustomFieldValues((v) => ({ ...v, [cf.id]: e.target.value }))}
+                    />
+                  )}
+                </Field>
+              ))}
+            </>
+          )}
 
           {/* ── Server error ──────────────────────────────────────────────── */}
           {serverError && (

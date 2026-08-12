@@ -12,17 +12,26 @@
  */
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   ChevronLeft, ChevronRight,
   User,
   LayoutDashboard, Users, CalendarCheck,
   CalendarDays, MessageSquare, Landmark,
-  Settings, Circle, Home, Church,
+  Settings, Circle, Home, Church, CreditCard, Newspaper,
 } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { cn } from '@/lib/utils';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { useChurchBranding } from '@/hooks/useChurchBranding';
+import { cn, BLUR_PLACEHOLDER, isDataOrBlobUrl } from '@/lib/utils';
 import type { SidebarItem } from '@/lib/site';
+
+/** Nav items gated behind a superadmin feature flag — hidden when disabled. */
+const HREF_FLAG: Record<string, string> = {
+  '/communication': 'communication_channels',
+  '/households': 'household_management',
+};
 
 type AdminSidebarProps = {
   items: SidebarItem[];
@@ -36,6 +45,8 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   '/events':        <CalendarDays    size={16} aria-hidden="true" />,
   '/communication': <MessageSquare   size={16} aria-hidden="true" />,
   '/finance':       <Landmark        size={16} aria-hidden="true" />,
+  '/billing':       <CreditCard      size={16} aria-hidden="true" />,
+  '/bulletin':      <Newspaper       size={16} aria-hidden="true" />,
   '/settings':      <Settings        size={16} aria-hidden="true" />,
   '/onboarding':    <Church          size={16} aria-hidden="true" />,
 };
@@ -53,11 +64,17 @@ const ROLE_META: Record<string, { label: string; color: string }> = {
 export function AdminSidebar({ items }: AdminSidebarProps) {
   const currentUser = useCurrentUser();
   const pathname    = usePathname();
+  const { enabled: enabledFlags, loading: flagsLoading } = useFeatureFlags();
+  const { branding } = useChurchBranding();
   const [collapsed, setCollapsed] = useState(false);
 
-  const visibleItems = items.filter((item) =>
-    currentUser.loading ? true : item.roles.includes(currentUser.role)
-  );
+  const visibleItems = items
+    .filter((item) => (currentUser.loading ? true : item.roles.includes(currentUser.role)))
+    .filter((item) => {
+      const requiredFlag = HREF_FLAG[item.href];
+      if (!requiredFlag || flagsLoading) return true;
+      return enabledFlags.has(requiredFlag);
+    });
 
   function isActive(href: string): boolean {
     return pathname === href || pathname.startsWith(href + '/');
@@ -66,9 +83,19 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
   const roleMeta = ROLE_META[currentUser.role] ?? ROLE_META.member;
   const displayName = currentUser.name || currentUser.email || 'Your account';
 
-  const avatarContent = currentUser.avatarUrl ? (
+  const avatarContent = currentUser.avatarUrl && isDataOrBlobUrl(currentUser.avatarUrl) ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={currentUser.avatarUrl} alt={displayName} className="admin-sidebar__avatar-img" />
+  ) : currentUser.avatarUrl ? (
+    <Image
+      src={currentUser.avatarUrl}
+      alt={displayName}
+      width={36}
+      height={36}
+      className="admin-sidebar__avatar-img"
+      placeholder="blur"
+      blurDataURL={BLUR_PLACEHOLDER}
+    />
   ) : currentUser.initials ? (
     <>{currentUser.initials}</>
   ) : (
@@ -82,6 +109,21 @@ export function AdminSidebar({ items }: AdminSidebarProps) {
     >
       {/* ── Brand ────────────────────────────────────────────────────── */}
       <div className="admin-sidebar__brand">
+        {branding.logoUrl && isDataOrBlobUrl(branding.logoUrl) ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={branding.logoUrl} alt="" className="admin-sidebar__brand-logo" />
+        ) : branding.logoUrl ? (
+          <Image
+            src={branding.logoUrl}
+            alt=""
+            width={32}
+            height={32}
+            className="admin-sidebar__brand-logo"
+            placeholder="blur"
+            blurDataURL={BLUR_PLACEHOLDER}
+            priority
+          />
+        ) : null}
         <div className="admin-sidebar__brand-copy">
           <p className="admin-sidebar__eyebrow">Church Management</p>
           <h2 className="admin-sidebar__title">Elevanda ChMS</h2>

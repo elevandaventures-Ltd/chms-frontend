@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Users, AlertCircle, RefreshCw, UserPlus, Upload } from 'lucide-react';
+import { Users, AlertCircle, RefreshCw, UserPlus, Upload, LayoutGrid, List, Zap } from 'lucide-react';
 import { MemberSearchBar }    from '@/components/members/MemberSearchBar';
 import { MemberFilterBar }    from '@/components/members/MemberFilterBar';
 import { MemberCard }         from '@/components/members/MemberCard';
+import { MemberVirtualList }  from '@/components/members/MemberVirtualList';
 import { MemberDirectorySkeleton } from '@/components/members/MemberCardSkeleton';
 import { MemberProfileDrawer }from '@/components/members/MemberProfileDrawer';
 import { AddMemberForm }      from '@/components/members/AddMemberForm';
@@ -55,6 +56,11 @@ export function MemberDirectory() {
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState('');
 
+  // Day 57 — virtualized list view: fetches a large batch (react-virtual,
+  // not pagination, keeps the DOM light) instead of PAGE_SIZE at a time.
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+  const [stressCount, setStressCount] = useState(0);
+
   const debouncedQuery = useDebounced(query, 300);
 
   useEffect(() => { setPage(1); }, [debouncedQuery, filters]);
@@ -62,8 +68,12 @@ export function MemberDirectory() {
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     setError('');
-    const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
+    const params = new URLSearchParams({
+      page: String(viewMode === 'list' ? 1 : page),
+      pageSize: String(viewMode === 'list' ? 10000 : PAGE_SIZE),
+    });
     if (debouncedQuery) params.set('q', debouncedQuery);
+    if (viewMode === 'list' && stressCount > 0) params.set('stress', String(stressCount));
     toParams(params);
 
     try {
@@ -77,7 +87,7 @@ export function MemberDirectory() {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedQuery, toParams]);
+  }, [page, debouncedQuery, toParams, viewMode, stressCount]);
 
   useEffect(() => { void fetchMembers(); }, [fetchMembers]);
 
@@ -160,7 +170,25 @@ export function MemberDirectory() {
           <Users size={14} aria-hidden="true" />
           {countLabel}
         </p>
-        {!loading && members.length > 0 && (
+        <div className="member-dir__view-toggle" role="tablist" aria-label="View mode">
+          <button type="button" role="tab" aria-selected={viewMode === 'cards'} className={viewMode === 'cards' ? 'active' : ''} onClick={() => setViewMode('cards')}>
+            <LayoutGrid size={13} aria-hidden="true" /> Cards
+          </button>
+          <button type="button" role="tab" aria-selected={viewMode === 'list'} className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')}>
+            <List size={13} aria-hidden="true" /> List (virtualized)
+          </button>
+        </div>
+        {viewMode === 'list' && (
+          <button
+            type="button"
+            className="member-dir__stress-btn"
+            onClick={() => setStressCount((c) => (c > 0 ? 0 : 5000))}
+            title="Load synthetic members to test virtualized-scroll performance at scale"
+          >
+            <Zap size={12} aria-hidden="true" /> {stressCount > 0 ? 'Using 5,000 test members — clear' : 'Load 5,000 test members'}
+          </button>
+        )}
+        {viewMode === 'cards' && !loading && members.length > 0 && (
           <label className="member-dir__select-all">
             <input
               type="checkbox"
@@ -188,21 +216,30 @@ export function MemberDirectory() {
         </Alert>
       )}
 
-      {/* Grid / Skeleton / Empty */}
+      {/* Grid / Virtualized list / Skeleton / Empty */}
       {loading ? (
         <MemberDirectorySkeleton count={PAGE_SIZE} />
       ) : members.length > 0 ? (
-        <div className="member-dir__grid" aria-label="Member cards">
-          {members.map((m) => (
-            <MemberCard
-              key={m.id}
-              member={m}
-              onClick={setSelectedMember}
-              selected={selected.has(m.id)}
-              onToggleSelect={toggleSelect}
-            />
-          ))}
-        </div>
+        viewMode === 'list' ? (
+          <MemberVirtualList
+            members={members}
+            onSelect={setSelectedMember}
+            selected={new Set(selected.keys())}
+            onToggleSelect={toggleSelect}
+          />
+        ) : (
+          <div className="member-dir__grid" aria-label="Member cards">
+            {members.map((m) => (
+              <MemberCard
+                key={m.id}
+                member={m}
+                onClick={setSelectedMember}
+                selected={selected.has(m.id)}
+                onToggleSelect={toggleSelect}
+              />
+            ))}
+          </div>
+        )
       ) : !error ? (
         <div className="member-dir__empty" role="status">
           <AlertCircle size={36} strokeWidth={1.5} aria-hidden="true" />
@@ -215,8 +252,8 @@ export function MemberDirectory() {
         </div>
       ) : null}
 
-      {/* Pagination */}
-      {!loading && totalPages > 1 && (
+      {/* Pagination (cards view only — the list view is fully virtualized) */}
+      {viewMode === 'cards' && !loading && totalPages > 1 && (
         <Pagination
           page={page}
           pageSize={PAGE_SIZE}

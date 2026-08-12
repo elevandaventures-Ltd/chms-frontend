@@ -1,3 +1,4 @@
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 /**
  * GET /api/attendance/sessions/:id/stream
  *
@@ -65,7 +66,9 @@ export async function GET(
             c.forEach(({ name, value }) => response.cookies.set(name, value));
           },
         },
+        global: { fetch: timeoutFetch },
       });
+      disablePostgrestRetry(supabase);
 
       async function pollCount() {
         const { count: total } = await supabase

@@ -6,7 +6,8 @@
  * Table of past sessions: date, type, total count, check-in rate vs expected.
  * Click a row to view session detail (list of checked-in members).
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronRight, RefreshCw, CalendarOff, Users, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SESSION_TYPE_LABELS, mockSessions, type AttendanceSession } from '@/lib/attendance';
@@ -39,6 +40,16 @@ export function AttendanceHistory() {
   const [selected,   setSelected]   = useState<SessionWithRate | null>(null);
   const [detail,     setDetail]     = useState<CheckinRecord[]>([]);
   const [detailLoad, setDetailLoad] = useState(false);
+  const checkinListRef = useRef<HTMLDivElement | null>(null);
+
+  // Day 57 Task 2 — a busy Sunday service can have hundreds of check-ins;
+  // only render the rows actually in view.
+  const checkinVirtualizer = useVirtualizer({
+    count: detail.length,
+    getScrollElement: () => checkinListRef.current,
+    estimateSize: () => 52,
+    overscan: 8,
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -109,21 +120,31 @@ export function AttendanceHistory() {
         {detailLoad ? (
           <p className="att-empty"><RefreshCw size={16} aria-hidden="true" /> Loading…</p>
         ) : (
-          <div className="att-history__checkin-list">
-            {detail.map((r, i) => (
-              <div key={`${r.memberId}-${i}`} className="att-history__checkin-row">
-                <div className="att-history__checkin-avatar" aria-hidden="true">
-                  {r.photoUrl
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={r.photoUrl} alt={r.memberName} />
-                    : getInitials(r.memberName)
-                  }
-                </div>
-                <span className="att-history__checkin-name">{r.memberName}</span>
-                <span className="att-history__checkin-time">{r.checkedInAt}</span>
-                <span className="att-history__checkin-method">{r.method}</span>
-              </div>
-            ))}
+          <div className="att-history__checkin-list att-history__checkin-list--virtual" ref={checkinListRef}>
+            <div style={{ height: checkinVirtualizer.getTotalSize(), position: 'relative' }}>
+              {checkinVirtualizer.getVirtualItems().map((virtualRow) => {
+                const r = detail[virtualRow.index];
+                if (!r) return null;
+                return (
+                  <div
+                    key={`${r.memberId}-${virtualRow.index}`}
+                    className="att-history__checkin-row"
+                    style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)`, position: 'absolute', top: 0, left: 0, right: 0 }}
+                  >
+                    <div className="att-history__checkin-avatar" aria-hidden="true">
+                      {r.photoUrl
+                        // eslint-disable-next-line @next/next/no-img-element
+                        ? <img src={r.photoUrl} alt={r.memberName} />
+                        : getInitials(r.memberName)
+                      }
+                    </div>
+                    <span className="att-history__checkin-name">{r.memberName}</span>
+                    <span className="att-history__checkin-time">{r.checkedInAt}</span>
+                    <span className="att-history__checkin-method">{r.method}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

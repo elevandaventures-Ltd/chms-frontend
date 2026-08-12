@@ -7,6 +7,7 @@
  */
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { NextRequest, NextResponse } from 'next/server';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 
 export function createSupabaseServerClient(
   request: NextRequest,
@@ -22,7 +23,7 @@ export function createSupabaseServerClient(
     );
   }
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  const client = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       /**
        * getAll / setAll follow the @supabase/ssr recommended cookie pattern.
@@ -40,5 +41,8 @@ export function createSupabaseServerClient(
         });
       },
     },
+    global: { fetch: timeoutFetch },
   });
+  disablePostgrestRetry(client);
+  return client;
 }

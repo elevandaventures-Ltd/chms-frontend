@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const { createSupabaseServerClient } = await import('@/lib/supabase/server');
     const response = NextResponse.next();
     const supabase = createSupabaseServerClient(request, response);
-    const { data } = await supabase.from('members').select('id,status,ministries,age_group,zone,phone,email');
+    const { data } = await supabase.from('members').select('id,full_name,status,ministries,age_group,zone,phone,email');
     if (data && data.length > 0) members = data as unknown as typeof mockMembers;
   } catch { /* env vars absent — use mock */ }
 
@@ -39,5 +39,15 @@ export async function POST(request: NextRequest) {
     filtered = filtered.filter((m) => Boolean(m.email));
   }
 
-  return NextResponse.json({ reach: filtered.length });
+  // Per-segment breakdown for the send-confirmation dialog (Day 35).
+  const byStatus: Record<string, number> = {};
+  filtered.forEach((m) => { byStatus[m.status] = (byStatus[m.status] ?? 0) + 1; });
+
+  // A short name sample for the WhatsApp composer's recipient list (Day 36).
+  const sampleNames = filtered
+    .slice(0, 8)
+    .map((m) => (m as { fullName?: string; full_name?: string }).fullName ?? (m as { full_name?: string }).full_name ?? 'Member')
+    .filter(Boolean);
+
+  return NextResponse.json({ reach: filtered.length, breakdown: { byStatus }, sampleNames });
 }

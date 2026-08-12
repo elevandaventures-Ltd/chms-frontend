@@ -14,6 +14,7 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 import { mockMembers } from '@/lib/site';
 
 const VISITOR_DAYS  = 30;
@@ -53,7 +54,7 @@ function getSupabase(request: NextRequest, response: NextResponse) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return null;
-  return createServerClient(url, key, {
+  const client = createServerClient(url, key, {
     cookies: {
       getAll() { return request.cookies.getAll(); },
       setAll(cookies: { name: string; value: string; options?: CookieOptions }[]) {
@@ -62,7 +63,10 @@ function getSupabase(request: NextRequest, response: NextResponse) {
         );
       },
     },
+    global: { fetch: timeoutFetch },
   });
+  disablePostgrestRetry(client);
+  return client;
 }
 
 // Optional shared-secret guard for scheduled callers.

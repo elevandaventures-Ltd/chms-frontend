@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { listMessageReports } from '@/lib/communication-store';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,15 +13,16 @@ export async function GET(request: NextRequest) {
       .order('sent_at', { ascending: false })
       .limit(50);
 
-    if (error) throw error;
+    if (error || !data || data.length === 0) throw error ?? new Error('no rows');
 
     // Normalise snake_case → camelCase
-    const reports = (data ?? []).map((r: Record<string, unknown>) => ({
+    const reports = data.map((r: Record<string, unknown>) => ({
       id:         r.id,
       channel:    r.channel,
       subject:    r.subject,
       recipients: r.recipients,
       delivered:  r.delivered,
+      failed:     r.failed ?? 0,
       opened:     r.opened,
       sentAt:     r.sent_at,
       status:     r.status,
@@ -28,7 +30,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: reports });
   } catch {
-    // Supabase absent — return empty so the component falls back to mock data
-    return NextResponse.json({ data: [] });
+    // Supabase absent (or the message_reports table doesn't exist yet) —
+    // fall back to the in-memory store, which every send/schedule route
+    // also writes to, so newly sent messages still show up here.
+    return NextResponse.json({ data: listMessageReports() });
   }
 }

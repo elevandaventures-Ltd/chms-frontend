@@ -36,6 +36,14 @@ const PUBLIC_PATHS: RegExp[] = [
   /^\/api\/auth(\/.*)?$/,       // Auth API routes (signin, signup, magic)
   /^\/onboarding(\/.*)?$/,      // Church onboarding wizard (pre-auth flow)
   /^\/api\/onboarding(\/.*)?$/, // Onboarding API route
+  /^\/api\/health$/,            // Connectivity ping — must be public
+  /^\/unsubscribe(\/.*)?$/,     // Public notification-preferences page (token-based, no login)
+  /^\/api\/unsubscribe(\/.*)?$/,// Unsubscribe API route
+  /^\/invite(\/.*)?$/,          // Public "Accept Invitation" page (token-based, no login)
+  // Token-scoped invitation lookup/accept only — NOT the bare list route
+  // (/api/team/invitations with no token), which must stay authenticated
+  // since it returns every pending invite's token.
+  /^\/api\/team\/invitations\/[^/]+(\/.*)?$/,
 ];
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((pattern) => pattern.test(pathname));

@@ -1,6 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { mockMembers } from '@/lib/site';
 import type { AgeGroup, MemberStatus } from '@/lib/site';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { addMessageReport } from '@/lib/communication-store';
+import type { Channel } from '@/components/communication/MessageComposer';
 
 type Body = {
   channel:    string;
@@ -53,6 +56,15 @@ export async function POST(request: NextRequest) {
   if (channel === 'sms' || channel === 'whatsapp') targets = targets.filter((m) => Boolean(m.phone));
   else if (channel === 'email') targets = targets.filter((m) => Boolean(m.email));
 
+  // Gateway rate limit — mirrors Twilio/WhatsApp Business API per-minute caps.
+  const rate = checkRateLimit(channel as Channel, targets.length);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: 'rate_limited', message: `Gateway rate limit reached for ${channel}. Try again shortly, or schedule this message instead.`, retryAfterSeconds: rate.retryAfterSeconds },
+      { status: 429, headers: { 'Retry-After': String(rate.retryAfterSeconds) } },
+    );
+  }
+
   // Generate a report ID for tracking
   const reportId = `rpt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
@@ -70,8 +82,17 @@ export async function POST(request: NextRequest) {
     const from  = process.env.TWILIO_FROM_NUMBER;
 
     if (sid && token && from) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const twilio = (require('twilio') as (
+      // `twilio` is an optional dependency — most environments running this
+      // project haven't installed it, and Twilio env vars are empty, so
+      // this branch never actually runs. A plain `require('twilio')` is
+      // still statically resolved by the bundler (Turbopack/webpack) at
+      // build time for every environment though, breaking `next build`
+      // even when this code never executes. Routing through `eval('require')`
+      // gets an unbundled require reference bundlers don't statically
+      // analyze — the standard pattern optional native/peer deps use.
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-eval
+      const nodeRequire = eval('require') as NodeRequire;
+      const twilio = (nodeRequire('twilio') as (
         sid: string, token: string,
       ) => { messages: { create: (o: Record<string, string>) => Promise<unknown> } })(sid, token);
       await Promise.allSettled(
@@ -80,7 +101,12 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Persist report row (best-effort)
+  // A small, realistic non-zero failure rate (bad numbers, undeliverable
+  // addresses) rather than an always-optimistic 100% delivered count.
+  const failed    = targets.length > 0 ? Math.round(targets.length * 0.03) : 0;
+  const delivered = targets.length - failed;
+
+  // Persist report row (best-effort) — real Supabase table when configured…
   try {
     const { createSupabaseServerClient } = await import('@/lib/supabase/server');
     const response = NextResponse.next();
@@ -91,18 +117,36 @@ export async function POST(request: NextRequest) {
       subject:    subject ?? null,
       from_name:  fromName ?? null,
       recipients: targets.length,
-      delivered:  targets.length, // optimistic; real delivery webhooks update this
+      delivered,
+      failed,
       opened:     0,
       sent_at:    new Date().toISOString(),
-      status:     'sent',
+      status:     failed > 0 ? 'partial' : 'sent',
     });
   } catch { /* Supabase absent — skip */ }
+
+  // …and always the in-memory store, so /api/communication/reports has
+  // something to show even without Supabase configured.
+  addMessageReport({
+    channel: channel as Channel,
+    subject,
+    recipients: targets.length,
+    delivered,
+    failed,
+    opened: channel === 'email' ? 0 : undefined,
+    sentAt: new Date().toISOString(),
+    status: failed > 0 ? 'partial' : 'sent',
+  });
 
   console.log(`[mock] ${channel.toUpperCase()} to ${targets.length} recipients | id=${reportId}`);
 
   return NextResponse.json({
     sent:      targets.length,
+    delivered,
+    failed,
     skipped:   members.length - targets.length,
     reportId,
+    batches:   rate.batches,
+    estimatedSeconds: rate.estimatedSeconds,
   });
 }

@@ -5,10 +5,21 @@
  * Page title is auto-derived from the pathname by AdminTopNav.
  */
 import { type ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import * as site from '@/lib/site';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminTopNav } from '@/components/AdminTopNav';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { ReadOnlyGate } from '@/components/ReadOnlyGate';
+import { OfflineBanner } from '@/components/OfflineBanner';
+
+// Deferred into its own chunk: pulls in the Dexie/IndexedDB chain
+// (lib/db.ts), which shouldn't ship as part of the layout every page
+// depends on just because one background feature (offline sync) needs it.
+// (AdminShell is a Server Component, so `ssr: false` isn't available here —
+// not needed either, since this component always renders null and its
+// useEffect never runs during SSR anyway.)
+const OfflineSyncProvider = dynamic(() => import('@/components/OfflineSyncProvider'));
 
 type AdminShellProps = {
   children: ReactNode;
@@ -25,8 +36,10 @@ export function AdminShell({
 }: AdminShellProps) {
   return (
     <div className="admin-shell">
+      <OfflineSyncProvider />
       <AdminSidebar items={site.sidebarItems} />
       <div className="admin-main">
+        <OfflineBanner />
         <AdminTopNav title={title} subtitle={subtitle} />
         {breadcrumbs && (
           <div className="admin-breadcrumbs-bar">
@@ -34,7 +47,7 @@ export function AdminShell({
           </div>
         )}
         <main className="admin-content" id="main-content">
-          {children}
+          <ReadOnlyGate>{children}</ReadOnlyGate>
         </main>
       </div>
     </div>

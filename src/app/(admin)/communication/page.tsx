@@ -5,17 +5,23 @@
  * Tabs: Compose | Templates | Delivery Reports
  */
 import { useCallback, useEffect, useState } from 'react';
+import { ShieldAlert } from 'lucide-react';
 import { AudienceSelector, EMPTY_FILTERS } from '@/components/communication/AudienceSelector';
 import { MessageComposer } from '@/components/communication/MessageComposer';
 import { DeliveryReport } from '@/components/communication/DeliveryReport';
 import { TemplateLibrary } from '@/components/communication/TemplateLibrary';
+import { ChannelPerformanceDashboard } from '@/components/communication/ChannelPerformanceDashboard';
+import { ScheduledMessagesList } from '@/components/communication/ScheduledMessagesList';
+import { WhatsAppInbox } from '@/components/communication/WhatsAppInbox';
+import { useFeatureFlag } from '@/hooks/useFeatureFlags';
 import type { AudienceFilters } from '@/components/communication/AudienceSelector';
 import type { Channel } from '@/components/communication/MessageComposer';
 import type { MessageTemplate } from '@/components/communication/TemplateLibrary';
 
-type PageTab = 'compose' | 'templates' | 'reports';
+type PageTab = 'compose' | 'templates' | 'scheduled' | 'reports' | 'analytics' | 'inbox';
 
 export default function CommunicationPage() {
+  const { enabled: channelsEnabled, loading: flagLoading } = useFeatureFlag('communication_channels');
   const [pageTab,          setPageTab]          = useState<PageTab>('compose');
   const [filters,          setFilters]          = useState<AudienceFilters>(EMPTY_FILTERS);
   const [channel,          setChannel]          = useState<Channel>('sms');
@@ -56,6 +62,18 @@ export default function CommunicationPage() {
     setTimeout(() => setToast(''), 4000);
   }
 
+  if (!flagLoading && !channelsEnabled) {
+    return (
+      <div className="comm-page">
+        <div className="comm-disabled">
+          <ShieldAlert size={28} strokeWidth={1.3} aria-hidden="true" />
+          <strong>Communication is disabled for this church</strong>
+          <p>Your platform administrator has turned off the Communication Channels feature flag. Contact them to restore access.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="comm-page">
       <div className="comm-page__head">
@@ -81,10 +99,31 @@ export default function CommunicationPage() {
         </button>
         <button
           type="button"
+          className={`comm-page-tab${pageTab === 'scheduled' ? ' comm-page-tab--active' : ''}`}
+          onClick={() => setPageTab('scheduled')}
+        >
+          Scheduled
+        </button>
+        <button
+          type="button"
           className={`comm-page-tab${pageTab === 'reports' ? ' comm-page-tab--active' : ''}`}
           onClick={() => setPageTab('reports')}
         >
-          Delivery Reports
+          Sent History
+        </button>
+        <button
+          type="button"
+          className={`comm-page-tab${pageTab === 'analytics' ? ' comm-page-tab--active' : ''}`}
+          onClick={() => setPageTab('analytics')}
+        >
+          Analytics
+        </button>
+        <button
+          type="button"
+          className={`comm-page-tab${pageTab === 'inbox' ? ' comm-page-tab--active' : ''}`}
+          onClick={() => setPageTab('inbox')}
+        >
+          WhatsApp Inbox
         </button>
       </div>
 
@@ -126,9 +165,27 @@ export default function CommunicationPage() {
         </div>
       )}
 
+      {pageTab === 'scheduled' && (
+        <div className="comm-panel">
+          <ScheduledMessagesList />
+        </div>
+      )}
+
       {pageTab === 'reports' && (
         <div className="comm-panel">
           <DeliveryReport />
+        </div>
+      )}
+
+      {pageTab === 'analytics' && (
+        <div className="comm-panel">
+          <ChannelPerformanceDashboard />
+        </div>
+      )}
+
+      {pageTab === 'inbox' && (
+        <div className="comm-panel comm-panel--inbox">
+          <WhatsAppInbox />
         </div>
       )}
     </div>

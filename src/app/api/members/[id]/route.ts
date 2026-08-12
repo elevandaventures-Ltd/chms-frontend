@@ -7,8 +7,18 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 import { mockMembers } from '@/lib/site';
 import { memberSchema } from '@/lib/member-schema';
+import { addAuditEntry } from '@/lib/church-store';
+
+const AUDITED_FIELDS = ['email', 'phone', 'status', 'role', 'zone', 'notes'] as const;
+
+function diffAuditedFields(before: Record<string, unknown>, after: Record<string, unknown>) {
+  return AUDITED_FIELDS
+    .filter((f) => before[f] !== after[f])
+    .map((f) => ({ field: f, before: before[f] ?? null, after: after[f] ?? null }));
+}
 
 type RouteCtx = { params: Promise<{ id: string }> };
 
@@ -24,7 +34,7 @@ function supabaseFromRequest(request: NextRequest, response: NextResponse) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return null;
 
-  return createServerClient(url, key, {
+  const client = createServerClient(url, key, {
     cookies: {
       getAll() { return request.cookies.getAll(); },
       setAll(cookies: { name: string; value: string; options?: CookieOptions }[]) {
@@ -33,7 +43,10 @@ function supabaseFromRequest(request: NextRequest, response: NextResponse) {
         );
       },
     },
+    global: { fetch: timeoutFetch },
   });
+  disablePostgrestRetry(client);
+  return client;
 }
 
 // ── GET ─────────────────────────────────────────────────────────────────────
@@ -142,6 +155,16 @@ export async function PUT(request: NextRequest, ctx: RouteCtx) {
 
     // ── Mock fallback ──────────────────────────────────────────────────────
     if (!supabase) {
+      const before = mockMembers.find((m) => m.id === id);
+      if (before) {
+        const changes = diffAuditedFields(before as unknown as Record<string, unknown>, data as unknown as Record<string, unknown>);
+        if (changes.length > 0) {
+          addAuditEntry({
+            actorName: 'Solomon Leek', action: 'member.updated', resourceType: 'Member',
+            resourceId: id, resourceLabel: fullName, changes,
+          });
+        }
+      }
       return NextResponse.json({ id, fullName });
     }
 
@@ -185,6 +208,12 @@ export async function PUT(request: NextRequest, ctx: RouteCtx) {
     };
     if (photoUrl !== undefined) update.photo_url = photoUrl;
 
+    const { data: beforeRow } = await supabase
+      .from('members')
+      .select('email, phone, status, role, zone, notes')
+      .eq('id', id)
+      .single();
+
     const { data: row, error } = await supabase
       .from('members')
       .update(update)
@@ -195,6 +224,13 @@ export async function PUT(request: NextRequest, ctx: RouteCtx) {
 
     if (error || !row) {
       return NextResponse.json({ error: 'Failed to update member.' }, { status: 500 });
+    }
+
+    if (beforeRow) {
+      const changes = diffAuditedFields(beforeRow, data as unknown as Record<string, unknown>);
+      if (changes.length > 0) {
+        addAuditEntry({ actorName: 'Solomon Leek', action: 'member.updated', resourceType: 'Member', resourceId: id, resourceLabel: fullName, changes });
+      }
     }
 
     return NextResponse.json({ id: row.id, fullName });

@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import jsQR from 'jsqr';
-import { Camera, CameraOff, Check, AlertTriangle, RefreshCw, UserCheck } from 'lucide-react';
+import { Camera, CameraOff, Check, AlertTriangle, RefreshCw, UserCheck, CloudOff } from 'lucide-react';
 import { decodeMemberQr } from '@/lib/qr';
+import { isOnline } from '@/lib/connectivity';
+import { enqueueSyncItem } from '@/lib/offline-sync';
+import { db } from '@/lib/db';
 
 type ScannedMember = { id: string; fullName: string; photoUrl: string | null };
-type ScanResult = { member: ScannedMember; alreadyCheckedIn: boolean };
+type ScanResult = { member: ScannedMember; alreadyCheckedIn: boolean; queuedOffline?: boolean };
 
 type CamState = 'idle' | 'starting' | 'live' | 'denied' | 'unavailable' | 'error';
 
@@ -41,6 +44,35 @@ export function QRScanner({ sessionId, onCheckedIn }: QRScannerProps) {
   const handleDetected = useCallback(async (memberId: string) => {
     processingRef.current = true;
     pausedRef.current = true;
+
+    // Day 53: offline check-in — queue it in IndexedDB instead of hitting
+    // the network, so the flow still completes for the person scanning.
+    if (!isOnline()) {
+      try {
+        const local = await db?.members.get(memberId);
+        const member: ScannedMember = local
+          ? { id: local.id, fullName: local.fullName, photoUrl: local.photoUrl ?? null }
+          : { id: memberId, fullName: 'Member', photoUrl: null };
+
+        await enqueueSyncItem('checkin', { sessionId, memberId }, `Check-in: ${member.fullName}`);
+
+        setError('');
+        setResult({ member, alreadyCheckedIn: false, queuedOffline: true });
+        setFlash(true);
+        window.setTimeout(() => setFlash(false), 320);
+        window.setTimeout(() => {
+          setResult(null);
+          pausedRef.current = false;
+          processingRef.current = false;
+        }, SUCCESS_HOLD_MS);
+      } catch {
+        setError('Could not queue check-in offline.');
+        pausedRef.current = false;
+        processingRef.current = false;
+      }
+      return;
+    }
+
     try {
       const res = await fetch(`/api/attendance/sessions/${sessionId}/checkin`, {
         method: 'POST',
@@ -185,7 +217,9 @@ export function QRScanner({ sessionId, onCheckedIn }: QRScannerProps) {
             </div>
             <p className="qr-success__name">{result.member.fullName}</p>
             <p className="qr-success__msg">
-              {result.alreadyCheckedIn ? 'Already checked in' : 'Checked in'}
+              {result.queuedOffline ? (
+                <span className="qr-success__offline"><CloudOff size={13} aria-hidden="true" /> Checked in (will sync when online)</span>
+              ) : result.alreadyCheckedIn ? 'Already checked in' : 'Checked in'}
             </p>
           </div>
         )}

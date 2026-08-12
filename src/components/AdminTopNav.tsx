@@ -2,11 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { Bell, ChevronRight, User, Users, CalendarCheck, Church, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { cn } from '@/lib/utils';
+import { InstallAppButton } from '@/components/InstallAppButton';
+import { cn, BLUR_PLACEHOLDER, isDataOrBlobUrl } from '@/lib/utils';
+
+// Deferred: pulls in the Dexie/IndexedDB chain (lib/db.ts), which has no
+// business being in every page's critical shared-layout bundle when most
+// sessions never touch offline data. Loading it after initial paint keeps
+// the persistent (admin) layout's own chunk light for every navigation.
+const SyncQueueBadge = dynamic(() => import('@/components/SyncQueueBadge'), { ssr: false });
 
 // ── Path → title mapping ──────────────────────────────────────────────────────
 
@@ -18,8 +27,19 @@ const PATH_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/events':           { title: 'Events',         subtitle: 'Schedule and manage events' },
   '/communication':    { title: 'Communication',  subtitle: 'Email and SMS messaging' },
   '/finance':          { title: 'Finance',        subtitle: 'Giving records and reports' },
+  '/billing':          { title: 'Billing',        subtitle: 'Subscription, plan, and invoices' },
+  '/bulletin':         { title: 'Bulletin',       subtitle: 'Digital bulletin editor' },
+  '/bulletin/preview': { title: 'Bulletin Preview', subtitle: 'Preview and send the weekly bulletin' },
   '/settings':         { title: 'Settings',       subtitle: 'System configuration' },
   '/settings/profile': { title: 'Profile',        subtitle: 'Update your account details' },
+  '/settings/notifications': { title: 'Notification preferences', subtitle: 'Choose which updates you receive' },
+  '/settings/team':          { title: 'Team',                subtitle: 'Invite staff and manage their roles' },
+  '/settings/branding':      { title: 'Branding',             subtitle: 'Logo, accent color, and welcome message' },
+  '/settings/general':       { title: 'General',              subtitle: 'Denomination, timezone, currency, language' },
+  '/settings/permissions':   { title: 'Roles & Permissions',  subtitle: 'What each role can access' },
+  '/settings/custom-fields': { title: 'Custom Fields',        subtitle: 'Denomination-specific member fields' },
+  '/settings/audit-log':     { title: 'Audit Log',            subtitle: 'Every change made in this church' },
+  '/settings/data-export':   { title: 'Data & Exports',       subtitle: 'Download your church data as CSV' },
   '/onboarding':       { title: 'Register Church', subtitle: 'Church registration wizard' },
 };
 
@@ -203,9 +223,23 @@ export function AdminTopNav({ title: titleProp, subtitle: subtitleProp }: AdminT
   }, []);
 
   const avatarContent = currentUser.loading ? null
-    : currentUser.avatarUrl
-      // eslint-disable-next-line @next/next/no-img-element
-      ? <img src={currentUser.avatarUrl} alt={currentUser.name || currentUser.email} className="admin-topnav__avatar-img" />
+    : currentUser.avatarUrl && isDataOrBlobUrl(currentUser.avatarUrl)
+      ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={currentUser.avatarUrl} alt={currentUser.name || currentUser.email} className="admin-topnav__avatar-img" />
+      )
+      : currentUser.avatarUrl
+      ? (
+        <Image
+          src={currentUser.avatarUrl}
+          alt={currentUser.name || currentUser.email}
+          width={36}
+          height={36}
+          className="admin-topnav__avatar-img"
+          placeholder="blur"
+          blurDataURL={BLUR_PLACEHOLDER}
+        />
+      )
       : currentUser.initials
         ? <span>{currentUser.initials}</span>
         : <User size={18} aria-hidden="true" />;
@@ -222,6 +256,9 @@ export function AdminTopNav({ title: titleProp, subtitle: subtitleProp }: AdminT
 
       {/* Right — actions */}
       <div className="admin-topnav__actions">
+
+        <SyncQueueBadge />
+        <InstallAppButton />
 
         {/* Notifications bell */}
         <div className="admin-topnav__notifications" ref={menuRef}>

@@ -1,5 +1,7 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
+import { ToastProvider } from '@/components/ui/Toast';
+import { ServiceWorkerManager } from '@/components/ServiceWorkerManager';
 
 import './globals.css';
 
@@ -28,6 +30,15 @@ const displayFont = Playfair_Display({
 export const metadata: Metadata = {
   title: 'Elevanda ChMS',
   description: 'Church management system for growing congregations.',
+  manifest: '/manifest.json',
+  icons: {
+    icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+    apple: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#1a4a2e',
 };
 
 export default function RootLayout({
@@ -42,6 +53,8 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <ToastProvider />
+        <ServiceWorkerManager />
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 /**
  * POST /api/onboarding
  *
@@ -101,7 +102,9 @@ export async function POST(request: NextRequest) {
         });
       },
     },
+    global: { fetch: timeoutFetch },
   });
+  disablePostgrestRetry(supabase);
 
   // Insert the church record.
   // Column names match the snake_case convention Supabase expects.

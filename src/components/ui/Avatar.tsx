@@ -1,3 +1,6 @@
+import Image from 'next/image';
+import { BLUR_PLACEHOLDER, isDataOrBlobUrl } from '@/lib/utils';
+
 type AvatarProps = {
   name?: string;
   src?: string;
@@ -14,9 +17,19 @@ export function Avatar({ name = '', src, size = 'md' }: AvatarProps) {
 
   const dims = size === 'sm' ? 28 : size === 'lg' ? 64 : 44;
 
-  return src ? (
+  return src && isDataOrBlobUrl(src) ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={name} style={{ width: dims, height: dims, borderRadius: '999px' }} />
+    <img src={src} alt={name} style={{ width: dims, height: dims, borderRadius: '999px', objectFit: 'cover' }} />
+  ) : src ? (
+    <Image
+      src={src}
+      alt={name}
+      width={dims}
+      height={dims}
+      style={{ borderRadius: '999px', objectFit: 'cover' }}
+      placeholder="blur"
+      blurDataURL={BLUR_PLACEHOLDER}
+    />
   ) : (
     <div className="sidebar__avatar" style={{ width: dims, height: dims, borderRadius: '999px' }}>{initials}</div>
   );

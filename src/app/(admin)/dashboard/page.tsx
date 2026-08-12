@@ -8,6 +8,9 @@ import {
   Bell, Church, Clock,
   BarChart3, Wifi,
 } from 'lucide-react';
+import { PushPermissionPrompt } from '@/components/PushPermissionPrompt';
+import { OnboardingChecklistWidget } from '@/components/OnboardingChecklistWidget';
+import { OfflinePageIndicator } from '@/components/OfflinePageIndicator';
 
 type Stats = {
   totalMembers: number;
@@ -94,6 +97,11 @@ export default function DashboardPage() {
 
   return (
     <div className="dash-v2">
+
+      <PushPermissionPrompt />
+      <OnboardingChecklistWidget />
+
+      <OfflinePageIndicator label="Dashboard numbers are from your last sync" />
 
       {/* ── KPI cards ── */}
       <div className="dash-v2__kpi-row">

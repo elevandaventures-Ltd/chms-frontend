@@ -10,6 +10,7 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 import { mockMembers } from '@/lib/site';
 import { z } from 'zod';
 
@@ -51,7 +52,9 @@ export async function POST(request: NextRequest, ctx: RouteCtx) {
           );
         },
       },
+      global: { fetch: timeoutFetch },
     });
+    disablePostgrestRetry(supabase);
 
     // Verify the member exists (and isn't soft-deleted).
     const { data: member, error: memberErr } = await supabase

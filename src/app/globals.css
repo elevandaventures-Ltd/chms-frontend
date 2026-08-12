@@ -13109,3 +13109,2036 @@ input:checked + .data-table__check-box,
     grid-template-columns: 1fr;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Sprint Days 40–45 — Superadmin platform, billing, feature flags,
+   channel analytics, unsubscribe page.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Day 41 · Superadmin shell — .sa-shell / .sa-sidebar / .sa-topnav ────── */
+
+.sa-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(39, 76, 63, 0.08), transparent 34%),
+    linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+}
+
+.sa-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.sa-breadcrumbs-bar { padding: 10px 28px 0; }
+
+.sa-content {
+  flex: 1;
+  padding: 20px 28px 48px;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.sa-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 16px 16px;
+  background: linear-gradient(180deg, #132720 0%, #1c352a 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-y: auto;
+  color: #eef5f1;
+}
+
+.sa-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+
+.sa-sidebar__brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #8fe0b8;
+  flex-shrink: 0;
+}
+
+.sa-sidebar__eyebrow {
+  margin: 0;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.sa-sidebar__title {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.sa-sidebar__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin: 4px 6px 16px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(143, 224, 184, 0.16);
+  border: 1px solid rgba(143, 224, 184, 0.3);
+  color: #8fe0b8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sa-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.sa-sidebar__nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: rgba(238, 245, 241, 0.72);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.sa-sidebar__nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.sa-sidebar__nav-item--active {
+  background: rgba(143, 224, 184, 0.14);
+  color: #fff;
+}
+
+.sa-sidebar__nav-item--active .sa-sidebar__nav-icon { color: #8fe0b8; }
+
+.sa-sidebar__nav-icon { display: inline-flex; flex-shrink: 0; }
+
+.sa-sidebar__footer {
+  padding: 14px 6px 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 8px;
+}
+
+.sa-sidebar__exit-link {
+  font-size: 0.78rem;
+  color: rgba(238, 245, 241, 0.55);
+  transition: color 160ms ease;
+}
+
+.sa-sidebar__exit-link:hover { color: #fff; }
+
+.sa-topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--panel-border);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.sa-topnav__title {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.sa-topnav__subtitle { margin: 0; font-size: 0.84rem; color: var(--muted); }
+
+.sa-topnav__actions { display: flex; align-items: center; gap: 14px; }
+
+.sa-topnav__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(39, 76, 63, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.sa-topnav__user { display: flex; align-items: center; gap: 10px; }
+.sa-topnav__user-name { font-size: 0.86rem; font-weight: 600; color: var(--text); }
+
+.sa-topnav__signout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: #fff;
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.sa-topnav__signout:hover:not(:disabled) { background: rgba(220,38,38,0.06); color: #b91c1c; }
+.sa-topnav__signout:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Shared superadmin buttons — .sa-btn ─────────────────────────────────── */
+
+.sa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+  text-decoration: none;
+}
+
+.sa-btn--sm { padding: 5px 10px; font-size: 0.74rem; gap: 4px; }
+
+.sa-btn--primary { background: var(--accent-strong); color: #fff; }
+.sa-btn--primary:hover:not(:disabled) { box-shadow: var(--shadow-strong); }
+
+.sa-btn--secondary { background: #fff; color: var(--text); border-color: var(--panel-border); }
+.sa-btn--secondary:hover:not(:disabled) { box-shadow: var(--shadow-strong); }
+
+.sa-btn--danger { background: rgba(220,38,38,0.08); color: #b91c1c; }
+.sa-btn--danger:hover:not(:disabled) { background: rgba(220,38,38,0.14); }
+
+.sa-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Day 41 · Church management page — .sa-page ──────────────────────────── */
+
+.sa-page { display: grid; gap: 18px; }
+
+.sa-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sa-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  color: var(--muted);
+  min-width: 280px;
+  flex: 1;
+  max-width: 420px;
+}
+
+.sa-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.88rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.sa-page__count { font-size: 0.82rem; color: var(--muted); }
+
+.sa-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.sa-select select {
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--panel-border);
+  background: #fff;
+  font-size: 0.86rem;
+  color: var(--text);
+  min-width: 220px;
+}
+
+/* ── Day 41/44 · Church detail drawer — .sa-church-detail ────────────────── */
+
+.sa-church-detail { display: grid; gap: 18px; }
+
+.sa-church-detail__head { display: flex; align-items: center; gap: 10px; }
+.sa-church-detail__plan { font-size: 0.84rem; color: var(--muted); font-weight: 600; }
+
+.sa-church-detail__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.07);
+  color: #7f1d1d;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.sa-church-detail__facts { display: grid; gap: 12px; margin: 0; }
+.sa-church-detail__facts > div { display: grid; gap: 2px; }
+.sa-church-detail__facts dt { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.sa-church-detail__facts dd {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sa-church-detail__mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-size: 0.82rem;
+}
+
+.sa-church-detail__error { color: #b91c1c; font-size: 0.82rem; margin: 0; }
+
+.sa-church-detail__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ── Day 44 · Setup Completion widget — .sa-setup-widget ─────────────────── */
+
+.sa-setup-widget {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg-accent);
+  border: 1px solid rgba(39, 76, 63, 0.14);
+}
+
+.sa-setup-widget__head { display: flex; align-items: center; justify-content: space-between; }
+.sa-setup-widget__head h4 { margin: 0; font-size: 0.86rem; font-family: var(--font-body); font-weight: 700; color: var(--text); }
+.sa-setup-widget__pct { font-size: 0.9rem; font-weight: 700; color: var(--accent-strong); }
+
+.sa-setup-widget__track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(39, 76, 63, 0.14);
+  overflow: hidden;
+}
+
+.sa-setup-widget__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-strong);
+  transition: width 300ms ease;
+}
+
+.sa-setup-widget__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+
+.sa-setup-widget__steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.sa-setup-widget__steps li svg { color: rgba(93, 84, 78, 0.35); flex-shrink: 0; }
+
+.sa-setup-widget__step--done { color: var(--text); }
+.sa-setup-widget__step--done svg { color: #2a7a36; }
+
+/* ── Day 43 · Platform dashboard — .sa-dashboard ─────────────────────────── */
+
+.sa-dashboard { display: grid; gap: 22px; }
+
+.sa-dashboard__kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.sa-kpi-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  display: grid;
+  gap: 4px;
+}
+
+.sa-kpi-card--skeleton { min-height: 96px; background: var(--bg-accent); }
+
+.sa-kpi-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  margin-bottom: 4px;
+}
+
+.sa-kpi-card__value { font-family: var(--font-display), serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+.sa-kpi-card__label { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+.sa-kpi-card__sub { font-size: 0.76rem; color: var(--muted); }
+
+.sa-dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1080px) {
+  .sa-dashboard__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .sa-dashboard__grid { grid-template-columns: 1fr; }
+}
+
+.sa-panel {
+  padding: 18px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.sa-panel--span2 { grid-column: span 2; }
+@media (max-width: 720px) { .sa-panel--span2 { grid-column: span 1; } }
+
+.sa-panel__title { margin: 0; font-family: var(--font-display), serif; font-size: 1.02rem; font-weight: 700; color: var(--text); }
+.sa-panel__subtitle { margin: -4px 0 0; font-size: 0.8rem; color: var(--muted); }
+
+/* ── Day 43/45 · Hand-rolled SVG charts — .sa-chart ──────────────────────── */
+
+.sa-chart { position: relative; }
+.sa-chart__svg { width: 100%; height: auto; overflow: visible; }
+
+.sa-chart__gridline { stroke: rgba(93, 84, 78, 0.14); stroke-width: 1; }
+.sa-chart__axis-label { fill: var(--muted); font-size: 9px; }
+.sa-chart__end-label { fill: var(--text); font-size: 11px; font-weight: 700; }
+.sa-chart__crosshair { stroke: rgba(93, 84, 78, 0.35); stroke-width: 1; }
+
+.sa-bar { fill: var(--accent-strong); transition: fill 120ms ease; cursor: pointer; }
+.sa-bar--hover { fill: #1c352a; }
+
+.sa-chart__tooltip {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  background: #1d1a17;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  display: grid;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-strong);
+  z-index: 5;
+}
+
+.sa-chart__tooltip strong { font-size: 0.8rem; }
+
+.sa-chart__legend { display: flex; gap: 16px; margin-bottom: 4px; }
+.sa-chart__legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--muted); }
+.sa-chart__legend-swatch { width: 12px; height: 3px; border-radius: 2px; display: inline-block; }
+
+/* ── Day 43 · Churn rate gauge — .sa-gauge ───────────────────────────────── */
+
+.sa-gauge { display: grid; gap: 10px; padding-top: 4px; }
+
+.sa-gauge__value { display: flex; align-items: baseline; justify-content: space-between; }
+.sa-gauge__number { font-family: var(--font-display), serif; font-size: 2rem; font-weight: 700; color: var(--text); }
+
+.sa-gauge__status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 700; }
+.sa-gauge__status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.sa-gauge__track {
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(93, 84, 78, 0.12);
+  overflow: hidden;
+}
+
+.sa-gauge__fill { height: 100%; border-radius: 999px; transition: width 300ms ease; }
+
+.sa-gauge__tick { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.6); }
+
+.sa-gauge__scale { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); }
+
+/* ── Day 45 · Geographic distribution map — .sa-geomap ───────────────────── */
+
+.sa-geomap { position: relative; }
+
+.sa-geomap__svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+
+.sa-geomap__outline {
+  fill: var(--bg-accent);
+  stroke: rgba(39, 76, 63, 0.4);
+  stroke-width: 1.5;
+}
+
+.sa-geomap__dot { cursor: pointer; transition: r 120ms ease; }
+
+.sa-geomap__tooltip {
+  position: absolute;
+  transform: translate(-50%, -120%);
+  background: #1d1a17;
+  color: #fff;
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  display: grid;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-strong);
+  z-index: 5;
+}
+
+.sa-geomap__tooltip strong { font-size: 0.8rem; }
+
+.sa-geomap__legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.sa-geomap__legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; color: var(--muted); }
+.sa-geomap__legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* ── Day 45 · Recent activity feed — .sa-activity ────────────────────────── */
+
+.sa-activity { display: grid; gap: 2px; }
+.sa-activity__empty { font-size: 0.84rem; color: var(--muted); }
+
+.sa-activity__item {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 4px;
+  border-bottom: 1px solid rgba(93, 84, 78, 0.08);
+}
+.sa-activity__item:last-child { border-bottom: none; }
+
+.sa-activity__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.sa-activity__copy strong { display: block; font-size: 0.84rem; color: var(--text); }
+.sa-activity__copy p { margin: 2px 0 0; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+.sa-activity__time { font-size: 0.72rem; color: var(--muted); white-space: nowrap; padding-top: 2px; }
+
+/* ── Day 44 · Feature flags table — .ff-table ────────────────────────────── */
+
+.ff-table-wrap {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.ff-table { width: 100%; border-collapse: collapse; }
+
+.ff-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--bg-accent);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.ff-table td { padding: 12px 16px; border-bottom: 1px solid rgba(93, 84, 78, 0.08); vertical-align: middle; }
+.ff-table tr:last-child td { border-bottom: none; }
+
+.ff-table__label { display: block; font-size: 0.9rem; color: var(--text); }
+.ff-table__desc { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.ff-table__category {
+  font-size: 0.72rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--bg-accent);
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+.ff-table__timestamp { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+
+.ff-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(93, 84, 78, 0.25);
+  cursor: pointer;
+  transition: background 160ms ease;
+  flex-shrink: 0;
+}
+
+.ff-toggle--on { background: var(--accent-strong); }
+.ff-toggle:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ff-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 160ms ease;
+}
+
+.ff-toggle--on .ff-toggle__thumb { transform: translateX(18px); }
+
+/* ── Day 41 · Audit log — .al-table ──────────────────────────────────────── */
+
+.al-table-wrap {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.al-table { width: 100%; border-collapse: collapse; }
+
+.al-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--bg-accent);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.al-table td { padding: 11px 16px; font-size: 0.86rem; color: var(--text); border-bottom: 1px solid rgba(93, 84, 78, 0.08); }
+.al-table tr:last-child td { border-bottom: none; }
+.al-empty { color: var(--muted); text-align: center; padding: 24px !important; }
+
+.al-action { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+.al-action svg { color: var(--accent-strong); flex-shrink: 0; }
+
+/* ── Day 43 · Read-only suspended mode — .readonly-banner / .readonly-scope */
+
+.readonly-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.08);
+  color: #7f1d1d;
+  font-size: 0.86rem;
+  margin: 0 0 4px;
+}
+
+.readonly-banner a { text-decoration: underline; font-weight: 600; }
+
+.readonly-scope { display: contents; }
+
+.readonly-scope--locked {
+  display: block;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  opacity: 0.55;
+  filter: grayscale(0.2);
+}
+
+/* ── Day 42 · Billing page — .billing-page ───────────────────────────────── */
+
+.billing-page { display: grid; gap: 26px; }
+
+.current-plan-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+}
+
+.current-plan-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.current-plan-card__body { flex: 1; display: grid; gap: 2px; }
+.current-plan-card__eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+.current-plan-card__name { margin: 0; font-family: var(--font-display), serif; font-size: 1.3rem; font-weight: 700; color: var(--text); }
+.current-plan-card__name span { font-size: 0.9rem; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.current-plan-card__meta { margin: 0; font-size: 0.84rem; color: var(--muted); }
+.current-plan-card__actions { flex-shrink: 0; }
+
+.billing-section { display: grid; gap: 14px; }
+.billing-section__title { margin: 0; font-family: var(--font-display), serif; font-size: 1.15rem; font-weight: 700; color: var(--text); }
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.plan-card {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+}
+
+.plan-card--current { border-color: var(--accent-strong); box-shadow: 0 0 0 1px var(--accent-strong); }
+
+.plan-card__badge {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent-strong);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.plan-card__name { margin: 4px 0 0; font-family: var(--font-display), serif; font-size: 1.15rem; font-weight: 700; color: var(--text); }
+.plan-card__price { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.plan-card__price span { font-size: 0.86rem; font-weight: 500; color: var(--muted); }
+.plan-card__tagline { margin: 0; font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+.plan-card__limit { margin: -4px 0 0; font-size: 0.78rem; font-weight: 600; color: var(--accent-strong); }
+
+.plan-card__features { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.plan-card__features li { display: flex; align-items: flex-start; gap: 7px; font-size: 0.82rem; color: var(--text); line-height: 1.4; }
+.plan-card__features li svg { color: #2a7a36; flex-shrink: 0; margin-top: 2px; }
+
+/* ── Day 42 · Stripe checkout modal — .sc-form ───────────────────────────── */
+
+.sc-form { display: grid; gap: 14px; }
+.sc-form__summary { margin: 0; font-size: 0.88rem; color: var(--text); }
+
+.sc-form__field { display: grid; gap: 5px; }
+.sc-form__field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.sc-form__field input {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  font-size: 0.88rem;
+  outline: none;
+}
+.sc-form__field input:focus { border-color: var(--accent-strong); }
+
+.sc-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.sc-form__input-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+}
+.sc-form__input-icon input { border: none; padding: 9px 0; flex: 1; outline: none; }
+.sc-form__input-icon svg { color: var(--muted); flex-shrink: 0; }
+
+.sc-form__test-cards {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-accent);
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.sc-form__test-cards ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.sc-form__test-cards li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sc-form__test-cards button {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-family: monospace;
+  font-size: 0.76rem;
+  cursor: pointer;
+  padding: 0;
+}
+.sc-form__test-cards button:hover { text-decoration: underline; }
+
+.sc-form__error { color: #b91c1c; font-size: 0.82rem; margin: 0; }
+.sc-form__submit { justify-content: center; width: 100%; }
+
+/* ── Day 42 · Cancel subscription modal — .csm ───────────────────────────── */
+
+.csm { display: grid; gap: 16px; }
+
+.csm__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(234, 179, 8, 0.1);
+  color: #713f12;
+}
+.csm__warning svg { flex-shrink: 0; margin-top: 2px; }
+.csm__warning p { margin: 0; font-size: 0.86rem; line-height: 1.5; }
+
+.csm__actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ── Day 42 · Billing history table — .billing-history ───────────────────── */
+
+.billing-history__empty { font-size: 0.84rem; color: var(--muted); }
+
+.billing-history {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.billing-history__table { width: 100%; border-collapse: collapse; }
+
+.billing-history__table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--bg-accent);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.billing-history__table td { padding: 11px 16px; font-size: 0.86rem; color: var(--text); border-bottom: 1px solid rgba(93, 84, 78, 0.08); }
+.billing-history__table tr:last-child td { border-bottom: none; }
+
+.billing-history__download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: #fff;
+  font-size: 0.78rem;
+  color: var(--text);
+  cursor: pointer;
+}
+.billing-history__download:hover { background: var(--bg-accent); }
+
+/* ── Day 40 · Communication disabled (feature flag off) — .comm-disabled ── */
+
+.comm-disabled {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.comm-disabled svg { color: #b91c1c; }
+.comm-disabled strong { font-size: 1.05rem; color: var(--text); }
+.comm-disabled p { margin: 0; max-width: 420px; font-size: 0.88rem; line-height: 1.5; }
+
+/* ── Day 40 · Channel performance dashboard — .cpd ───────────────────────── */
+
+.cpd { display: grid; gap: 32px; }
+.cpd-loading { padding: 40px; text-align: center; color: var(--muted); }
+
+.cpd-section { display: grid; gap: 6px; }
+.cpd-section__title { margin: 0; font-family: var(--font-display), serif; font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.cpd-section__subtitle { margin: 0 0 8px; font-size: 0.8rem; color: var(--muted); }
+
+.cpd-bars { display: grid; gap: 14px; margin-top: 8px; }
+
+.cpd-bar-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 110px 1fr 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.cpd-bar-row__label { display: flex; align-items: center; gap: 7px; font-size: 0.84rem; color: var(--text); font-weight: 600; }
+.cpd-bar-row__swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+.cpd-bar-row__track { height: 20px; border-radius: 6px; background: rgba(93, 84, 78, 0.1); overflow: hidden; }
+.cpd-bar-row__fill { height: 100%; border-radius: 6px; transition: width 300ms ease; }
+
+.cpd-bar-row__value { font-size: 0.84rem; font-weight: 700; color: var(--text); text-align: right; }
+
+.cpd-tooltip {
+  position: absolute;
+  top: -8px;
+  left: 110px;
+  transform: translateY(-100%);
+  background: #1d1a17;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  display: grid;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.cpd-heatmap { display: grid; gap: 10px; }
+
+.cpd-heatmap__grid {
+  display: grid;
+  gap: 3px;
+}
+
+.cpd-heatmap__hour, .cpd-heatmap__day {
+  font-size: 0.72rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+}
+
+.cpd-heatmap__hour { justify-content: center; padding-bottom: 4px; }
+.cpd-heatmap__day { justify-content: flex-start; }
+
+.cpd-heatmap__cell {
+  aspect-ratio: 1.4;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: outline 120ms ease;
+}
+.cpd-heatmap__cell:hover, .cpd-heatmap__cell:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: -2px;
+}
+
+.cpd-heatmap__scale { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--muted); }
+.cpd-heatmap__scale-bar {
+  height: 8px;
+  width: 120px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, hsl(217,70%,92%), hsl(217,70%,40%));
+}
+
+.cpd-categories { display: grid; gap: 10px; margin-top: 8px; }
+
+.cpd-cat-row { display: grid; grid-template-columns: 160px 1fr 44px; align-items: center; gap: 12px; }
+.cpd-cat-row__label { font-size: 0.84rem; color: var(--text); }
+.cpd-cat-row__track { height: 16px; border-radius: 6px; background: rgba(93, 84, 78, 0.1); overflow: hidden; }
+.cpd-cat-row__fill { height: 100%; border-radius: 6px; background: var(--accent-strong); transition: width 300ms ease; }
+.cpd-cat-row__value { font-size: 0.82rem; font-weight: 700; color: var(--text); text-align: right; }
+
+@media (max-width: 640px) {
+  .cpd-bar-row, .cpd-cat-row { grid-template-columns: 90px 1fr 36px; }
+}
+
+/* ── Day 40 · Public unsubscribe page — .unsub-page ──────────────────────── */
+
+.unsub-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background:
+    radial-gradient(circle at top left, rgba(178, 81, 49, 0.1), transparent 34%),
+    radial-gradient(circle at 90% 12%, rgba(39, 76, 63, 0.1), transparent 24%),
+    linear-gradient(180deg, #fbf7f1 0%, var(--bg) 100%);
+}
+
+.unsub-card {
+  width: min(480px, 100%);
+  padding: 32px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 6px;
+}
+
+.unsub-card__brand { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.unsub-card__title { margin: 4px 0 0; font-family: var(--font-display), serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+.unsub-card__sub { margin: 0 0 14px; font-size: 0.86rem; color: var(--muted); }
+
+.unsub-card__banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border-radius: 10px;
+  background: rgba(234, 179, 8, 0.1);
+  color: #713f12;
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
+.unsub-card__banner--success { background: rgba(64, 170, 85, 0.12); color: #2a7a36; }
+
+.unsub-section { display: grid; gap: 2px; margin-bottom: 14px; }
+.unsub-section h2 { margin: 0 0 8px; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-family: var(--font-body); font-weight: 700; }
+
+.unsub-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(93, 84, 78, 0.08);
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+}
+.unsub-toggle-row:last-child { border-bottom: none; }
+.unsub-toggle-row span { display: flex; align-items: center; gap: 8px; }
+.unsub-toggle-row input { width: 18px; height: 18px; accent-color: var(--accent-strong); cursor: pointer; }
+
+.unsub-card__unsub-all {
+  margin-top: 4px;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  background: rgba(220, 38, 38, 0.05);
+  color: #b91c1c;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.unsub-card__unsub-all:hover:not(:disabled) { background: rgba(220, 38, 38, 0.1); }
+.unsub-card__unsub-all:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Responsive — superadmin shell collapses to a top-nav-only layout on narrow viewports */
+@media (max-width: 900px) {
+  .sa-shell { grid-template-columns: 1fr; }
+  .sa-sidebar { position: relative; height: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Sprint Days 34–39 — Message scheduling, send confirmation, WhatsApp
+   composer/inbox, push notifications, digital bulletin.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Day 34 · Schedule controls — .sched-controls ────────────────────────── */
+
+.sched-controls { display: grid; gap: 10px; }
+
+.sched-controls__toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--bg-accent);
+  width: fit-content;
+}
+
+.sched-controls__toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sched-controls__toggle-btn--active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+.sched-controls__fields { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.sched-controls__field { display: grid; gap: 4px; font-size: 0.76rem; color: var(--muted); }
+.sched-controls__field input, .sched-controls__field select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  font-size: 0.86rem;
+  color: var(--text);
+}
+.sched-controls__field--tz select { min-width: 220px; }
+.sched-controls__error { color: #b91c1c; font-size: 0.8rem; margin: 0; }
+
+/* ── Day 34 · Scheduled messages list — .sched-list ──────────────────────── */
+
+.sched-list { display: grid; gap: 12px; }
+
+.sched-list__head { display: flex; align-items: center; justify-content: space-between; }
+.sched-list__head h3 { margin: 0; font-size: 1rem; }
+.sched-list__empty { font-size: 0.86rem; color: var(--muted); }
+.sched-list__history-title { margin: 10px 0 0; font-size: 0.86rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.sched-list__rows { display: grid; gap: 8px; }
+
+.sched-list__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: #fff;
+}
+
+.sched-list__row--muted { opacity: 0.72; }
+
+.sched-list__body { display: grid; gap: 2px; }
+.sched-list__body strong { font-size: 0.88rem; color: var(--text); }
+.sched-list__body span { font-size: 0.78rem; color: var(--muted); }
+.sched-list__reach { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+
+/* ── Day 35 · Send confirmation dialog — .scd ─────────────────────────────── */
+
+.scd { display: grid; gap: 14px; }
+.scd__headline { margin: 0; font-size: 0.94rem; line-height: 1.5; color: var(--text); }
+.scd__meta { margin: 0; font-size: 0.84rem; color: var(--muted); }
+
+.scd__breakdown { display: grid; gap: 8px; }
+.scd__breakdown-title { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.scd__breakdown-loading { font-size: 0.82rem; color: var(--muted); }
+.scd__breakdown-rows { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.scd__breakdown-pill {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--bg-accent);
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.scd__breakdown-pill--muted { background: rgba(93,84,78,0.08); color: var(--muted); font-weight: 500; }
+
+.scd__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(234, 179, 8, 0.1);
+  color: #713f12;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.scd__actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ── Day 35 · Sent history additions — .dr-search / .dr-failed ───────────── */
+
+.dr-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border-radius: 9px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  color: var(--muted);
+  max-width: 380px;
+  margin-bottom: 4px;
+}
+.dr-search input { border: none; outline: none; background: transparent; font-size: 0.86rem; color: var(--text); flex: 1; }
+.dr-failed { color: #b91c1c; font-weight: 700; }
+
+/* ── Day 36 · WhatsApp composer — .wa-composer / .wa-field / .wa-recipients */
+
+.wa-composer { display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
+.wa-composer__main { display: grid; gap: 14px; min-width: 0; }
+.wa-composer__preview { position: sticky; top: 12px; }
+
+.wa-field { display: grid; gap: 5px; }
+.wa-field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.wa-field input, .wa-field select {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  font-size: 0.88rem;
+}
+.wa-field__hint { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; font-size: 0.76rem; color: var(--muted); }
+.wa-field__hint svg { color: #b91c1c; flex-shrink: 0; }
+
+.wa-vars { display: grid; gap: 10px; padding: 12px; border-radius: 10px; background: var(--bg-accent); }
+
+.wa-recipients { display: grid; gap: 8px; }
+.wa-recipients__title { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.wa-recipients__list { display: flex; flex-wrap: wrap; gap: 6px; }
+.wa-recipients__chip { padding: 4px 10px; border-radius: 999px; background: var(--bg-accent); color: var(--accent-strong); font-size: 0.78rem; font-weight: 600; }
+.wa-recipients__chip--muted { background: rgba(93,84,78,0.08); color: var(--muted); font-weight: 500; }
+.wa-recipients__empty { font-size: 0.8rem; color: var(--muted); }
+
+@media (max-width: 780px) {
+  .wa-composer { grid-template-columns: 1fr; }
+  .wa-composer__preview { position: static; }
+}
+
+/* ── Day 36 · WhatsApp phone mockup — .wa-phone ──────────────────────────── */
+
+.wa-phone {
+  width: 260px;
+  border-radius: 28px;
+  background: #0b141a;
+  padding: 10px;
+  box-shadow: var(--shadow-strong);
+}
+
+.wa-phone__notch { width: 60px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.25); margin: 4px auto 8px; }
+
+.wa-phone__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #1f2c34;
+  border-radius: 10px 10px 0 0;
+  color: #e9edef;
+}
+
+.wa-phone__avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #16a34a; color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+}
+
+.wa-phone__header-copy { display: grid; }
+.wa-phone__header-copy strong { font-size: 0.82rem; }
+.wa-phone__header-copy span { font-size: 0.68rem; color: #8696a0; }
+
+.wa-phone__body {
+  min-height: 220px;
+  padding: 14px 10px;
+  background: #0b141a url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="%230b141a"/></svg>');
+  border-radius: 0 0 10px 10px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.wa-phone__bubble {
+  background: #005c4b;
+  color: #e9edef;
+  padding: 8px 10px;
+  border-radius: 8px 8px 8px 2px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  max-width: 92%;
+}
+
+.wa-phone__meta { display: block; text-align: right; font-size: 0.66rem; color: rgba(233,237,239,0.6); margin-top: 4px; }
+.wa-phone__ticks { vertical-align: -2px; margin-left: 3px; color: #53bdeb; }
+
+.wa-phone__empty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8696a0;
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* ── Day 37 · WhatsApp inbox — .wa-inbox ─────────────────────────────────── */
+
+.comm-panel--inbox { padding: 0; overflow: hidden; }
+
+.wa-inbox {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 520px;
+  max-height: 640px;
+}
+
+.wa-inbox__list {
+  border-right: 1px solid var(--panel-border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.wa-inbox__list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--panel-border);
+  position: sticky;
+  top: 0;
+  background: #fff;
+}
+
+.wa-inbox__convo {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid rgba(93,84,78,0.06);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.wa-inbox__convo:hover { background: var(--bg-accent); }
+.wa-inbox__convo--active { background: var(--accent-soft); }
+
+.wa-inbox__avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent-strong); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+}
+
+.wa-inbox__convo-copy { display: grid; min-width: 0; }
+.wa-inbox__convo-copy strong { font-size: 0.86rem; color: var(--text); }
+.wa-inbox__convo-copy span { font-size: 0.78rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.wa-inbox__convo-meta { display: grid; justify-items: end; gap: 4px; }
+.wa-inbox__convo-time { font-size: 0.7rem; color: var(--muted); }
+.wa-inbox__unread-badge {
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 999px; background: #16a34a; color: #fff;
+  font-size: 0.68rem; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+.wa-inbox__thread { display: flex; flex-direction: column; min-width: 0; }
+.wa-inbox__empty { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--muted); font-size: 0.86rem; }
+
+.wa-inbox__thread-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.wa-inbox__thread-head div { display: grid; flex: 1; }
+.wa-inbox__thread-head strong { font-size: 0.88rem; }
+.wa-inbox__thread-head span { font-size: 0.76rem; color: var(--muted); }
+
+.wa-inbox__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f7f3ec;
+}
+
+.wa-inbox__bubble-row { display: flex; }
+.wa-inbox__bubble-row--admin { justify-content: flex-end; }
+.wa-inbox__bubble-row--member { justify-content: flex-start; }
+
+.wa-inbox__bubble {
+  max-width: 70%;
+  padding: 8px 11px;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  position: relative;
+}
+.wa-inbox__bubble--admin { background: var(--accent-strong); color: #fff; border-bottom-right-radius: 3px; }
+.wa-inbox__bubble--member { background: #fff; color: var(--text); border: 1px solid var(--panel-border); border-bottom-left-radius: 3px; }
+
+.wa-inbox__bubble-time { display: block; text-align: right; font-size: 0.65rem; opacity: 0.7; margin-top: 3px; }
+
+.wa-inbox__typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  width: fit-content;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.wa-inbox__typing-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--muted);
+  animation: wa-typing-bounce 1.2s infinite ease-in-out;
+}
+.wa-inbox__typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.wa-inbox__typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes wa-typing-bounce { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
+
+.wa-inbox__composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--panel-border);
+  background: #fff;
+}
+
+.wa-inbox__emoji-wrap { position: relative; }
+.wa-inbox__icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 8px; border: none;
+  background: var(--bg-accent); color: var(--muted); cursor: pointer;
+}
+
+.wa-inbox__emoji-picker {
+  position: absolute;
+  bottom: 42px;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow-strong);
+  z-index: 5;
+}
+.wa-inbox__emoji-picker button { border: none; background: none; font-size: 1.1rem; padding: 4px; cursor: pointer; border-radius: 6px; }
+.wa-inbox__emoji-picker button:hover { background: var(--bg-accent); }
+
+.wa-inbox__composer textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  padding: 9px 14px;
+  font-size: 0.86rem;
+  max-height: 100px;
+}
+
+.wa-inbox__send-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: var(--accent-strong); color: #fff; cursor: pointer; flex-shrink: 0;
+}
+.wa-inbox__send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 780px) {
+  .wa-inbox { grid-template-columns: 1fr; }
+  .wa-inbox__list { display: none; }
+}
+
+/* ── Day 38 · Push permission prompt — .push-prompt ──────────────────────── */
+
+.push-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  margin-bottom: 4px;
+}
+
+.push-prompt--ask { background: var(--accent-soft); color: var(--text); }
+.push-prompt--granted { background: rgba(64,170,85,0.1); color: #2a7a36; }
+.push-prompt--denied { background: rgba(93,84,78,0.08); color: var(--muted); }
+
+.push-prompt span { flex: 1; }
+
+.push-prompt__actions { display: flex; align-items: center; gap: 6px; flex: none; }
+
+.push-prompt__enable-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-strong);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.push-prompt__enable-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.push-prompt__dismiss-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 6px; border: none;
+  background: transparent; color: var(--muted); cursor: pointer;
+}
+.push-prompt__dismiss-btn:hover { background: rgba(0,0,0,0.06); }
+
+.push-prompt__test-btn {
+  border: none; background: none; color: #2a7a36; font-weight: 600;
+  font-size: 0.8rem; cursor: pointer; text-decoration: underline; flex: none;
+}
+
+/* ── Day 38 · Notification preferences matrix — .notif-matrix ───────────── */
+
+.notif-prefs-page { display: grid; gap: 18px; }
+.notif-prefs-page__head h1 { margin: 0 0 4px; font-size: 1.4rem; }
+.notif-prefs-page__head p { margin: 0; color: var(--muted); }
+
+.notif-prefs-page__saved {
+  display: inline-flex; align-items: center; gap: 6px;
+  width: fit-content; padding: 6px 12px; border-radius: 999px;
+  background: rgba(64,170,85,0.12); color: #2a7a36; font-size: 0.82rem; font-weight: 600;
+}
+
+.notif-matrix-wrap { border: 1px solid var(--panel-border); border-radius: 14px; background: #fff; overflow-x: auto; }
+
+.notif-matrix { width: 100%; border-collapse: collapse; }
+.notif-matrix th {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 0.76rem;
+  color: var(--muted);
+  background: var(--bg-accent);
+  border-bottom: 1px solid var(--panel-border);
+}
+.notif-matrix th:first-child { text-align: left; }
+.notif-matrix td { padding: 12px 16px; border-bottom: 1px solid rgba(93,84,78,0.08); text-align: center; }
+.notif-matrix tr:last-child td { border-bottom: none; }
+.notif-matrix__label { text-align: left !important; font-size: 0.88rem; color: var(--text); font-weight: 600; }
+
+/* ── Day 39 · Bulletin editor — .bulletin-editor ─────────────────────────── */
+
+.bulletin-editor, .bulletin-preview-page { display: grid; gap: 20px; }
+
+.bulletin-editor__head, .bulletin-preview-page .bulletin-editor__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.bulletin-editor__head h1 { margin: 0 0 4px; font-size: 1.4rem; }
+.bulletin-editor__head p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+.bulletin-editor__head-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+.bulletin-editor__layout { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 24px; align-items: start; }
+
+.bulletin-editor__form { display: grid; gap: 18px; }
+
+.bulletin-editor__group { display: grid; gap: 10px; padding: 16px; border-radius: 12px; background: #fff; border: 1px solid var(--panel-border); }
+.bulletin-editor__group h3 { margin: 0; font-size: 0.92rem; }
+.bulletin-editor__group textarea { padding: 9px 12px; border-radius: 8px; border: 1px solid var(--panel-border); font-size: 0.88rem; resize: vertical; }
+.bulletin-editor__group-head { display: flex; align-items: center; justify-content: space-between; }
+
+.bulletin-editor__field { display: grid; gap: 4px; font-size: 0.78rem; color: var(--muted); }
+.bulletin-editor__field input {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  font-size: 0.88rem;
+  color: var(--text);
+}
+.bulletin-editor__color-row { display: flex; gap: 14px; }
+.bulletin-editor__field--color input { padding: 3px; height: 36px; width: 56px; cursor: pointer; }
+
+.bulletin-editor__toggle { display: flex; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--text); cursor: pointer; }
+.bulletin-editor__toggle input { width: 16px; height: 16px; accent-color: var(--accent-strong); }
+
+.bulletin-editor__preview { position: sticky; top: 12px; display: grid; gap: 8px; }
+.bulletin-editor__preview-label { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+@media (max-width: 900px) {
+  .bulletin-editor__layout { grid-template-columns: 1fr; }
+  .bulletin-editor__preview { position: static; }
+}
+
+/* ── Day 39 · Bulletin sheet render — .bulletin-sheet ────────────────────── */
+
+.bulletin-sheet {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+  font-family: var(--font-display), serif;
+}
+
+.bulletin-sheet--compact { max-width: 100%; }
+
+.bulletin-sheet__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 22px;
+  color: #fff;
+}
+.bulletin-sheet__logo { height: 32px; width: auto; border-radius: 4px; background: rgba(255,255,255,0.15); }
+.bulletin-sheet__logo-fallback {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.15); flex-shrink: 0;
+}
+.bulletin-sheet__header strong { display: block; font-size: 1.05rem; }
+.bulletin-sheet__header span { display: block; font-size: 0.72rem; opacity: 0.8; font-family: var(--font-body), sans-serif; }
+
+.bulletin-sheet__section { padding: 16px 22px; border-top: 1px solid rgba(93,84,78,0.08); font-family: var(--font-body), sans-serif; }
+.bulletin-sheet__section h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-body), sans-serif; }
+
+.bulletin-sheet__welcome { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+
+.bulletin-sheet__sermon-title { margin: 0; font-size: 1rem; font-weight: 700; color: var(--text); }
+.bulletin-sheet__sermon-verse { margin: 4px 0 0; font-size: 0.82rem; color: var(--muted); font-style: italic; }
+.bulletin-sheet__sermon-speaker { margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
+
+.bulletin-sheet__events { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bulletin-sheet__events li { display: grid; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid rgba(93,84,78,0.06); }
+.bulletin-sheet__events li:last-child { border-bottom: none; padding-bottom: 0; }
+.bulletin-sheet__events li strong { font-size: 0.88rem; color: var(--text); }
+.bulletin-sheet__events li span { font-size: 0.78rem; color: var(--muted); }
+.bulletin-sheet__empty { margin: 0; font-size: 0.82rem; color: var(--muted); }
+
+.bulletin-sheet__giving-track { height: 8px; border-radius: 999px; background: rgba(93,84,78,0.12); overflow: hidden; margin-bottom: 8px; }
+.bulletin-sheet__giving-fill { height: 100%; border-radius: 999px; }
+.bulletin-sheet__giving-line { margin: 0; font-size: 0.86rem; color: var(--text); }
+.bulletin-sheet__giving-sub { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted); }
+
+.bulletin-sheet__footer {
+  padding: 14px 22px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  border-top: 1px solid rgba(93,84,78,0.08);
+  font-family: var(--font-body), sans-serif;
+}
+
+/* ── Day 39 · Bulletin preview page — .bulletin-preview-page ─────────────── */
+
+.bulletin-preview-page__back {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.8rem; color: var(--accent); margin-bottom: 6px;
+}
+
+.bulletin-preview-page__layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+
+.bulletin-preview-page__send {
+  position: sticky;
+  top: 12px;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--panel-border);
+}
+.bulletin-preview-page__send h3 { margin: 0; font-size: 0.98rem; }
+.bulletin-preview-page__send p { margin: -6px 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+.bulletin-preview-page__result {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(64,170,85,0.1);
+  color: #2a7a36;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.bulletin-preview-page__mock-note { color: var(--muted); }
+
+@media (max-width: 900px) {
+  .bulletin-preview-page__layout { grid-template-columns: 1fr; }
+  .bulletin-preview-page__send { position: static; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Sprint Days 46–58 — Team, branding, audit log, permissions, custom
+   fields, onboarding checklist, offline/PWA infrastructure, virtualized
+   lists, image optimization.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Day 46 · Team management — .team-page ───────────────────────────────── */
+
+.team-page { display: grid; gap: 20px; }
+.team-page__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.team-page__head h1 { margin: 0 0 4px; font-size: 1.4rem; }
+.team-page__head p { margin: 0; color: var(--muted); }
+
+.team-table-wrap { border: 1px solid var(--panel-border); border-radius: 14px; background: #fff; overflow-x: auto; }
+.team-table { width: 100%; border-collapse: collapse; }
+.team-table th {
+  text-align: left; padding: 12px 16px; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--muted); background: var(--bg-accent); border-bottom: 1px solid var(--panel-border);
+}
+.team-table td { padding: 11px 16px; border-bottom: 1px solid rgba(93,84,78,0.08); vertical-align: middle; }
+.team-table tr:last-child td { border-bottom: none; }
+.team-table__name { display: block; font-size: 0.9rem; color: var(--text); }
+.team-table__email { display: block; font-size: 0.78rem; color: var(--muted); }
+.team-table__role-select {
+  padding: 6px 10px; border-radius: 7px; border: 1px solid var(--panel-border); font-size: 0.84rem; background: #fff;
+}
+.team-table__role-select:disabled { opacity: 0.6; cursor: not-allowed; }
+.team-table__remove {
+  display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
+  border-radius: 7px; border: none; background: transparent; color: var(--muted); cursor: pointer;
+}
+.team-table__remove:hover { background: rgba(220,38,38,0.08); color: #b91c1c; }
+
+.team-invites { display: grid; gap: 10px; }
+.team-invites h2 { margin: 0; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-family: var(--font-body); }
+.team-invites__rows { display: grid; gap: 6px; }
+.team-invites__row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px;
+  background: var(--bg-accent); font-size: 0.86rem; color: var(--text);
+}
+.team-invites__role { font-weight: 600; color: var(--accent-strong); }
+.team-invites__time { margin-left: auto; font-size: 0.76rem; color: var(--muted); }
+
+.team-invite-form { display: grid; gap: 14px; }
+.team-accept-card { text-align: center; }
+
+/* ── Day 47 · Branding + General settings — .branding-page ──────────────── */
+
+.branding-page, .cf-page, .perm-page { display: grid; gap: 20px; }
+
+.branding-dropzone {
+  display: grid; justify-items: center; gap: 8px; padding: 28px; border-radius: 12px;
+  border: 2px dashed var(--panel-border); color: var(--muted); font-size: 0.84rem; cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+.branding-dropzone:hover, .branding-dropzone--over { border-color: var(--accent); background: var(--accent-soft); }
+.branding-dropzone__preview { max-height: 64px; max-width: 100%; object-fit: contain; border-radius: 6px; }
+
+.general-select {
+  padding: 9px 12px; border-radius: 8px; border: 1px solid var(--panel-border); font-size: 0.88rem;
+  color: var(--text); background: #fff; width: 100%;
+}
+.general-seeded-note {
+  display: flex; align-items: flex-start; gap: 6px; margin-top: 8px; padding: 9px 12px; border-radius: 10px;
+  background: rgba(64,170,85,0.1); color: #2a7a36; font-size: 0.8rem; line-height: 1.5;
+}
+
+/* ── Day 50 · Branding live preview — .brand-preview ─────────────────────── */
+
+.brand-preview { display: grid; gap: 8px; position: sticky; top: 12px; }
+.brand-preview__label { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+.brand-preview__frame {
+  display: grid; grid-template-columns: 130px 1fr; border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--panel-border); box-shadow: var(--shadow); min-height: 220px;
+}
+
+.brand-preview__sidebar {
+  background: linear-gradient(180deg, #1a1714 0%, #231f1b 100%); padding: 14px 10px; display: grid;
+  gap: 14px; justify-items: center; align-content: start;
+}
+.brand-preview__logo { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; }
+.brand-preview__logo-fallback {
+  width: 26px; height: 26px; border-radius: 6px; background: rgba(255,255,255,0.1); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.brand-preview__sidebar-name { font-size: 0.66rem; color: rgba(255,255,255,0.7); text-align: center; }
+.brand-preview__nav { display: grid; gap: 4px; width: 100%; }
+.brand-preview__nav-item {
+  display: flex; align-items: center; gap: 5px; padding: 5px 7px; border-radius: 6px; font-size: 0.64rem;
+  color: rgba(255,255,255,0.65);
+}
+
+.brand-preview__main { padding: 16px; display: grid; gap: 14px; align-content: start; background: var(--bg); }
+.brand-preview__card { padding: 12px; border-radius: 10px; background: #fff; border: 1px solid var(--panel-border); }
+.brand-preview__card strong { display: block; font-size: 0.8rem; margin-bottom: 4px; }
+.brand-preview__card p { margin: 0; font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
+.brand-preview__buttons { display: flex; gap: 8px; }
+.brand-preview__btn { padding: 7px 14px; border-radius: 8px; font-size: 0.76rem; font-weight: 600; }
+.brand-preview__btn--primary { color: #fff; }
+.brand-preview__btn--secondary { background: #fff; border: 1.5px solid; }
+
+.admin-sidebar__brand-logo { width: 32px; height: 32px; border-radius: 7px; object-fit: cover; flex-shrink: 0; }
+
+/* ── Day 48 · Audit log diff view — .al-diff-table ───────────────────────── */
+
+.al-row--clickable { cursor: pointer; }
+.al-row--clickable:hover { background: var(--bg-accent); }
+.al-detail-row td { padding: 0 16px 14px !important; background: var(--bg-accent); }
+
+.al-diff-table { width: 100%; border-collapse: collapse; margin-top: 4px; background: #fff; border-radius: 8px; overflow: hidden; }
+.al-diff-table th { text-align: left; padding: 7px 12px; font-size: 0.68rem; text-transform: uppercase; color: var(--muted); background: var(--panel-border); }
+.al-diff-table td { padding: 7px 12px; font-size: 0.82rem; border-bottom: 1px solid rgba(93,84,78,0.06); }
+.al-diff-table__before { color: #b91c1c; text-decoration: line-through; }
+.al-diff-table__after { color: #2a7a36; font-weight: 600; }
+
+/* ── Day 49 · Custom fields — .cf-list / .cf-form ────────────────────────── */
+
+.cf-list { display: grid; gap: 8px; }
+.cf-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--panel-border); background: #fff;
+}
+.cf-row__icon {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border-radius: 8px; background: var(--bg-accent); color: var(--accent-strong); flex-shrink: 0;
+}
+.cf-row__copy { display: grid; flex: 1; }
+.cf-row__copy strong { font-size: 0.88rem; color: var(--text); }
+.cf-row__copy span { font-size: 0.78rem; color: var(--muted); }
+
+.cf-form { display: grid; gap: 12px; padding: 16px; border-radius: 12px; background: var(--bg-accent); }
+.cf-form h3 { margin: 0; font-size: 0.9rem; }
+.cf-form__row { display: flex; gap: 12px; }
+
+.amf-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: var(--text); }
+.amf-checkbox-row input { width: 16px; height: 16px; accent-color: var(--accent-strong); }
+
+/* ── Day 49 · Permission matrix — .perm-matrix ───────────────────────────── */
+
+.perm-matrix-wrap { border: 1px solid var(--panel-border); border-radius: 14px; background: #fff; overflow-x: auto; }
+.perm-matrix { width: 100%; border-collapse: collapse; }
+.perm-matrix th {
+  text-align: center; padding: 11px 14px; font-size: 0.74rem; color: var(--muted); background: var(--bg-accent);
+  border-bottom: 1px solid var(--panel-border); white-space: nowrap;
+}
+.perm-matrix th:first-child { text-align: left; }
+.perm-matrix td { padding: 9px 14px; border-bottom: 1px solid rgba(93,84,78,0.06); text-align: center; position: relative; }
+.perm-matrix__feature { text-align: left !important; font-size: 0.84rem; color: var(--text); white-space: nowrap; }
+
+.perm-matrix__mark {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px;
+  border-radius: 7px; border: none; background: transparent; color: rgba(93,84,78,0.3); cursor: pointer;
+}
+.perm-matrix__mark--yes { background: rgba(64,170,85,0.12); color: #2a7a36; }
+
+.perm-matrix__tooltip {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 6px;
+  display: flex; align-items: flex-start; gap: 5px; padding: 7px 11px; border-radius: 8px;
+  background: #1d1a17; color: #fff; font-size: 0.72rem; line-height: 1.4; white-space: nowrap; z-index: 5;
+  box-shadow: var(--shadow-strong);
+}
+
+/* ── Day 49 · Data export — .export-card ─────────────────────────────────── */
+
+.export-card {
+  display: grid; justify-items: center; gap: 14px; padding: 32px; border-radius: 14px;
+  border: 1px solid var(--panel-border); background: #fff; text-align: center; color: var(--accent-strong);
+}
+.export-card__files { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.export-card__file {
+  padding: 4px 11px; border-radius: 999px; background: var(--bg-accent); color: var(--muted);
+  font-size: 0.76rem; font-family: monospace;
+}
+
+/* ── Day 50 · Onboarding checklist widget — .onboard-widget ──────────────── */
+
+.onboard-widget { border: 1px solid var(--panel-border); border-radius: 14px; background: #fff; overflow: hidden; }
+
+.onboard-widget__head {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 18px; border: none;
+  background: transparent; cursor: pointer; text-align: left;
+}
+.onboard-widget__icon {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+  border-radius: 9px; background: var(--accent-soft); color: var(--accent); flex-shrink: 0;
+}
+.onboard-widget__copy { display: grid; flex-shrink: 0; }
+.onboard-widget__copy strong { font-size: 0.88rem; color: var(--text); }
+.onboard-widget__copy span { font-size: 0.76rem; color: var(--muted); }
+
+.onboard-widget__track { flex: 1; height: 6px; border-radius: 999px; background: var(--bg-accent); overflow: hidden; }
+.onboard-widget__fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 300ms ease; }
+
+.onboard-widget__steps { list-style: none; margin: 0; padding: 4px 18px 16px; display: grid; gap: 8px; }
+.onboard-widget__steps li { display: flex; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--text); }
+.onboard-widget__steps li svg { color: rgba(93,84,78,0.35); flex-shrink: 0; }
+.onboard-widget__steps li a { color: var(--accent); text-decoration: underline; }
+.onboard-widget__step--done { color: var(--muted); }
+.onboard-widget__step--done svg { color: #2a7a36; }
+.onboard-widget__dismiss { margin-top: 4px; }
+.onboard-widget__dismiss button { border: none; background: none; color: var(--muted); font-size: 0.76rem; text-decoration: underline; cursor: pointer; padding: 0; }
+
+/* ── Day 53 · Offline check-in — .qr-success__offline ────────────────────── */
+
+.qr-success__offline { display: inline-flex; align-items: center; gap: 5px; color: #d97706; font-weight: 600; }
+
+/* ── Day 53 · Sync queue badge — .sync-badge ─────────────────────────────── */
+
+.sync-badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px;
+  font-size: 0.76rem; font-weight: 600; flex-shrink: 0;
+}
+.sync-badge--pending { background: rgba(234,179,8,0.14); color: #9a6000; }
+.sync-badge--syncing { background: rgba(37,99,235,0.1); color: #1d4ed8; }
+.sync-badge--synced { background: rgba(64,170,85,0.12); color: #2a7a36; }
+.sync-badge__spin { animation: sync-badge-spin 1s linear infinite; }
+@keyframes sync-badge-spin { to { transform: rotate(360deg); } }
+
+/* ── Day 54 · Offline banner + page indicator ────────────────────────────── */
+
+/* Always mounted; height/opacity animate instead of the element being
+   inserted/removed from the DOM, so connectivity flips slide in rather
+   than instantly shoving the rest of the page down. */
+.offline-banner {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  background: #7f1d1d;
+  color: #fff;
+  transition: max-height 220ms ease, opacity 180ms ease;
+}
+.offline-banner--visible { max-height: 48px; opacity: 1; }
+.offline-banner--back { background: #166534; }
+
+.offline-banner__inner {
+  display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px;
+  font-size: 0.82rem; font-weight: 500;
+}
+
+.offline-page-indicator {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; padding: 4px 10px; border-radius: 999px;
+  background: rgba(234,179,8,0.12); color: #9a6000; font-size: 0.74rem; font-weight: 600; width: fit-content;
+}
+
+/* ── Day 56 · Install App button — .install-app-btn ──────────────────────── */
+
+.install-app-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px;
+  border: 1px solid var(--panel-border); background: #fff; color: var(--text); font-size: 0.82rem;
+  font-weight: 600; cursor: pointer; flex-shrink: 0;
+}
+.install-app-btn:hover:not(:disabled) { background: var(--bg-accent); border-color: var(--accent); }
+.install-app-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Day 57 · Member directory view toggle + virtualized list — .mvl ────── */
+
+.member-dir__view-toggle {
+  display: inline-flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--bg-accent); margin-left: auto;
+}
+.member-dir__view-toggle button {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; border: none;
+  background: transparent; color: var(--muted); font-size: 0.78rem; font-weight: 600; cursor: pointer;
+}
+.member-dir__view-toggle button.active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+.member-dir__stress-btn {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px;
+  border: 1px dashed var(--panel-border); background: #fff; color: var(--muted); font-size: 0.74rem; cursor: pointer;
+}
+.member-dir__stress-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.mvl { height: 600px; max-height: 70vh; overflow-y: auto; border: 1px solid var(--panel-border); border-radius: 12px; background: #fff; }
+.mvl__spacer { position: relative; width: 100%; }
+
+.mvl__row {
+  position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; border-bottom: 1px solid rgba(93,84,78,0.06); cursor: pointer;
+}
+.mvl__row:hover { background: var(--bg-accent); }
+
+.mvl__avatar {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent-strong); color: #fff; font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+}
+.mvl__name { font-size: 0.86rem; color: var(--text); font-weight: 600; width: 180px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mvl__contact { display: inline-flex; align-items: center; gap: 4px; font-size: 0.78rem; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mvl__status { font-size: 0.72rem; font-weight: 700; text-transform: capitalize; padding: 3px 9px; border-radius: 999px; flex-shrink: 0; }
+.mvl__status--active { background: rgba(64,170,85,0.12); color: #2a7a36; }
+.mvl__status--inactive { background: rgba(93,84,78,0.1); color: var(--muted); }
+.mvl__status--visitor { background: rgba(234,179,8,0.12); color: #9a6000; }
+
+/* ── Day 57 · Attendance checkin virtualized list ────────────────────────── */
+
+.att-history__checkin-list--virtual { max-height: 420px; overflow-y: auto; position: relative; }
+
+/* ── Day 57 · Households virtualized list — .hh-vlist ────────────────────── */
+
+.hh-vlist { height: 720px; max-height: 75vh; overflow-y: auto; }
+.hh-card--virtual { width: 100%; margin-bottom: 14px; box-sizing: border-box; }
+
+@media (max-width: 640px) {
+  .team-invites__row { flex-wrap: wrap; }
+  .brand-preview__frame { grid-template-columns: 1fr; }
+  .mvl__name { width: 120px; }
+}
+
+/* ── Route-level loading state — .route-loading ──────────────────────────
+   Shown instantly by Next.js the moment a navigation starts (App Router
+   loading.tsx convention), before the destination page's own JS/data is
+   ready — this is what makes clicking a nav link feel immediate instead
+   of frozen. */
+
+.route-loading { display: grid; gap: 16px; padding-top: 4px; }
+
+.route-loading__bar {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  animation: route-loading-pulse 1.1s ease-in-out infinite;
+  transform-origin: left;
+}
+@keyframes route-loading-pulse {
+  0% { opacity: 0.4; transform: scaleX(0.3); }
+  50% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0.4; transform: scaleX(0.3); }
+}
+
+.route-loading__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.route-loading__block { border-radius: 14px; }

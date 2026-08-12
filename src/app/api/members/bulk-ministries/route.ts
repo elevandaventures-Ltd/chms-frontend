@@ -11,6 +11,7 @@
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { timeoutFetch, disablePostgrestRetry } from '@/lib/supabase/timeout-fetch';
 import { z } from 'zod';
 
 const bodySchema = z.object({
@@ -48,7 +49,9 @@ export async function POST(request: NextRequest) {
           );
         },
       },
+      global: { fetch: timeoutFetch },
     });
+    disablePostgrestRetry(supabase);
 
     if (mode === 'replace') {
       const { error } = await supabase

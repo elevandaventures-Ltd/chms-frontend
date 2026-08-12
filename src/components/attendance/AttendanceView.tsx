@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Plus, X, RefreshCw, CalendarOff, QrCode } from 'lucide-react';
 import { Alert } from '@/components/ui/Alert';
 import { SessionCard } from '@/components/attendance/SessionCard';
+import { OfflinePageIndicator } from '@/components/OfflinePageIndicator';
 import {
   SESSION_TYPES, SESSION_TYPE_LABELS,
   type AttendanceSession, type SessionType,
@@ -92,6 +93,7 @@ export function AttendanceView({ onActiveSession }: { onActiveSession?: (id: str
         <div>
           <h1 className="att-view__title">Attendance</h1>
           <p className="att-view__sub">Start a session and track who&apos;s in the room.</p>
+          <OfflinePageIndicator label="Offline — check-ins will queue and sync automatically" />
         </div>
         <div className="att-view__head-actions">
           <Link href="/attendance/scan" className="att-scan-link">
