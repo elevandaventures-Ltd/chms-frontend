@@ -1,0 +1,16 @@
+{
+  "name": "Elevanda ChMS — Church Management System",
+  "short_name": "Elevanda ChMS",
+  "description": "Church management system for growing congregations — members, attendance, events, and communication in one place.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1a4a2e",
+  "background_color": "#faf8f3",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

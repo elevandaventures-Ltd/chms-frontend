@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>You're offline — Elevanda ChMS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      background: linear-gradient(180deg, #fbf7f1 0%, #f3efe7 100%);
+      color: #1d1a17; text-align: center; padding: 24px;
+    }
+    .card { max-width: 380px; }
+    .icon {
+      width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 20px;
+      background: rgba(178, 81, 49, 0.12); color: #b25131;
+      display: flex; align-items: center; justify-content: center;
+    }
+    h1 { font-size: 1.3rem; margin: 0 0 8px; }
+    p { color: #5d544e; line-height: 1.6; margin: 0 0 20px; }
+    button {
+      border: none; background: #b25131; color: #fff; padding: 10px 22px;
+      border-radius: 9px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+    </div>
+    <h1>You're offline</h1>
+    <p>This page hasn't been cached yet, so it needs a connection the first time. Already-visited pages and your data stay available while you're offline.</p>
+    <button onclick="location.reload()">Try again</button>
+  </div>
+</body>
+</html>

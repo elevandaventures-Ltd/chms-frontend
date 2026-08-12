@@ -1,0 +1,17 @@
+node_modules
+.next
+.turbo
+coverage
+dist
+*.log
+.DS_Store
+.env.local
+.env.*.local
+*storybook.log
+storybook-static
+
+# User data — never commit records or credentials to version control
+data/
+
+# Backend repo — tracked separately
+chms-backend/
